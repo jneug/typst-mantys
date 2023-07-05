@@ -28,7 +28,7 @@
   version:  none,  // string
   date:     none,  // string|datetime
   abstract: none   // string|content
-) = page([
+) = [
 	#set align(center)
 	#set block(spacing: 2em)
 
@@ -74,7 +74,9 @@
 		title: none,
 		indent: auto
 	))
-])
+
+	#pagebreak()
+]
 
 #let mantys( ..args, body ) = {
 	if not "name" in args.named() {
