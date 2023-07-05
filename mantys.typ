@@ -199,27 +199,20 @@
 // }
 
 //#let meta( name ) = emph({sym.angle.l + name + sym.angle.r})
+
 #let meta( name ) = mty.rawc(colors.argument, name)
 
 #let opt( name ) = mty.rawc(colors.option, name)
 
+#let barg( name ) = {
+	mty.rawi(sym.bracket.l)
+	meta(mty.txt(name))
+	mty.rawi(sym.bracket.r)
+}
+
 #let arg(..args) = {
 	if args.pos().len() > 0 {
-		let name = args.pos().first()
-		if type(name) == "content" {
-			if type(name) != "string" {
-				if name.has("text") {
-					name = name.text
-				} else {
-					name = repr(name)
-				}
-			}
-			mty.rawi(sym.bracket.l)
-			meta(name)
-			mty.rawi(sym.bracket.r)
-		} else {
-			meta(args.pos().first())
-		}
+		meta(txt(args.pos().first()))
 	} else {
 		meta(args.named().keys().first())
 		mty.rawi(sym.colon + " ")
@@ -245,7 +238,7 @@
 		}).join(`, `)
 	}
 	mty.rawi(sym.paren.r)
-	args.pos().filter(v => type(v)=="content").map(arg).join()
+	args.pos().filter(v => type(v)=="content").map(barg).join()
 }
 
 #let var( name ) = {
