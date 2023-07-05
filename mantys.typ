@@ -111,8 +111,8 @@
 	titlepage(args.named().at("name"), ..options.extract(args, title:none, subtitle:none, info:none, authors:none, url:none, version:none, date:none, abstract:[]))
 
 	// Some common replacements
-	show mty.ufirst(name): mty.package(name)
-	show "Mantys": it => mty.package(it)
+	show upper(name): mty.package(name)
+	show "Mantys": mty.package
 	show "Typst": it => smallcaps(strong(it))
 
 	body
