@@ -1,4 +1,6 @@
+//#import "@local/typopts:0.0.3": options, states
 #import "../typopts-0.0.3/options.typ"
+#import "../typopts-0.0.3/states.typ"
 
 #import "./mty.typ"
 
@@ -186,32 +188,49 @@
 
 #let value = mty.value
 
+// Parse function spec into datatypes
+#let func( spec ) = {
+
+}
+
 #let dtype( t, fnote:false, parse-type:false ) = {
 	if parse-type or type(t) != "string" {
 		t = type(t)
 	}
 
+	let d = none
 	if t.contains("=>") {
-		doc("types/function", name:t, fnote:fnote)
+		d = doc("types/function", name:t, fnote:fnote)
+		t = "function"
 	} else if t == "location" {
-		doc("meta/locate", name:"location", fnote:fnote)
+		d = doc("meta/locate", name:"location", fnote:fnote)
+	} else if t == "any" {
+		d = doc("types", name:"any", fnote:fnote)
 	} else if t == "dict" {
-		doc("types/dictionary", name:"dict", fnote:fnote)
+		t = "dictionary"
+		d = doc("types/dictionary", name:"dict", fnote:fnote)
 	} else if t == "arr" {
-		doc("types/array", name:"arr", fnote:fnote)
+		t = "array"
+		d = doc("types/array", name:"arr", fnote:fnote)
 	} else {
-		doc("types/" + t, fnote:fnote)
+		d = doc("types/" + t, fnote:fnote)
 	}
+
+	if t in colors.dtypes {
+		box(fill: colors.dtypes.at(t), radius:2pt, inset: (x: 4pt, y:0pt), outset:(y:2pt), d)
+	} else {
+		d
+	}
+}
+
+#let dtypes( ..types ) = {
+	types.pos().map(dtype.with(fnote:false)).join(box(inset:(left:1pt,right:1pt))[|])
 }
 
 #let def( val ) = underline(value(val), offset:0.2em, stroke:1pt+colors.value)
 
-#let dtypes( ..types ) = {
-	types.pos().map(dtype.with(fnote:false)).join("|")
-}
-
 #let choices( default: "__none__", ..values ) = {
-	let list = values.pos().map(__value)
+	let list = values.pos().map(mty.value)
 	if default != "__none__" {
 		if default in values.pos() {
 			let pos = values.pos().position(v => v == default)
@@ -223,19 +242,26 @@
 	list.join("|")
 }
 
-// #let arg(..args) = {
-// 	text(fill:colors.argument, mty.rawi(args.pos().at(0)))
-// 	if args.pos().len() > 1 {
-// 		mty.rawi(sym.colon + " ")
-// 		__value(args.pos().at(1))
-// 	}
-// }
+// #let meta( name ) = mty.rawc(colors.argument, {sym.angle.l + name + sym.angle.r})
+#let meta = mty.rawc.with(colors.argument)
 
-//#let meta( name ) = emph({sym.angle.l + name + sym.angle.r})
+#let opt(name, index:true) = {
+	if index {
+		idx(kind:"option")[#mty.rawc(colors.option, name)]
+	} else {
+		mty.rawc(colors.option, name)
+	}
+}
 
-#let meta( name ) = mty.rawc(colors.argument, name)
-
-#let opt( name ) = mty.rawc(colors.option, name)
+#let arg(..args) = {
+	if args.pos().len() > 0 {
+		meta(mty.txt(args.pos().first()))
+	} else {
+		meta(args.named().keys().first())
+		mty.rawi(sym.colon + " ")
+		mty.value(args.named().values().first())
+	}
+}
 
 #let barg( name ) = {
 	mty.rawi(sym.bracket.l)
@@ -243,19 +269,9 @@
 	mty.rawi(sym.bracket.r)
 }
 
-#let arg(..args) = {
-	if args.pos().len() > 0 {
-		meta(txt(args.pos().first()))
-	} else {
-		meta(args.named().keys().first())
-		mty.rawi(sym.colon + " ")
-		__value(args.named().values().first())
-	}
-}
+#let sarg( name ) = arg(".." + mty.txt(name))
 
-#let sink( name ) = arg(".." + mty.txt(name))
-
-#let cmd(name, ..args) = {
+#let cmd(name, ret:none, ..args) = {
 	mty.rawi(sym.hash)
 	mty.rawc(colors.command, mty.txt(name))
 	mty.rawi(sym.paren.l)
@@ -264,14 +280,17 @@
 		if args.pos().filter(v => type(v)=="string").len() > 0 {
 			mty.rawi(", ")
 		}
-		args.named().pairs().map(v => {
-			let x = (:)
-			x.insert(v.at(0), v.at(1))
-			return arg(..x)
-		}).join(`, `)
+		args.named().pairs()
+			.map(v => mty.kv(..v))
+			.map(v => arg(..v))
+			.join(`, `)
 	}
 	mty.rawi(sym.paren.r)
 	args.pos().filter(v => type(v)=="content").map(barg).join()
+	if ret != none {
+		box(inset:(x:2pt), mty.rawi("->"))
+		dtype(ret)
+	}
 }
 
 #let var( name ) = {
@@ -283,7 +302,7 @@
 #let command(name, ..args, body ) = [
 	#set terms(hanging-indent: 0pt)
 	#set par(first-line-indent:0.65pt, hanging-indent: 0pt)
-	/ #cmd(name, ..args.pos(), ..args.named() ): #block(inset:(left:2em), body)
+	/ #cmd(name, ..args.pos(), ..args.named() )<cmd>: #idx(hide:true, kind:"cmd")[#cmd(name)]#block(inset:(left:2em), body)#label("cmd-"+name)
 	// #set terms(hanging-indent: 1.2em, separator: [\ ])
 	// #set par(first-line-indent: 1.2em, hanging-indent: 1.2em)
 	// / #cmd(name, ..args.pos(), ..args.named() ): #body
@@ -303,14 +322,6 @@
 	par(hanging-indent: 0pt, body),
 	if mty.type(type) == "array" { dtypes(..type) } else { dtype(type) }
 ))
-// [
-	// / #arg(..args.pos(), ..args.named()): #body
-	// #place(right, type)#if default != "__none__" {
-	// 	let x = (:)
-	// 	x.insert(argument, default)
-	// 	arg(..x)
-	// } else {arg(argument)}: #body \
-// ]
 
 #let example(side-by-side: false, code1, code2) = {
 	let code = code1.children.filter(i=>i.func() == raw).first()
