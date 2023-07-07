@@ -58,6 +58,8 @@
 				s += txt(c)
 			}
 			s
+		} else if v.has("child") {
+			txt(v.child)
 		} else if v.has("body") {
 			txt(v.body)
 		} else {
