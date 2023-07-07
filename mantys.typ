@@ -1,22 +1,8 @@
-//#import "@local/typopts:0.0.3": options
 #import "../typopts-0.0.3/options.typ"
 
 #import "./mty.typ"
 
-#let colors = (
-	primary:   rgb(166, 9, 18),
-	secondary: rgb(5, 10, 122),
-	argument:  rgb(220, 53, 69),
-	option:    rgb(214, 182, 93),
-	value:     rgb(11, 113, 20),
-	command:   rgb(153, 64, 39),
-	comment:   rgb(128, 128, 128),
-
-	info: rgb(23, 162, 184),
-	warning: rgb(255, 193, 7),
-	error: rgb(220, 53, 69),
-	success: rgb(40, 167, 69),
-)
+#let colors = mty.colors
 
 #let titlepage(
   name,            // string
@@ -120,22 +106,67 @@
 	body
 }
 
-#let __value( value ) = {
-	let t = type(value)
-	// if t in ("boolean","angle","length") {
-	// 	return [#value]
-	// } else if t == "string" {
-	// 	return mty.rawi(sym.quote.double) + mty.rawc(colors.value, value) + mty.rawi(sym.quote.double)
-	// } else {
-	// 	return mty.rawc(colors.value, repr(value))
-	// }
-	if t == "string" {
-		return mty.rawi(sym.quote.double) + mty.rawc(colors.value, value) + mty.rawi(sym.quote.double)
-	} else {
-		return mty.rawc(colors.value, repr(value))
-	}
-	// return [#value]
+#states.new-arr("mty-index")
+
+#let __get-term(term) = {
+	mty.txt(term).replace(regex("[#_()]"), "")
 }
+#let idx(body, term:none, hide:false, kind:"term") = locate(loc => {
+	states.enq("mty-index", (
+		term: __get-term(if term == none { body } else { term }),
+		body: if term == none { body } else { term },
+		kind: kind,
+		loc: loc
+	))
+	if not hide {
+		emph(body)
+	}
+})
+#let make-index(
+	kind:none,
+	cols:3,
+	headings:(h) => heading(level:2, numbering:none, outlined:false, h),
+	entry: (term, body, pages) => [
+		#link((page:pages.first(), x:0pt, y:0pt), body) #box(width: 1fr, repeat[.]) #{pages.map(p => link((page:p, x:0pt, y:0pt), [*#p*])).join([, ])}\
+	]
+) = locate(loc => {
+	states.get("mty-index", final:true, index => {
+		let terms = (:)
+
+		for idx in index {
+			if kind != none and idx.kind != kind {
+				continue
+			}
+			let term = idx.term
+			let l = upper(term.first())
+			let p = idx.loc.page()
+
+			if l not in terms {
+				terms.insert(l, (:))
+			}
+			if term in terms.at(l) {
+				if p not in terms.at(l).at(term).pages {
+					terms.at(l).at(term).pages.push(p)
+				}
+			} else {
+				terms.at(l).insert(term, (term:term, body:idx.body, pages: (p,)))
+			}
+		}
+
+		show heading: it => block([
+			#block(spacing:0.3em, text(font:("Liberation Sans"), fill:colors.secondary, it.body))
+		])
+		columns(cols,
+			for (l, ts) in terms {
+				headings(l)
+
+				for (_, term) in ts {
+					entry(term.term, term.body, term.pages)
+				}
+			}
+		)
+	})
+})
 
 #let name = mty.package(options.display("name", ns:"mty"))
 #let pkg = mty.package
@@ -153,7 +184,7 @@
 	}
 }
 
-#let value = __value
+#let value = mty.value
 
 #let dtype( t, fnote:false, parse-type:false ) = {
 	if parse-type or type(t) != "string" {
