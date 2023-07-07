@@ -1,16 +1,36 @@
 #let colors = (
-	primary:   rgb(166, 9, 18),
-	secondary: rgb(5, 10, 122),
-	argument:  rgb(220, 53, 69),
+	primary:   rgb(35, 157, 172),
+	secondary: rgb(18, 120, 133),
+	argument:  rgb(0, 24, 69),
 	option:    rgb(214, 182, 93),
-	value:     rgb(11, 113, 20),
-	command:   rgb(153, 64, 39),
+	value:     rgb(181, 2, 86),
+	command:   rgb(75, 105, 197),
 	comment:   rgb(128, 128, 128),
 
-	info:      rgb(23, 162, 184),
-	warning:   rgb(255, 193, 7),
-	error:     rgb(220, 53, 69),
-	success:   rgb(40, 167, 69),
+	info: rgb(23, 162, 184),
+	warning: rgb(255, 193, 7),
+	error: rgb(220, 53, 69),
+	success: rgb(40, 167, 69),
+
+	dtypes: (
+		length: rgb(230, 218, 255),
+		integer: rgb(230, 218, 255),
+		fraction: rgb(230, 218, 255),
+		"relative length": rgb(230, 218, 255),
+		"none": rgb(255, 203, 195),
+		"auto": rgb(255, 203, 195),
+		"any": rgb(255, 203, 195),
+		dictionary: rgb(239, 240, 243),
+		array: rgb(239, 240, 243),
+		stroke: rgb(239, 240, 243),
+		location: rgb(239, 240, 243),
+		alignement: rgb(239, 240, 243),
+		"2d alignement": rgb(239, 240, 243),
+		boolean: rgb(255, 236, 193),
+		content: rgb(166, 235, 229),
+		string: rgb(209, 255, 226),
+		function: rgb(249, 223, 255)
+	)
 )
 
 // #################################
@@ -181,3 +201,95 @@
 
 #let package( name ) = primary(smallcaps(name))
 #let module( name ) = secondary(rawi(name))
+
+
+#let value( value ) = {
+	let t = type(value)
+	// if t in ("boolean","angle","length") {
+	// 	return [#value]
+	// } else if t == "string" {
+	// 	return mty.rawi(sym.quote.double) + mty.rawc(colors.value, value) + mty.rawi(sym.quote.double)
+	// } else {
+	// 	return mty.rawc(colors.value, repr(value))
+	// }
+	if t == "string" {
+		if value.contains("=>") {
+			return rawc(colors.value, value)
+		} else {
+			return rawi(sym.quote.double) + rawc(colors.value, value) + rawi(sym.quote.double)
+		}
+	} else {
+		return rawc(colors.value, repr(value))
+	}
+	// return [#value]
+}
+
+
+#let code(
+	fill: white,
+	border: none,
+
+	tab-indent: 4,
+	gobble: auto,
+
+	linenos: true,
+	gutter: 10pt,
+
+	body
+) = {
+	let lines = 0
+	let lang = none
+	let code-lines = ()
+
+	for item in body.children {
+		if item.func() == raw {
+			code-lines = item.text.split("\n")
+			lines = code-lines.len()
+			lang = item.lang
+
+
+			if gobble == auto {
+				gobble = code-lines.fold(100, (v, line) => {
+					return calc.min(v, __count_tabs(line, default:v))
+				})
+			}
+
+			for i in range(lines) {
+				code-lines.at(i) = __tabs(code-lines.at(i), spaces:tab-indent, gobble:gobble)
+			}
+		}
+	}
+
+	style(styles => {
+		block(
+			fill:fill,
+			stroke: border,
+			inset: (x: 5pt, y: 10pt),
+			radius: 4pt,
+			breakable: true,
+			width: 100%,
+		)[
+			#set align(left)
+			#set par(justify:false)
+			#if linenos {
+				let lines-content = raw(range(lines).map(i => str(i + 1)).join("\n"))
+				let lines-width = measure(lines-content, styles).width
+
+				grid(
+					columns: (lines-width, 100% - lines-width - gutter),
+					column-gutter: gutter,
+					align(right, text(fill:theme.muted,
+						lines-content
+					)),
+					raw(lang:lang, block:true,
+						code-lines.join("\n")
+					)
+				)
+			} else {
+				raw(lang:lang, block:true,
+					code-lines.join("\n")
+				)
+			}
+		]
+	})
+}
