@@ -1,21 +1,17 @@
-//#import "@local/typopts:0.0.3": options, states
-#import "../typopts-0.0.3/options.typ"
-#import "../typopts-0.0.3/states.typ"
-
 #import "./mty.typ"
 
 #let colors = mty.colors
 
 #let titlepage(
-  name,            // string
-  title:    none,  // string|content
-  subtitle: none,  // string|content
-  info:     none,  // string|content
-  authors:  none,  // string|array[string]|array[dict[string, string]]
-  url:      none,  // string
-  version:  none,  // string
-  date:     none,  // string|datetime
-  abstract: none   // string|content
+  name,        // string
+  title,       // string|content
+  subtitle,    // string|content
+  info,        // string|content
+  authors,     // string|array[string]|array[dict[string, string]]
+  url,         // string
+  version,     // string
+  date,        // string|datetime
+  abstract     // string|content
 ) = [
 	#set align(center)
 	#set block(spacing: 2em)
@@ -66,16 +62,63 @@
 	#pagebreak()
 ]
 
-#let mantys( ..args, body ) = {
-	if not "name" in args.named() {
+#let mantys(
+	name:	   none,
+	title:     none,
+	subtitle:  none,
+	info:      none,
+	authors:   (),
+	url:       none,
+	version:   none,
+	date:      none,
+	abstract:  [],
+
+	titlepage: titlepage,
+
+	example-imports: (:),
+
+	..args,
+
+	body
+) = {
+	if "name" == none {
 		panic("You need to specifiy the package name.")
 	}
 
-	let name = args.named().name
-	options.update("name", name, ns:"mty")
+	set document(
+		title: if title != none { mty.txt(title) } else { mty.txt(name) },
+		author: authors
+	)
 
-	set text(size: 12pt, lang:"en", region:"EN")
-	set par(justify:true, /*first-line-indent: 1em, hanging-indent: -1em*/)
+	set page(
+		paper: "a4",
+		margin: auto,
+		header: locate(loc => {
+			let elems = query(
+				heading.where(level:2).before(loc),
+				loc,
+			)
+			if elems != () {
+				let elem = elems.last()
+				h(1fr) + emph(counter(heading).at(loc).map(str).join(".") + h(.75em) + elem.body) + h(1fr)
+			}
+		}),
+		footer: [
+			#h(1fr)
+			#counter(page).display("1")
+			#h(1fr)
+		]
+	)
+	set text(
+		size: 12pt,
+		lang:"en",
+		region:"EN"
+	)
+	set par(
+		justify:true,
+		// first-line-indent: 1em,
+		// hanging-indent: -1em
+	)
 	//show par: set block(spacing: 0.65em)
 	set heading(numbering: "I.1.")
 	show heading: it => block([
@@ -98,7 +141,11 @@
 		it
 	}
 
-	titlepage(args.named().at("name"), ..options.extract(args, title:none, subtitle:none, info:none, authors:none, url:none, version:none, date:none, abstract:[]))
+	// show raw.where(block:true, lang:"example"): it => mty.example(imports:example-imports, it)
+	// show raw.where(block:true, lang:"side-by-side"): it => mty.example(side-by-side:true, imports:example-imports, it)
+	state("@mty-example-imports").update(example-imports)
+
+	titlepage(name, title, subtitle, info, authors, url, version, date, abstract)
 
 	// Some common replacements
 	show upper(name): mty.package(name)
@@ -106,73 +153,15 @@
 	show "Typst": it => smallcaps(strong(it))
 
 	body
+
+	[= Index]
+	mty.make-index()
 }
 
-#states.new-arr("mty-index")
-
-#let __get-term(term) = {
-	mty.txt(term).replace(regex("[#_()]"), "")
-}
-#let idx(body, term:none, hide:false, kind:"term") = locate(loc => {
-	states.enq("mty-index", (
-		term: __get-term(if term == none { body } else { term }),
-		body: if term == none { body } else { term },
-		kind: kind,
-		loc: loc
-	))
-	if not hide {
-		emph(body)
-	}
-})
-#let make-index(
-	kind:none,
-	cols:3,
-	headings:(h) => heading(level:2, numbering:none, outlined:false, h),
-	entry: (term, body, pages) => [
-		#link((page:pages.first(), x:0pt, y:0pt), body) #box(width: 1fr, repeat[.]) #{pages.map(p => link((page:p, x:0pt, y:0pt), [*#p*])).join([, ])}\
-	]
-) = locate(loc => {
-	states.get("mty-index", final:true, index => {
-		let terms = (:)
-
-		for idx in index {
-			if kind != none and idx.kind != kind {
-				continue
-			}
-			let term = idx.term
-			let l = upper(term.first())
-			let p = idx.loc.page()
-
-			if l not in terms {
-				terms.insert(l, (:))
-			}
-			if term in terms.at(l) {
-				if p not in terms.at(l).at(term).pages {
-					terms.at(l).at(term).pages.push(p)
-				}
-			} else {
-				terms.at(l).insert(term, (term:term, body:idx.body, pages: (p,)))
-			}
-		}
-
-		show heading: it => block([
-			#block(spacing:0.3em, text(font:("Liberation Sans"), fill:colors.secondary, it.body))
-		])
-		columns(cols,
-			for (l, ts) in terms {
-				headings(l)
-
-				for (_, term) in ts {
-					entry(term.term, term.body, term.pages)
-				}
-			}
-		)
-	})
-})
-
-#let name = mty.package(options.display("name", ns:"mty"))
 #let pkg = mty.package
 #let module = mty.module
+#let idx = mty.idx
+#let make-index = mty.make-index
 
 #let doc( target, name:none, fnote:false ) = {
 	if name == none {
@@ -208,10 +197,12 @@
 		d = doc("types", name:"any", fnote:fnote)
 	} else if t == "dict" {
 		t = "dictionary"
-		d = doc("types/dictionary", name:"dict", fnote:fnote)
+		d = doc("types/dictionary", name:"dictionary", fnote:fnote)
 	} else if t == "arr" {
 		t = "array"
-		d = doc("types/array", name:"arr", fnote:fnote)
+		d = doc("types/array", name:"array", fnote:fnote)
+	} else if t.ends-with("alignment") {
+		d = doc("layout/align/#parameters-alignment", name:t, fnote:fnote)
 	} else {
 		d = doc("types/" + t, fnote:fnote)
 	}
@@ -223,23 +214,21 @@
 	}
 }
 
-#let dtypes( ..types ) = {
-	types.pos().map(dtype.with(fnote:false)).join(box(inset:(left:1pt,right:1pt))[|])
+#let dtypes( ..types, sep: box(inset:(left:1pt,right:1pt), sym.bar.v)) = {
+	types.pos().map(dtype.with(fnote:false)).join(sep)
 }
-
-#let def( val ) = underline(value(val), offset:0.2em, stroke:1pt+colors.value)
 
 #let choices( default: "__none__", ..values ) = {
 	let list = values.pos().map(mty.value)
 	if default != "__none__" {
 		if default in values.pos() {
 			let pos = values.pos().position(v => v == default)
-			list.at(pos) = def(default)
+			list.at(pos) = mty.default(default)
 		} else {
-			list.insert(0, def(default))
+			list.insert(0, mty.default(default))
 		}
 	}
-	list.join("|")
+	[#list.join(box(inset:(left:1pt,right:1pt), sym.bar.v))<arg-choices>]
 }
 
 // #let meta( name ) = mty.rawc(colors.argument, {sym.angle.l + name + sym.angle.r})
@@ -252,46 +241,84 @@
 		mty.rawc(colors.option, name)
 	}
 }
+#let opt- = opt.with(index:false)
 
 #let arg(..args) = {
-	if args.pos().len() > 0 {
-		meta(mty.txt(args.pos().first()))
+	let a = none
+	if args.pos().len() == 1 {
+		a = meta(mty.txt(args.pos().first()))
+	} else if args.named() != (:) {
+		a = {
+			meta(args.named().keys().first())
+			mty.rawi(sym.colon + " ")
+			mty.value(args.named().values().first())
+		}
+	} else  if args.pos().len() == 2 {
+		a = {
+			meta(args.pos().first())
+			mty.rawi(sym.colon + " ")
+			mty.value(args.pos().at(1))
+		}
 	} else {
-		meta(args.named().keys().first())
-		mty.rawi(sym.colon + " ")
-		mty.value(args.named().values().first())
+		panic()
+		return
 	}
+	[#a<arg>]
 }
 
 #let barg( name ) = {
-	mty.rawi(sym.bracket.l)
-	meta(mty.txt(name))
-	mty.rawi(sym.bracket.r)
+	let b = {
+		mty.rawi(sym.bracket.l)
+		meta(mty.txt(name))
+		mty.rawi(sym.bracket.r)
+	}
+	[#b<arg-body>]
 }
 
-#let sarg( name ) = arg(".." + mty.txt(name))
+#let sarg( name ) = {
+	let s = meta(".." + mty.txt(name))
+	[#s<arg-sink>]
 
-#let cmd(name, ret:none, ..args) = {
-	mty.rawi(sym.hash)
-	mty.rawc(colors.command, mty.txt(name))
-	mty.rawi(sym.paren.l)
-	args.pos().filter(v => type(v)=="string").map(arg).join(`, `)
-	if args.named().len() > 0 {
-		if args.pos().filter(v => type(v)=="string").len() > 0 {
-			mty.rawi(", ")
-		}
-		args.named().pairs()
-			.map(v => mty.kv(..v))
-			.map(v => arg(..v))
-			.join(`, `)
+}
+
+#let args( ..args ) = {
+	let arguments = args.pos().filter(mty.is-string).map(arg)
+	arguments += args.pos().filter(mty.is-content).map(barg)
+	arguments += args.named().pairs().map(v => arg(v.at(0), v.at(1)))
+	arguments
+}
+
+#let cmd(name, module:none, ret:none, index:true, unpack:false, ..args) = {
+	if module != none {
+		// mty.module(module)
+		// mty.rawi(".")
+		mty.marginnote[
+			#mty.module(module)
+			#sym.quote.angle.r.double
+		]
 	}
+	if index {
+		idx(kind:"cmd")[#mty.rawi(sym.hash)#mty.rawc(colors.command, name)]
+	} else {
+		mty.rawi(sym.hash)
+		mty.rawc(colors.command, name)
+	}
+
+	let sep = `, `
+	if unpack and args.pos().len() + args.named().len() > 5 {
+		sep = [`,`\ #h(1em)]
+	}
+
+	mty.rawi(sym.paren.l)
+	args.pos().filter(mty.not-is-body).join(sep)
 	mty.rawi(sym.paren.r)
-	args.pos().filter(v => type(v)=="content").map(barg).join()
+	args.pos().filter(mty.is-body).join()
 	if ret != none {
 		box(inset:(x:2pt), mty.rawi("->"))
 		dtype(ret)
 	}
 }
+#let cmd- = cmd.with(index:false)
 
 #let var( name ) = {
 	mty.rawi(sym.hash)
@@ -299,13 +326,19 @@
 }
 
 
-#let command(name, ..args, body ) = [
+#let command(name, ..args, body) = [
 	#set terms(hanging-indent: 0pt)
 	#set par(first-line-indent:0.65pt, hanging-indent: 0pt)
-	/ #cmd(name, ..args.pos(), ..args.named() )<cmd>: #idx(hide:true, kind:"cmd")[#cmd(name)]#block(inset:(left:2em), body)#label("cmd-"+name)
+	/ #cmd(name, unpack:false, ..args.pos(), ..args.named() )<cmd>: #block(inset:(left:2em), body)#label("cmd-"+name)
 	// #set terms(hanging-indent: 1.2em, separator: [\ ])
 	// #set par(first-line-indent: 1.2em, hanging-indent: 1.2em)
 	// / #cmd(name, ..args.pos(), ..args.named() ): #body
+]
+
+#let variable( name, types:none, value:none, body ) = [
+	#set terms(hanging-indent: 0pt)
+	#set par(first-line-indent:0.65pt, hanging-indent: 0pt)
+	/ #var(name)#{if value != none {" " + sym.colon + " " + mty.value(value)}}#{if types != none {h(1fr) + dtypes(..types)}}<var>: #block(inset:(left:2em), body)#label("var-"+name)
 ]
 
 #let argument(
@@ -315,89 +348,80 @@
 	choices:none,
 	default:"__none__",
 	body
-) = block(width:100%, inset:(left:1em), grid(
+) = block(width:100%, inset:(left:-1em), grid(
 	columns: (auto, 1fr, auto),
 	gutter: 10pt,
-	if is-sink { sink(argument) } else { if default != "__none__" {arg(..mty.kv(argument, default))}  else {arg(argument)}},
+	if is-sink { sarg(argument) } else { if default != "__none__" {arg(..mty.kv(argument, default))}  else {arg(argument)}},
 	par(hanging-indent: 0pt, body),
-	if mty.type(type) == "array" { dtypes(..type) } else { dtype(type) }
+	if type == none and default != "__none__" {
+		dtype(default)
+	} else if mty.type(type) == "array" {
+		dtypes(..type)
+	} else {
+		dtype(type)
+	}
 ))
 
-#let example(side-by-side: false, code1, code2) = {
-	let code = code1.children.filter(i=>i.func() == raw).first()
-	let cont = (raw(lang:"typc", code.text),)
-	if not side-by-side {
-		cont.push(line(length:100%, stroke:.5pt+black))
+#let module-commands(module, body) = [
+	#let add-module = (c) => {
+		mty.marginnote[
+			#mty.module(module)
+			#sym.quote.angle.r.double
+		]
+		c
 	}
-	cont.push(code2)
+	#show <cmd>: add-module
+	#show <var>: add-module
+	#body
+]
+
+#let cmd-selector(name) = selector(<cmd>).before(label("cmd-"+name))
+
+#let refcmd(name, format: (name, loc) => [command #cmd(name) on #link(loc)[page #loc.page()]]) = locate(loc => {
+	let res = query(cmd-selector(name), loc)
+	if res == () {
+		panic("No label <cmd-" + name + "> found.")
+	} else {
+		let e = res.last()
+		format(name, e.location())
+	}
+})
+#let refrel( label ) = locate(loc => {
+	if query(selector(label).before(loc), loc) != () {
+		[above]
+	} else if query(selector(label).after(loc), loc) != () {
+		[below]
+	} else {
+		panic("No label " + str(label) + " found.")
+	}
+})
 
 
-	block(
-		stroke: .75pt+colors.primary,
-		radius: 4pt,
-		inset: 3mm,
-		width: 100%,
-		grid(
-			columns: if side-by-side {(1fr,1fr)} else {(1fr,)},
-			gutter: 5mm,
-			..cont
-		)
-	)
-}
+#let example(..args) = locate(loc => {
+	let imports = state("@mty-example-imports").at(loc)
+	mty.example(imports: imports, ..args)
+})
+#let side-by-side = example.with(side-by-side:true)
+#let quickex( code ) = locate(loc => {
+	let imports = state("@mty-example-imports").at(loc)
+	[#raw(code.text, lang:"typc") #sym.arrow.r #eval("[" + mty.build-imports(imports) + code.text + "]")]
+})
 
-#let sourcecode( title: none, file: none, sourcecode ) = {
-	let head = block()
+#let sourcecode( title: none, file: none, ..args, code ) = {
+	let header = ()
 	if title != none {
-		head = block(
-			stroke: .75pt+colors.primary,
-			radius: (top:4pt),
-			width: 100% + 6mm,
-			inset: 2mm,
-			fill: colors.primary,
-			text(fill:white, title)
-		)
+		header.push(text(fill:white, title))
+	}
+	if file != none {
+		header.push(h(1fr))
+		header.push(text(fill:white, emoji.folder) + " ")
+		header.push(text(fill:white, emph(file)))
 	}
 
-	style(styles => {
-		let m = (height:0pt)
-		if title != none {
-			m = measure([title], styles)
-			m.height += 4mm
-		}
-
-		block(
-			stroke: .75pt+colors.primary,
-			radius: 4pt,
-			inset: (top:m.height + 3mm, left: 3mm, bottom: 3mm, right: 3mm),
-			width: 100%,
-			place(top+left, dy:-m.height - 3mm, dx:-3mm, head) + sourcecode
-		)
-	})
-}
-
-#let shell( title:"shell", sourcecode ) = {
-	let header = block(
-		width: 100% + 6mm,
-		inset: 2mm,
-		fill: colors.comment,
-		text(fill:white, weight:600, mty.rawi(title))
+	mty.frame(
+		header: header.join(),
+		mty.sourcecode(..args, code)
 	)
-
-	style(styles => {
-		let m = measure(header, styles)
-
-		block(
-			stroke: .75pt+black,
-			fill: luma(42),
-			inset: (top:m.height + 3mm, left: 3mm, bottom: 3mm, right: 3mm),
-			width: 100%,
-			{
-				place(top+left, dy:-m.height - 3mm, dx:-3mm, header)
-				set text(fill:rgb(0,255,36))
-				sourcecode
-			}
-		)
-	})
 }
 
 #let ibox = mty.alert.with(color:colors.info)
