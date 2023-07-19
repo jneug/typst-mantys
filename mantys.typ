@@ -340,6 +340,10 @@
 	mty.rawi(sym.hash)
 	mty.rawc(colors.command, name)
 }
+#let var-( name ) = {
+	mty.rawi(sym.hash)
+	mty.rawc(colors.command, name)
+}
 
 
 #let command(name, ..args, body) = [
