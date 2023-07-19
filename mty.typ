@@ -22,6 +22,7 @@
 		"none": rgb(255, 203, 195),
 		"auto": rgb(255, 203, 195),
 		"any": rgb(255, 203, 195),
+		"regular expression": rgb(239, 240, 243),
 		dictionary: rgb(239, 240, 243),
 		array: rgb(239, 240, 243),
 		stroke: rgb(239, 240, 243),
@@ -31,7 +32,14 @@
 		boolean: rgb(255, 236, 193),
 		content: rgb(166, 235, 229),
 		string: rgb(209, 255, 226),
-		function: rgb(249, 223, 255)
+		function: rgb(249, 223, 255),
+		color: (
+			rgb(133, 221, 244),
+			rgb(170, 251, 198),
+			rgb(214, 247, 160),
+			rgb(255, 243, 124),
+			rgb(255, 187, 147)
+		)
 	)
 )
 

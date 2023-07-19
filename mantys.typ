@@ -201,13 +201,29 @@
 	} else if t == "arr" {
 		t = "array"
 		d = doc("types/array", name:"array", fnote:fnote)
+	} else if t == "regular experssion" {
+		d = doc("construct/regex", name:"regular expression", fnote:fnote)
 	} else if t.ends-with("alignment") {
 		d = doc("layout/align/#parameters-alignment", name:t, fnote:fnote)
 	} else {
 		d = doc("types/" + t, fnote:fnote)
 	}
 
-	if t in colors.dtypes {
+	if t == "color" {
+		for i in range(5) {
+			let ins = (x:2pt, y:0pt)
+			let rad = 0pt
+			if i == 0 {
+				ins = (left:3pt, right:2pt, y:0pt)
+				rad = (left:2pt)
+			} else if i == 4 {
+				ins = (right:3pt, left:2pt, y:0pt)
+				rad = (right:2pt)
+			}
+
+			box(fill:colors.dtypes.color.at(i), radius:rad, inset:ins, outset:(y:2pt), "color".at(i))
+		}
+	} else if t in colors.dtypes {
 		box(fill: colors.dtypes.at(t), radius:2pt, inset: (x: 4pt, y:0pt), outset:(y:2pt), d)
 	} else {
 		d
