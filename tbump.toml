@@ -25,13 +25,16 @@ search = 'version = "{current_version}"'
 
 [[file]]
 src = "README.md"
-search = "Mantys ({current_version})"
-[[file]]
-src = "README.md"
-search = "mantys:{current_version}"
-[[file]]
-src = "README.md"
-search = "v{current_version}"
+search = "({current_version})"
+# [[file]]
+# src = "README.md"
+# search = "mantys:{current_version}"
+# [[file]]
+# src = "README.md"
+# search = "mantys-{current_version}"
+# [[file]]
+# src = "README.md"
+# search = "v{current_version}"
 
 [[file]]
 src = "manual.typ"
@@ -46,7 +49,7 @@ search = 'mantys-{current_version}'
 [[before_commit]]
 name = "create local version"
 #cmd = "mkdir ../mantys-{new_version}; cp ./* ../mantys-{new_version}"
-cmd = "ln -s ../mantys ../mantys-{new_version}"
+cmd = "ln -s mantys ../mantys-{new_version}"
 [[before_commit]]
 name = "compile manual"
 cmd = "typst compile manual.typ"
