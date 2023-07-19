@@ -1,4 +1,4 @@
-//#import "@local/mantys:0.0.1": *
+//#import "@local/mantys:0.0.2": *
 #import "mantys.typ": *
 
 #show: mantys.with(
@@ -8,13 +8,13 @@
 	info:		[A Typst template to create consistens and readable manuals for pakcages and templates.],
 	authors:	"Jonas Neugebauer",
 	url:		"https://github.com/jneug/typst-mantys",
-	version:	"0.0.1",
+	version:	"0.0.2",
 	date:		datetime.today(),
 	abstract: 	[
 		Weit hinten, hinter den Wortbergen, fern der Länder Vokalien und Konsonantien leben die Blindtexte. Abgeschieden wohnen sie in Buchstabhausen an der Küste des Semantik, eines großen Sprachozeans. Ein kleines Bächlein namens Duden fließt durch ihren Ort und versorgt sie mit den nötigen Regelialien. Es ist ein paradiesmatisches Land, in dem einem gebratene Satzteile in den Mund fliegen. Nicht einmal von der allmächtigen Interpunktion werden die Blindtexte beherrscht – ein geradezu unorthographisches Leben.
 	],
 
-	example-imports: ("@local/mantys:0.0.1": "*")
+	example-imports: ("@local/mantys:0.0.2": "*")
 )
 
 #let cnltx = mty.primary("CNLTX")
@@ -54,7 +54,7 @@ Either download the current release from GitHub#footnote[#link("https://github.c
 
 #shell[
 ```shell-unix-generic
-git clone https://github.com/jneug/typst-mantys.git mantys-0.0.1
+git clone https://github.com/jneug/typst-mantys.git mantys-0.0.2
 ```
 ]
 
@@ -62,7 +62,7 @@ After installing the package just import it inside your `typ` file:
 
 #sourcecode[
 ```typc
-#import "@local/mantys:0.0.1": *
+#import "@local/mantys:0.0.2": *
 ```
 ]
 
@@ -106,7 +106,7 @@ After importing Mantys the template is initialized by applying a show rule with 
 
 			```typc
 			example-imports: (
-			  "@local/mantys:0.0.1": "*",
+			  "@local/mantys:0.0.2": "*",
 			  "@preview/tablex:0.0.1": "",
 			  "@preview/cetz:0.0.1": "canvas"
 			)
@@ -250,7 +250,7 @@ Use any #emph[Typst] code here.
 The result will be generated using #doc("foundations/eval") and thus is subject to its limitations. Each `eval` call is run in a local scope and does not have access to previously imported commands. To use your packages commands, you have to import it as a package:
 
 #example(raw("#example[```
-#import \"@local/mantys:0.0.1\": dtype
+#import \"@local/mantys:0.0.2\": dtype
 
 #dtype(false)
 ```]"))
@@ -259,7 +259,7 @@ The result will be generated using #doc("foundations/eval") and thus is subject 
 	You can only import packages and not local files.
 ]
 
-To automatically add imports to every example code, you can set the option #opt[example-imports] at the initial call to #cmd[mantys]. For example this manual was compiled with #arg(example-imports: ("@local/mantys:0.0.1": "*")). This imports the Mantys commands into all example code, without explicitly importing it in the code.
+To automatically add imports to every example code, you can set the option #opt[example-imports] at the initial call to #cmd[mantys]. For example this manual was compiled with #arg(example-imports: ("@local/mantys:0.0.2": "*")). This imports the Mantys commands into all example code, without explicitly importing it in the code.
 
 #example(raw("#example[```
 #mty.value(false)
@@ -270,7 +270,7 @@ See #refrel(<cmd-example>) for how to use the #cmd-[example] command.
 #ibox[
 	To use fenced code blocks in your example, pass the code as a string to #doc("text/raw") like this:
 
-	#example(imports:("@local/mantys:0.0.1": "example"), raw("#example(raw(\"```rust
+	#example(imports:("@local/mantys:0.0.2": "example"), raw("#example(raw(\"```rust
 fn main() {
 	println!(\\\"Hello World!\\\");
 }
@@ -470,7 +470,7 @@ The commands provide some helpful low-level functionality, that might be useful 
 	```
 ]
 #command("date", arg[d], ret: "content")[
-	#side-by-side(imports:("@local/mantys:0.0.1":"mty"))[
+	#side-by-side(imports:("@local/mantys:0.0.2":"mty"))[
 		```
 		- #mty.date("2023-07-15")
 		- #mty.date(datetime(year:2023, month:7, day:15))
