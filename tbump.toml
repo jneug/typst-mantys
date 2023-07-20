@@ -26,15 +26,15 @@ search = 'version = "{current_version}"'
 [[file]]
 src = "README.md"
 search = "({current_version})"
-# [[file]]
-# src = "README.md"
-# search = "mantys:{current_version}"
-# [[file]]
-# src = "README.md"
-# search = "mantys-{current_version}"
-# [[file]]
-# src = "README.md"
-# search = "v{current_version}"
+[[file]]
+src = "README.md"
+search = "mantys:{current_version}"
+[[file]]
+src = "README.md"
+search = "mantys-{current_version}"
+[[file]]
+src = "README.md"
+search = "v{current_version}"
 
 [[file]]
 src = "manual.typ"
