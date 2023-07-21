@@ -23,7 +23,7 @@ Now import the package at the beginning of your document:
 For Typst before 0.6.0 or to use **Mantys** as a local module, download the package and unpack into a folder inside your project (e.g. `/mantys`). Then import `mantys/mantys.typ`:
 
 ```typst
-#import "mantys.typ": *
+#import "mantys/mantys.typ": *
 ```
 
 ## Writing basics
@@ -40,13 +40,13 @@ A basic template for a manual should look like this:
 	info:		[A short descriptive text for the package.],
 	authors:	"Your Name",
 	url:		"https://github.com/repository/url",
-	version:	"0.0.2",
+	version:	"0.0.1",
 	date:		"date.of.release",
 	abstract: 	[
 		A few paragraphs of text to describe the package.
 	],
 
-	example-imports: ("@local/your-package-name:0.0.2": "*")
+	example-imports: ("@local/your-package-name:0.0.1": "*")
 )
 
 // end of preamble
