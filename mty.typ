@@ -1,3 +1,5 @@
+#import "@local/codelst:0.0.3": sourcecode, sourcefile, lineref, code-frame, numbers-style
+
 #let colors = (
 	primary:   rgb(35, 157, 172),
 	secondary: rgb(18, 120, 133),
@@ -377,102 +379,102 @@
 	}
 	return line
 }
-#let sourcecode(
-	fill: white,
-	border: none,
-	lines-color: luma(200),
-	lines-style: (i) => text(
-		fill: luma(200),
-		size: .8em,
-		rawi(str(i))
-	),
+// #let sourcecode(
+// 	fill: white,
+// 	border: none,
+// 	lines-color: luma(200),
+// 	lines-style: (i) => text(
+// 		fill: luma(200),
+// 		size: .8em,
+// 		rawi(str(i))
+// 	),
 
-	tab-indent: 4,
-	gobble: auto,
+// 	tab-indent: 4,
+// 	gobble: auto,
 
-	linenos: true,
-	gutter: 10pt,
+// 	linenos: true,
+// 	gutter: 10pt,
 
-	body
-) = {
-	let lines = 0
-	let lang = none
-	let code-lines = ()
+// 	body
+// ) = {
+// 	let lines = 0
+// 	let lang = none
+// 	let code-lines = ()
 
-	let code = body
-	if code.func() != raw {
-		for item in body.children {
-			if item.func() == raw {
-				code = item
-				break
-			}
-		}
-	}
+// 	let code = body
+// 	if code.func() != raw {
+// 		for item in body.children {
+// 			if item.func() == raw {
+// 				code = item
+// 				break
+// 			}
+// 		}
+// 	}
 
-	code-lines = code.text.split("\n")
-	lines = code-lines.len()
-	lang = code.lang
+// 	code-lines = code.text.split("\n")
+// 	lines = code-lines.len()
+// 	lang = code.lang
 
-	if gobble == auto {
-		gobble = code-lines.fold(100, (v, line) => {
-			return calc.min(v, count_tabs(line, default:v))
-		})
-	}
+// 	if gobble == auto {
+// 		gobble = code-lines.fold(100, (v, line) => {
+// 			return calc.min(v, count_tabs(line, default:v))
+// 		})
+// 	}
 
-	for i in range(lines) {
-		code-lines.at(i) = tabs(code-lines.at(i), spaces:tab-indent, gobble:gobble)
-	}
+// 	for i in range(lines) {
+// 		code-lines.at(i) = tabs(code-lines.at(i), spaces:tab-indent, gobble:gobble)
+// 	}
 
-	let grid-cont = ()
-	for i in range(lines) {
-		grid-cont.push(lines-style(i + 1))
-		// grid-cont.push(hide(raw(lang:lang, block:true,code-lines.at(i))))
-		grid-cont.push(raw(lang:lang, block:true,code-lines.at(i)))
-	}
+// 	let grid-cont = ()
+// 	for i in range(lines) {
+// 		grid-cont.push(lines-style(i + 1))
+// 		// grid-cont.push(hide(raw(lang:lang, block:true,code-lines.at(i))))
+// 		grid-cont.push(raw(lang:lang, block:true,code-lines.at(i)))
+// 	}
 
-	style(styles => {
-		block(
-			fill:fill,
-			stroke: border,
-			inset: (x: 5pt, y: 10pt),
-			radius: 4pt,
-			breakable: true,
-			// breakable: false,
-			width: 100%,
-		)[
-			#set align(left)
-			#set par(justify:false)
-			#if linenos {
-				let lines-content = raw(range(lines).map(i => str(i + 1)).join("\n"))
-				let lines-width = measure(lines-content, styles).width
+// 	style(styles => {
+// 		block(
+// 			fill:fill,
+// 			stroke: border,
+// 			inset: (x: 5pt, y: 10pt),
+// 			radius: 4pt,
+// 			breakable: true,
+// 			// breakable: false,
+// 			width: 100%,
+// 		)[
+// 			#set align(left)
+// 			#set par(justify:false)
+// 			#if linenos {
+// 				let lines-content = raw(range(lines).map(i => str(i + 1)).join("\n"))
+// 				let lines-width = measure(lines-content, styles).width
 
-				// place(top+left, dx:lines-width+gutter, dy:-2pt,
-				// 	block(width: 100% - lines-width - gutter, breakable:true,
-				// 		raw(lang:lang, block:true,
-				// 			code-lines.join("\n")
-				// 		)
-				// 	)
-				// )
-				grid(
-					columns: (lines-width, 100% - lines-width - gutter),
-					column-gutter: gutter,
-					row-gutter: 0.51em,
-					// align(right, text(fill:lines-color,
-					// 	lines-content
-					// )),
-					// raw(lang:lang, block:true,
-					// 	code-lines.join("\n")
-					// )
-					..grid-cont
-				)
-			} else {
-				raw(lang:lang, block:true,
-					code-lines.join("\n")
-				)
-			}
-		]
-	})
-}
+// 				// place(top+left, dx:lines-width+gutter, dy:-2pt,
+// 				// 	block(width: 100% - lines-width - gutter, breakable:true,
+// 				// 		raw(lang:lang, block:true,
+// 				// 			code-lines.join("\n")
+// 				// 		)
+// 				// 	)
+// 				// )
+// 				grid(
+// 					columns: (lines-width, 100% - lines-width - gutter),
+// 					column-gutter: gutter,
+// 					row-gutter: 0.51em,
+// 					// align(right, text(fill:lines-color,
+// 					// 	lines-content
+// 					// )),
+// 					// raw(lang:lang, block:true,
+// 					// 	code-lines.join("\n")
+// 					// )
+// 					..grid-cont
+// 				)
+// 			} else {
+// 				raw(lang:lang, block:true,
+// 					code-lines.join("\n")
+// 				)
+// 			}
+// 		]
+// 	})
+// }
 
 
 #let build-imports( imports ) = {

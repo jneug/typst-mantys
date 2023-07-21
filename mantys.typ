@@ -152,6 +152,8 @@
 	show "Mantys": mty.package
 	show "Typst": it => smallcaps(strong(it))
 
+	show <lineno>: mty.numbers-style
+	show figure.where(kind: raw): set block(breakable: true)
 	body
 
 	[= Index]
