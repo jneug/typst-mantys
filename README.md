@@ -32,11 +32,11 @@ To use **Mantys** as a local module for one project only, download the package a
 
 Mantys depends on some other packages. All but one are available from the Typst package repository and will get downloaded automatically.
 
-- [jneug/typst-codelst](jneug/typst-codelst)
-- [Pablo-Gonzalez-Calderon/showybox-package](Pablo-Gonzalez-Calderon/showybox-package)
-- [jneug/typst-tools4typst](jneug/typst-tools4typst)
+- [jneug/typst-codelst](https://github.com/jneug/typst-codelst)
+- [Pablo-Gonzalez-Calderon/showybox-package](https://github.com/Pablo-Gonzalez-Calderon/showybox-package)
+- [jneug/typst-tools4typst](https://github.com/jneug/typst-tools4typst)
 
-The only one currently waiting for approval is [jneug/typst-tools4typst](jneug/typst-tools4typst). Currently, the package ([v0.1.0](https://github.com/jneug/typst-tool4typst/releases/tag/v0.1.0)) needs to be downloaded and saved in the local repository. (See above for a description of the process.)
+The only one currently waiting for approval is [jneug/typst-tools4typst](https://github.com/jneug/typst-tools4typst). Currently, the package ([v0.1.0](https://github.com/jneug/typst-tool4typst/releases/tag/v0.1.0)) needs to be downloaded and saved in the local repository. (See above for a description of the process.)
 
 ## Writing basics
 
@@ -114,9 +114,9 @@ For a full reference of available commands read [the manual](manual.pdf).
 ### Version 0.0.3
 
 - Added some dependencies:
-	- [jneug/typst-tools4typst](jneug/typst-tools4typst) for some common utilities,
-	- [jneug/typst-codelst](jneug/typst-codelst) for rendering examples and source code,
-	- [Pablo-Gonzalez-Calderon/showybox-package](Pablo-Gonzalez-Calderon/showybox-package) for adding frames to different areas of a manual (like examples).
+	- [jneug/typst-tools4typst](https://github.com/jneug/typst-tools4typst) for some common utilities,
+	- [jneug/typst-codelst](https://github.com/jneug/typst-codelst) for rendering examples and source code,
+	- [Pablo-Gonzalez-Calderon/showybox-package](https://github.com/Pablo-Gonzalez-Calderon/showybox-package) for adding frames to different areas of a manual (like examples).
 - Redesign of some elements:
 	- Argument display in command descriptions,
 	- Alert boxes.
