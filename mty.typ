@@ -63,8 +63,9 @@
 #let rawc( color, code ) = text(fill:color, rawi(code))
 
 // A centered block
-#let cblock( width:90%, ..args, body ) = block(
+#let cblock( width:90%, breakable:false, ..args, body ) = block(
 	width: 100%,
+  breakable: breakable,
 	inset: (left:(100%-width)/2, right:(100%-width)/2),
 	block(width:100%, spacing: 0pt, ..args, body)
 )
@@ -94,26 +95,25 @@
     stroke: stroke + color,
     radius: radius,
     width: width,
-    stack( dir:ttb,
+    grid(
+      columns: if is.not-none(icon) { (100% - 1em - 2*inset, auto) } else { 1 },
+      block(
+        width: 100%,
+        spacing: 0pt,
+        inset: inset,
+        body
+      ),
       if is.not-none(icon) {
         h(1fr)
         box(
           fill: color,
+          width: 1em + 2*inset,
+          height: 1em + 2*inset,
           inset: inset,
           radius: (top-right: radius, bottom-left: radius),
           text(fill: white, weight: 600, icon)
         )
-      },
-      block(
-        width: 100%,
-        spacing: 0pt,
-        inset: if is.not-none(icon) {
-          (top: -inset, right: 1em + 3*inset, rest: inset)
-        } else {
-          inset
-        },
-        body
-      )
+      }
     )
   )
 }
