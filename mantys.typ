@@ -327,19 +327,19 @@
 }
 
 #let cmd(name, module:none, ret:none, index:true, unpack:false, ..args) = {
-	if module != none {
-		// mty.module(module)
-		// mty.rawi(".")
-		mty.marginnote[
-			#mty.module(module)
-			#sym.quote.angle.r.double
-		]
-	}
+	// if module != none {
+	// 	// mty.module(module)
+	// 	// mty.rawi(".")
+	// 	mty.marginnote[
+	// 		#mty.module(module)
+	// 		#sym.quote.angle.r.double
+	// 	]
+	// }
+  let full-name = if mty.is.not-none(module) { module + `.` + mty.rawc(colors.command, name) } else { mty.rawc(colors.command, name) }
 	if index {
-		idx(kind:"cmd")[#mty.rawi(sym.hash)#mty.rawc(colors.command, name)]
+		idx(kind:"cmd")[#mty.rawi(sym.hash)#full-name]
 	} else {
-		mty.rawi(sym.hash)
-		mty.rawc(colors.command, name)
+		full-name
 	}
 
   let pargs = args.pos().filter(mty.not-is-body)
