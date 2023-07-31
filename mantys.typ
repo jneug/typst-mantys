@@ -476,9 +476,9 @@
 	mty.example(imports: imports, ..args)
 })
 #let side-by-side = example.with(side-by-side:true)
-#let quickex( code ) = locate(loc => {
+#let quickex( code, sep: sym.arrow.r ) = locate(loc => {
 	let imports = state("@mty-example-imports").at(loc)
-	[#raw(code.text, lang:"typc") #sym.arrow.r #eval("[" + mty.build-imports(imports) + code.text + "]")]
+	[#raw(code.text, lang:"typc") #sep #eval("[" + mty.build-imports(imports) + code.text + "]")]
 })
 
 #let sourcecode( title: none, file: none, ..args, code ) = {
