@@ -364,27 +364,6 @@
 
 
 #let __s_mty_command = state("@mty-command", none)
-// #let __s_mty_arguments = state("@mty-arguments", ())
-
-// #let show-arguments( args ) = block(width:100%, inset:(left:-1em), {
-//   if args != () {
-//     [*Available Arguments:*]
-//     for a in args {
-//       grid(columns:(1fr, auto),
-//         if a.is-sink {
-//           sarg(a.name)
-//         } else if a.default != "__none__" {
-//           arg(..mty.get.dict(a.name, a.default))
-//         }  else {
-//           arg(a.name)
-//         },
-//         dtype(a.type)
-//       )
-//       block(width:100%, below: .65em, inset:(left:.75em), a.body)
-//       line(stroke:.75pt + mty.colors.text, length:100%)
-//     }
-//   }
-// })
 
 #let command(name, ..args, body) = [
   #__s_mty_command.update(name)
@@ -395,7 +374,6 @@
 	// #set terms(hanging-indent: 1.2em, separator: [\ ])
 	// #set par(first-line-indent: 1.2em, hanging-indent: 1.2em)
 	// / #cmd(name, ..args.pos(), ..args.named() ): #body
-  // #__s_mty_arguments.update(())
   #__s_mty_command.update(none)
 ]
 
@@ -427,19 +405,6 @@
 
   block(width:100%, below: .65em, inset:(x:.75em), body)
 })
-// {
-//   __s_mty_arguments.update((arr) => {
-//     arr.push((
-//       name: argument,
-//       is-sink: is-sink,
-//       type: type,
-//       choices: choices,
-//       default: default,
-//       body: body
-//     ))
-//     arr
-//   })
-// }
 
 #let module-commands(module, body) = [
 	#let add-module = (c) => {
