@@ -107,8 +107,7 @@
         h(1fr)
         box(
           fill: color,
-          width: 1em + 2*inset,
-          height: 1em + 2*inset,
+          // width: 1em + 2*inset,
           inset: inset,
           radius: (top-right: radius, bottom-left: radius),
           text(fill: white, weight: 600, icon)
