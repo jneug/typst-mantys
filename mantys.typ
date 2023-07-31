@@ -392,7 +392,6 @@
 	body
 ) = block(stroke:.75pt + mty.colors.muted, inset: (top:10pt, left: -1em + 8pt, rest:8pt), outset:(left: 1em), radius: 2pt, {
   place(top+left, dy: -15.5pt, dx: 5.75pt, box(inset:2pt, fill:white, text(.75em, mty.colors.muted, "Argument")))
-
   if is-sink {
     sarg(name)
   } else if default != "__none__" {
@@ -402,7 +401,6 @@
   }
   h(1fr)
   dtype(if type != none { type } else if default != "__none__" { default })
-
   block(width:100%, below: .65em, inset:(x:.75em), body)
 })
 
@@ -440,6 +438,10 @@
 	}
 })
 
+
+#let update-example-imports( imports ) = {
+  state("@mty-example-imports").update(example-imports)
+}
 
 #let example(..args) = locate(loc => {
 	let imports = state("@mty-example-imports").at(loc)
