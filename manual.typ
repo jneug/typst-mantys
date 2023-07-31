@@ -142,7 +142,7 @@ After importing Mantys the template is initialized by applying a show rule with 
 
 		All other arguments will be passed to #cmd-[titlepage].
 
-		All uppercase occurences of #arg[name] will be highlighted as a packagename. For example MAN\u{2060}TYS will appear as Mantys.
+		All uppercase occurences of #arg[name] will be highlighted as a packagename. For example #text(hyphenate:false, "MAN\u{2060}TYS") will appear as Mantys.
 ]
 
 == Available commands
@@ -377,6 +377,16 @@ The value is: #mty.value(range(4))
 		println!(\"Hello World!\");
 	}
 ```]"))
+]
+
+#command("codesnippet", barg[code])[
+	A short code snippet, that is shown without line numbers or title.
+
+	#example[````
+  #codesnippet[```shell-unix-generic
+  git clone https://github.com/jneug/typst-mantys.git mantys-0.0.3
+  ```]
+  ````]
 ]
 
 === Other commands
