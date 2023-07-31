@@ -1,7 +1,9 @@
 #import "./mty.typ"
-#import "./mty.typ": idx, make-index, module, package, value
+#import "./mty.typ": idx, make-index, module, package, value, lineref
 
-#let colors = mty.colors
+#import "./theme.typ"
+
+#let colors = theme.colors
 
 #let titlepage(
   name,        // string
@@ -99,8 +101,7 @@
 	)
 
 	set page(
-		paper: "a4",
-		margin: auto,
+		..theme.page,
 		header: locate(loc => {
 			let elems = query(
 				heading.where(level:2).before(loc),
@@ -118,17 +119,15 @@
 		]
 	)
 	set text(
-		size: 12pt,
+    font: theme.fonts.text,
+		size: theme.font-sizes.text,
 		lang: "en",
 		region: "EN",
-    fill: mty.colors.text
+    fill: theme.colors.text
 	)
 	set par(
 		justify:true,
-		// first-line-indent: 1em,
-		// hanging-indent: -1em
 	)
-	//show par: set block(spacing: 0.65em)
 	set heading(numbering: "I.1.")
 	show heading: it => block([
 		#v(0.3em)
@@ -146,7 +145,11 @@
 		])
 	}
 	show heading: it => {
-		set text(font:("Liberation Sans"))
+		set text(
+      font:theme.fonts.headings,
+      size://calc.max(theme.font.sizes.text, theme.font-sizes.headings * ( it.level))
+        mty.math.map(4, 1, theme.font-sizes.text, theme.font-sizes.headings * 1.4, it.level)
+    )
 		it
 	}
 
@@ -155,16 +158,18 @@
   // font and size before the show rule takes effect.
 	// show raw.where(block:true, lang:"example"): it => mty.example(imports:example-imports, it)
 	// show raw.where(block:true, lang:"side-by-side"): it => mty.example(side-by-side:true, imports:example-imports, it)
+  show raw: set text(font:theme.fonts.code, size:theme.font-sizes.code)
 	state("@mty-example-imports").update(example-imports)
+
+  // Some common replacements
+	show upper(name): mty.package(name)
+	show "Mantys": mty.package
+  // show "Typst": it => text(font: "Liberation Sans", weight: "semibold", fill: eastern)[typst] // smallcaps(strong(it))
+
+  show figure.where(kind: raw): set block(breakable: true)
 
 	titlepage(name, title, subtitle, info, authors, url, version, date, abstract)
 
-	// Some common replacements
-	show upper(name): mty.package(name)
-	show "Mantys": mty.package
-	// show "Typst": it => text(font: "Liberation Sans", weight: "semibold", fill: eastern)[typst] // smallcaps(strong(it))
-
-	show figure.where(kind: raw): set block(breakable: true)
 	body
 
 	if index != none and index != () and index != (:) {
@@ -482,9 +487,9 @@
   if mty.is.not-empty(since) or mty.is.not-empty(until) {
     mty.marginnote(gutter: 1em, dy: 0pt, {
       set text(size:.8em)
-      if mty.is.not-empty(since) { [_since_ #text(mty.colors.secondary, mty.ver(..since))] }
+      if mty.is.not-empty(since) { [_since_ #text(theme.colors.secondary, mty.ver(..since))] }
       if mty.is.not-empty(since) and mty.is.not-empty(until) { linebreak() }
-      if mty.is.not-empty(until) { [until #text(mty.colors.secondary, mty.ver(..until))] }
+      if mty.is.not-empty(until) { [until #text(theme.colors.secondary, mty.ver(..until))] }
     })
   }
 }

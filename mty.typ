@@ -3,55 +3,7 @@
 #import "@preview/codelst:1.0.0"
 #import "@preview/showybox:0.2.1": showybox
 
-
-#let colors = (
-	primary:   eastern,   // rgb(31, 158, 173),
-	secondary: teal,      // rgb(18, 120, 133),
-	argument:  navy,      // rgb(0, 29, 87),
-	option:    rgb(214, 182, 93),
-	value:     rgb(181, 2, 86),
-	command:   blue,      // rgb(75, 105, 197),
-	comment:   gray,      // rgb(128, 128, 128),
-
-  text:      rgb(35, 31, 32),
-  muted:     luma(210),
-
-	info:      rgb(23, 162, 184),
-	warning:   rgb(255, 193, 7),
-	error:     rgb(220, 53, 69),
-	success:   rgb(40, 167, 69),
-
-  // Datatypes taken from typst.app
-	dtypes: (
-		length: rgb(230, 218, 255),
-		integer: rgb(230, 218, 255),
-		float: rgb(230, 218, 255),
-		fraction: rgb(230, 218, 255),
-		ratio: rgb(230, 218, 255),
-		"relative length": rgb(230, 218, 255),
-		"none": rgb(255, 203, 195),
-		"auto": rgb(255, 203, 195),
-		"any": rgb(255, 203, 195),
-		"regular expression": rgb(239, 240, 243),
-		dictionary: rgb(239, 240, 243),
-		array: rgb(239, 240, 243),
-		stroke: rgb(239, 240, 243),
-		location: rgb(239, 240, 243),
-		alignment: rgb(239, 240, 243),
-		"2d alignment": rgb(239, 240, 243),
-		boolean: rgb(255, 236, 193),
-		content: rgb(166, 235, 229),
-		string: rgb(209, 255, 226),
-		function: rgb(249, 223, 255),
-		color: (
-			rgb(133, 221, 244),
-			rgb(170, 251, 198),
-			rgb(214, 247, 160),
-			rgb(255, 243, 124),
-			rgb(255, 187, 147)
-		)
-	)
-)
+#import "theme.typ"
 
 // #################################
 // # Some common utility functions #
@@ -73,8 +25,8 @@
 // Some boxes / blocks to highlight content
 #let frame = showybox.with(
   frame: (
-    border-color: colors.primary,
-    upper-color: colors.primary,
+    border-color: theme.colors.primary,
+    upper-color: theme.colors.primary,
     width: .75pt,
     radius: 4pt,
     inset: 8pt
@@ -101,7 +53,7 @@
         width: 100%,
         spacing: 0pt,
         inset: inset,
-        body
+        text(size:.88em, body)
       ),
       if is.not-none(icon) {
         h(1fr)
@@ -194,7 +146,7 @@
 	}
 
 	show heading: it => block([
-		#block(spacing:0.3em, text(font:("Liberation Sans"), fill:colors.secondary, it.body))
+		#block(spacing:0.3em, text(font:("Liberation Sans"), fill:theme.colors.secondary, it.body))
 	])
 	columns(cols,
 		for l in terms.keys().sorted() {
@@ -244,8 +196,8 @@
 #let gitlink( repo ) = footlink("https://github.com/" + repo, repo)
 #let pkglink( name, version, namespace:"preview" ) = footlink("https://github.com/typst/packages/tree/main/packages/" + namespace + "/" + name + "-" + version.join("."), repo + sym.colon + version.join("."))
 
-#let primary = text.with(fill:colors.primary)
-#let secondary = text.with(fill:colors.secondary)
+#let primary = text.with(fill:theme.colors.primary)
+#let secondary = text.with(fill:theme.colors.secondary)
 
 #let package( name ) = primary(smallcaps(name))
 #let module( name ) = secondary(rawi(name))
@@ -262,19 +214,19 @@
 #let value( value ) = {
 	if is.str(value) {
 		if value.contains("=>") {
-			return rawc(colors.value, value)
+			return rawc(theme.colors.value, value)
 		} else {
-			return rawi(sym.quote.double) + rawc(colors.value, value) + rawi(sym.quote.double)
+			return rawi(sym.quote.double) + rawc(theme.colors.value, value) + rawi(sym.quote.double)
 		}
 	} else if is-choices(value) {
 		return value
 	} else {
-		return rawc(colors.value, repr(value))
+		return rawc(theme.colors.value, repr(value))
 	}
 	// return [#value]
 }
 
-#let default( val ) = [#underline(value(val), offset:0.2em, stroke:1pt+colors.value)<default>]
+#let default( val ) = [#underline(value(val), offset:0.2em, stroke:1pt+theme.colors.value)<default>]
 
 #let sourcecode = codelst.sourcecode.with(frame:none, label-regex: none)
 #let lineref = codelst.lineref
@@ -313,11 +265,11 @@
 		sourcecode(raw(lang:if is-code {"typc"} else {"typ"}, code.text)),
 	)
 	if not side-by-side {
-		cont.push(line(length: 100%, stroke: .75pt + colors.text))
+		cont.push(line(length: 100%, stroke: .75pt + theme.colors.text))
 	}
 
   // If the result was provided as an argument, use that,
-  // otherwise eval the given example.
+  // otherwise eval the given example as code or content.
 	if args.pos() != () {
 		cont.push(args.pos().first())
 	} else {
