@@ -372,14 +372,14 @@
 
 #let command(name, ..args, body) = [
   #__s_mty_command.update(name)
-	#set terms(hanging-indent: 0pt)
-	#set par(first-line-indent:0.65pt, hanging-indent: 0pt)
-	/ #cmd(name, unpack:auto, ..args.pos(), ..args.named() )<cmd>:
-    #block(inset:(left:1em), body)#label("cmd-"+name)
-	// #set terms(hanging-indent: 1.2em, separator: [\ ])
-	// #set par(first-line-indent: 1.2em, hanging-indent: 1.2em)
-	// / #cmd(name, ..args.pos(), ..args.named() ): #body
+  #block(
+    below: 0.65em,
+    above: 1.3em,
+    text(weight:600)[#cmd(name, unpack:auto, ..args.pos(), ..args.named() )<cmd>]
+  )
+  #block(inset:(left:1em), spacing: 0pt, breakable:true, body)#label("cmd-"+name)
   #__s_mty_command.update(none)
+  // #v(.65em, weak:true)
 ]
 
 #let variable( name, types:none, value:none, body ) = [
@@ -395,19 +395,31 @@
 	choices: none,
 	default: "__none__",
 	body
-) = block(stroke:.75pt + mty.colors.muted, inset: (top:10pt, left: -1em + 8pt, rest:8pt), outset:(left: 1em), radius: 2pt, {
-  place(top+left, dy: -15.5pt, dx: 5.75pt, box(inset:2pt, fill:white, text(.75em, mty.colors.muted, "Argument")))
-  if is-sink {
-    sarg(name)
-  } else if default != "__none__" {
-    arg(..mty.get.dict(name, default))
-  }  else {
-    arg(name)
-  }
-  h(1fr)
-  dtype(if type != none { type } else if default != "__none__" { default })
-  block(width:100%, below: .65em, inset:(x:.75em), body)
-})
+) = {
+  v(.65em)
+  block(
+    above: .65em,
+    stroke:.75pt + theme.colors.muted,
+    inset: (top:10pt, left: -1em + 8pt, rest:8pt),
+    outset: (left: 1em),
+    radius: 2pt, {
+    place(top+left, dy: -15.5pt, dx: 5.75pt,
+      box(inset:2pt, fill:white,
+        text(size:.75em, font:theme.fonts.sans, theme.colors.muted, "Argument")
+      )
+    )
+    if is-sink {
+      sarg(name)
+    } else if default != "__none__" {
+      arg(..mty.get.dict(name, default))
+    }  else {
+      arg(name)
+    }
+    h(1fr)
+    dtype(if type != none { type } else if default != "__none__" { default })
+    block(width:100%, below: .65em, inset:(x:.75em), body)
+  })
+}
 
 #let module-commands(module, body) = [
 	#let add-module = (c) => {
@@ -424,7 +436,7 @@
 
 #let cmd-selector(name) = selector(<cmd>).before(label("cmd-"+name))
 
-#let refcmd(name, format: (name, loc) => [command #cmd(name) on #link(loc)[page #loc.page()]]) = locate(loc => {
+#let cmdref(name, format: (name, loc) => [command #cmd(name) on #link(loc)[page #loc.page()]]) = locate(loc => {
 	let res = query(cmd-selector(name), loc)
 	if res == () {
 		panic("No label <cmd-" + name + "> found.")
@@ -433,7 +445,8 @@
 		format(name, e.location())
 	}
 })
-#let refrel( label ) = locate(loc => {
+
+#let relref( label ) = locate(loc => {
 	if query(selector(label).before(loc), loc) != () {
 		[above]
 	} else if query(selector(label).after(loc), loc) != () {
@@ -442,6 +455,12 @@
 		panic("No label " + str(label) + " found.")
 	}
 })
+
+// For backwards compatibility with v0.0.3 and lower
+// {deprecated}
+#let refcmd = cmdref
+// {deprecated}
+#let refrel = relref
 
 
 #let update-example-imports( imports ) = {
