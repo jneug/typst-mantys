@@ -342,15 +342,19 @@
 		mty.rawc(colors.command, name)
 	}
 
-	let sep = `, `
-	if unpack == true or (unpack == auto and args.pos().len() + args.named().len() > 5) {
-		sep = [`,`\ #h(1em)]
-	}
+  let pargs = args.pos().filter(mty.not-is-body)
+  let bargs = args.pos().filter(mty.is-body)
 
-	mty.rawi(sym.paren.l)
-	args.pos().filter(mty.not-is-body).join(sep)
-	mty.rawi(sym.paren.r)
-	args.pos().filter(mty.is-body).join()
+	if unpack == true or (unpack == auto and pargs.len() >= 5) {
+    mty.rawi(sym.paren.l) + [\ #h(1em)]
+    pargs.join([`,`\ #h(1em)])
+    [\ ] + mty.rawi(sym.paren.r)
+	} else {
+    mty.rawi(sym.paren.l)
+    pargs.join(`, `)
+    mty.rawi(sym.paren.r)
+  }
+	bargs.join()
 	if ret != none {
 		box(inset:(x:2pt), mty.rawi("->"))
 		dtype(ret)
