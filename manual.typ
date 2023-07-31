@@ -1,23 +1,27 @@
-//#import "@local/mantys:0.0.2": *
 #import "mantys.typ": *
 
-#show: mantys.with(
-	name:		"Mantys",
-	title: 		"The Mantys Package",
-	subtitle: 	[#strong[MAN]uals for #strong[TY]p#strong[S]t packages and templates],
-	info:		[A Typst template to create consistens and readable manuals for pakcages and templates.],
-	authors:	"Jonas Neugebauer",
-	url:		"https://github.com/jneug/typst-mantys",
-	version:	"0.0.2",
-	date:		datetime.today(),
-	abstract: 	[
-		Weit hinten, hinter den Wortbergen, fern der Länder Vokalien und Konsonantien leben die Blindtexte. Abgeschieden wohnen sie in Buchstabhausen an der Küste des Semantik, eines großen Sprachozeans. Ein kleines Bächlein namens Duden fließt durch ihren Ort und versorgt sie mit den nötigen Regelialien. Es ist ein paradiesmatisches Land, in dem einem gebratene Satzteile in den Mund fliegen. Nicht einmal von der allmächtigen Interpunktion werden die Blindtexte beherrscht – ein geradezu unorthographisches Leben.
-	],
+// Some fancy logos
+// credits go to discord user @adriandelgado
+#let TeX = style(styles => {
+  set text(font: "New Computer Modern")
+  let e = measure("E", styles)
+  let T = "T"
+  let E = text(1em, baseline: e.height * 0.31, "E")
+  let X = "X"
+  box(T + h(-0.15em) + E + h(-0.125em) + X)
+})
 
-	example-imports: ("@local/mantys:0.0.2": "*")
-)
+#let LaTeX = style(styles => {
+  set text(font: "New Computer Modern")
+  let a-size = 0.66em
+  let l = measure("L", styles)
+  let a = measure(text(a-size, "A"), styles)
+  let L = "L"
+  let A = box(scale(x: 110%, text(a-size, baseline: a.height - l.height, "A")))
+  box(L + h(-a.width * 0.67) + A + h(-a.width * 0.25) + TeX)
+})
 
-#let cnltx = mty.primary("CNLTX")
+#let cnltx = package("CNLTX")
 
 #let shell( title:"shell", sourcecode ) = {
 	mty.frame(
@@ -31,15 +35,40 @@
 	)
 }
 
+#show: mantys.with(
+	name:		"Mantys",
+	title: 		"The Mantys Package",
+	subtitle: 	[#strong[MAN]uals for #strong[TY]p#strong[S]t],
+	info:		[A Typst template to create consistens and readable manuals for packages and templates.],
+	authors:	((name: "Jonas Neugebauer", email:"github@neugebauer.cc"),),
+	url:		"https://github.com/jneug/typst-mantys",
+	version:	"0.0.2",
+	date:		datetime.today(),
+	abstract: 	[
+		#package[Mantys] is a Typst template to help package and template authors to write manuals. It provides functionality for consistent formatting of commands, variables, options and source code examples. The template automatically creates a table of contents and a commanc index for easy reference and navigation.
+
+    The main idea and design was inspired by the #LaTeX package #cnltx by #mty.name[Clemens Niederberger].
+	],
+
+	example-imports: ("@local/mantys:0.0.3": "*"),
+)
+
 = About
 
-Mantys is a Typst package.
+Mantys is a Typst package to help package and template authors to write consistently formatted manuals. The idea is that, as many Typst users are switching over from #TeX, they are used to the way packages provide a PDF manual for reference. Though in a modern ecosystem there are other ways to write documentation (like #mty.footlink("https://rust-lang.github.io/mdBook/")[mdBook] or #mty.footlink("https://asciidoc.org")[AsciiDoc]), having a manual in PDF format might still be beneficial, since many users of Typst will generate PDFs as their main output.
+
+The design and functionality of Mantys was inspired by the fantastic #LaTeX package #mty.footlink("https://ctan.org/pkg/cnltx")[#cnltx] by #mty.name[Clemens Niederberger]#footnote[#link("mailto:clemens@cnltx.de", "clemens@cnltx.de")].
+
+#ebox[
+  Note that this manual is currently out of date with the newest version of Mantys and will be updated soon.
+]
+
+This manual is supposed to be a complete reference of Mantys, but might be out of date for the most recent additions and changes. On the other hand, the source file of this document is a great example of the things Mantys can do. Other than that, refer to the README file in the GitHub repository and the source code for Mantys.
 
 #wbox[
-	Mantys is in active development and its functionality is subject to change.
-]
-#ibox[
-	Contributions are welcome.
+	Mantys is in active development and its functionality is subject to change. Until version #mty.ver(0,1,0) is reached, the command signatures and manual layout may change and break previous versions. Keep that in mind while using Mantys.
+
+  Contributions to the package are very welcome!
 ]
 
 = Usage
@@ -52,19 +81,15 @@ Currently the package needs to be installed into the local package repository.
 
 Either download the current release from GitHub#footnote[#link("https://github.com/jneug/typst-typopts/releases/latest")] and unpack the archive into your system dependent local repository folder#footnote(link("https://github.com/typst/packages#local-packages")) or clone it directly:
 
-#shell[
-```shell-unix-generic
+#codesnippet[```shell-unix-generic
 git clone https://github.com/jneug/typst-mantys.git mantys-0.0.2
-```
-]
+```]
 
 After installing the package just import it inside your `typ` file:
 
-#sourcecode[
-```typc
+#codesnippet[```typ
 #import "@local/mantys:0.0.2": *
-```
-]
+```]
 
 === Loading as a module
 
@@ -72,14 +97,14 @@ To load Mantys into a single project as a module download the necessary files an
 
 Import the module into your manual file:
 
-#sourcecode[```typc
+#codesnippet[```typ
 #import "mantys.typ": *
 ```]
 
 === Initialising the template
 
 After importing Mantys the template is initialized by applying a show rule with the #cmd[mantys] command passing the necessary options using `with`:
-#sourcecode[```typc
+#codesnippet[```typ
 #show: mantys.with(
 	...
 )
@@ -268,13 +293,15 @@ To automatically add imports to every example code, you can set the option #opt[
 See #refrel(<cmd-example>) for how to use the #cmd-[example] command.
 
 #ibox[
-	To use fenced code blocks in your example, pass the code as a string to #doc("text/raw") like this:
+	To use fenced code blocks in your example, add an extra backtick to the example code:
 
-	#example(imports:("@local/mantys:0.0.2": "example"), raw("#example(raw(\"```rust
+	#example(imports:("@local/mantys:0.0.2": "example"), raw("#example[````
+```rust
 fn main() {
-	println!(\\\"Hello World!\\\");
+  println!(\"Hello World!\");
 }
-```\"))"))
+```
+````]"))
 ]
 
 #command("example", ..args(side-by-side: false, imports:(:), [example-code], [result]))[
@@ -293,7 +320,7 @@ fn main() {
 		#wbox(width:100%)[#arg[result] is optional and will be omitted in most cases!]
 	]
 
-	Sets #barg[example-code] as a #doc("text/raw") block with #arg(lang: "typc") and the result of the code beneath. #barg[example-code] need to be `raw` code itself.
+	Sets #barg[example-code] as a #doc("text/raw") block with #arg(lang: "typ") and the result of the code beneath. #barg[example-code] need to be `raw` code itself.
 
 	#example[
 #raw("#example[```
@@ -341,7 +368,7 @@ The value is: #mty.value(range(4))
 		A filename to show above the code in a titlebar.
 	]
 
-	#cmd-[sourcecode] will render a #doc("text/raw") block with linenumbers and proper tab indentions using #cmd[mty.sourcecode] and put it inside a #cmd-[mty.frame].
+	#cmd-[sourcecode] will render a #doc("text/raw") block with linenumbers and proper tab indentions using #package[codelst] and put it inside a #cmd-[mty.frame].
 
 	If provided, the #arg("title") and #arg("file") argument are set as a titlebar above the content.
 
@@ -350,20 +377,16 @@ The value is: #mty.value(range(4))
 		println!(\"Hello World!\");
 	}
 ```]"))
-
-	#wbox[
-		The sourcecode set with this command is set line by line in a #doc("layout/grid") and will not be selectable as a whole without including the line numbers. If you want the code to be selectable (to allow copy&paste) you should set #arg(linenos: false).
-	]
 ]
 
 === Other commands
 
-#command("pkg")[
+#command("package")[
 	Shows a package name:
 
 	#side-by-side()[
 	```
-	#pkg[tablex]
+	#package[tablex]
 
 	#mty.package[tablex]
 	```
