@@ -1,5 +1,4 @@
-#import "@local/t4t:0.1.0": *
-
+#import "@preview/t4t:0.1.0": *
 #import "@preview/codelst:1.0.0"
 #import "@preview/showybox:0.2.1": showybox
 
