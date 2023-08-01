@@ -1,5 +1,5 @@
 #import "./mty.typ"
-#import "./mty.typ": idx, make-index, module, package, value, lineref
+#import "./mty.typ": is-none, is-auto, is, idx, make-index, module, package, value, lineref
 
 #import "./theme.typ"
 
@@ -7,9 +7,9 @@
   name,        // string
   title,       // string|content
   subtitle,    // string|content
-  info,        // string|content
+  description, // string|content
   authors,     // string|array[string]|array[dict[string, string]]
-  url,         // string
+  urls,        // array[string]
   version,     // string
   date,        // string|datetime
   abstract     // string|content
@@ -20,21 +20,21 @@
 	#block(text(fill:theme.colors.primary, size:2.5em,
 		mty.def.if-none(name, title)
 	))
-	#if mty.is.not-none(subtitle) {
+	#if is.not-none(subtitle) {
 		block(subtitle)
 	}
 
-  #if mty.is.not-none(version, date) {
+  #if is.not-none(version, date) {
 	  block({
       set text(size:1.2em)
-      if mty.is.not-none(version) [ v#version ] else { hide("v0.0.0") }
+      if is.not-none(version) [ v#version ] else { hide("v0.0.0") }
       h(4em)
-      if mty.is.not-none(version) { mty.date(date) } else { hide("0000-00-00") }
+      if is.not-none(version) { mty.date(date) } else { hide("0000-00-00") }
     })
   }
 
-	#if mty.is.not-none(info) {
-		block(info)
+	#if is.not-none(description) {
+		block(description)
 	}
 
 	#block(if type(authors) == "array" {
@@ -42,11 +42,11 @@
 	} else {
 		mty.name(authors)
 	})
-	#if mty.is.not-none(url) {
-		block(link(url))
+	#if is.not-none(urls) {
+		block(mty.as-arr(urls).map(link).join(linebreak()))
 	}
 
-	#if mty.is.not-none(abstract) {
+	#if is.not-none(abstract) {
 		block(width:75%)[
 			#set align(left)
 			//#set par(first-line-indent: .65em, hanging-indent: 0pt)
@@ -72,15 +72,23 @@
 ]
 
 #let mantys(
-	name:	   none,
-	title:     none,
-	subtitle:  none,
-	info:      none,
-	authors:   (),
-	url:       none,
-	version:   none,
-	date:      none,
-	abstract:  [],
+  // Package info
+	name: none,
+	description: none,
+	authors: (),
+  repository: none,
+	version: none,
+  license: none,
+
+  package: none,  // loaded toml file
+
+  // Additional info
+	title: none,
+	subtitle: none,
+	url: none,
+
+	date: none,
+  abstract: [],
 
 	titlepage: titlepage,
 	index: auto,
@@ -91,11 +99,23 @@
 
 	body
 ) = {
-  mty.assert.not-none(name, message:"You need to specifiy the package name.")
+  mty.assert.that(
+    is.not-none(name) or is.not-none(package),
+    message:"You need to specifiy the package name or load the package info via ..toml(\"typst.toml\")."
+  )
+
+  if is-none(name) {
+    ( name, description, authors,
+      repository, version, license
+    ) = ( "name", "description", "authors",
+          "repository", "version", "license").map(
+              (k) => package.at(k, default:none)
+            )
+  }
 
 	set document(
-		title: if title != none { mty.get.text(title) } else { mty.get.text(name) },
-		author: if mty.is.arr(authors) { if mty.is.dict(authors.first()) { authors.first().name } else { authors.first() } } else { authors }
+		title: mty.get.text( mty.def.if-none(name, title) ),
+		author: mty.as-arr(mty.def.if-none(authors, "")).map((a) => if is.dict(a) { a.name } else { a }).first()
 	)
 
 	set page(
@@ -166,7 +186,7 @@
 
   show figure.where(kind: raw): set block(breakable: true)
 
-	titlepage(name, title, subtitle, info, authors, url, version, date, abstract)
+	titlepage(name, title, subtitle, description, authors, (url,repository).filter(is.not-none), version, date, abstract)
 
 	body
 
@@ -319,22 +339,22 @@
 }
 
 #let args( ..args ) = {
-	let arguments = args.pos().filter(mty.is.str).map(arg)
-	arguments += args.pos().filter(mty.is.content).map(barg)
+	let arguments = args.pos().filter(is.str).map(arg)
+	arguments += args.pos().filter(is.content).map(barg)
 	arguments += args.named().pairs().map(v => arg(v.at(0), v.at(1)))
 	arguments
 }
 
 #let func( name, module: none ) = {
-  let full-name = if mty.is.not-none(module) { mty.module(module) + `.` + mty.rawc(theme.colors.command, name) } else { mty.rawc(theme.colors.command, name) }
+  let full-name = if is.not-none(module) { mty.module(module) + `.` + mty.rawc(theme.colors.command, name) } else { mty.rawc(theme.colors.command, name) }
   mty.mark-func(emph(mty.rawi(sym.hash) + full-name))
 }
 
 #let lambda( ..args, ret:none  ) = {
   args = args.pos().map(type)
-  if mty.is.arr(ret) and ret.len() > 0 {
+  if is.arr(ret) and ret.len() > 0 {
     ret = sym.paren.l + ret.map(type).join(",") + if ret.len() == 1 {","} + sym.paren.r
-  } else if mty.is.dict(ret) and ret.len() > 0 {
+  } else if is.dict(ret) and ret.len() > 0 {
     ret = sym.paren.l + ret.pairs().map(pair => {sym.quote + pair.first() + sym.quote + sym.colon + type(pair.last())}).join(",") + sym.paren.r
   } else {
     ret = type(ret)
@@ -349,7 +369,7 @@
   }
 
   mty.rawi(sym.hash)
-  if mty.is.not-none(module) {
+  if is.not-none(module) {
     mty.module(module)
   } else {
     // raw("", lang:"cmd-module")
@@ -505,10 +525,10 @@
 
 #let sourcecode( title: none, file: none, ..args, code ) = {
 	let header = ()
-	if mty.is.not-none(title) {
+	if is.not-none(title) {
 		header.push(text(fill:white, title))
 	}
-	if mty.is.not-none(file) {
+	if is.not-none(file) {
 		header.push(h(1fr))
 		header.push(text(fill:white, emoji.folder) + " ")
 		header.push(text(fill:white, emph(file)))
@@ -529,12 +549,12 @@
 #let sbox = mty.alert.with(color:theme.colors.success, icon:"✓")
 
 #let version( since:(), until:() ) = {
-  if mty.is.not-empty(since) or mty.is.not-empty(until) {
+  if is.not-empty(since) or is.not-empty(until) {
     mty.marginnote(gutter: 1em, dy: 0pt, {
       set text(size:.8em)
-      if mty.is.not-empty(since) { [_since_ #text(theme.colors.secondary, mty.ver(..since))] }
-      if mty.is.not-empty(since) and mty.is.not-empty(until) { linebreak() }
-      if mty.is.not-empty(until) { [until #text(theme.colors.secondary, mty.ver(..until))] }
+      if is.not-empty(since) { [_since_ #text(theme.colors.secondary, mty.ver(..since))] }
+      if is.not-empty(since) and is.not-empty(until) { linebreak() }
+      if is.not-empty(until) { [until #text(theme.colors.secondary, mty.ver(..until))] }
     })
   }
 }

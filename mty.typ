@@ -214,6 +214,8 @@
 #let is-lambda( value ) = is-a(value, <mty-lambda>)
 #let not-is-lambda( value ) = not is-a(value, <mty-lambda>)
 
+#let as-arr( ..values ) = (..values.pos(),).flatten()
+
 #let mark-as( mark, elem ) = {
   if not is.label(mark) {
     mark = alias.label(mark)
