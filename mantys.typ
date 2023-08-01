@@ -197,18 +197,19 @@
 	}
 }
 
-// Parse function spec into datatypes
-#let func( spec ) = {
-
-}
 
 #let dtype( t, fnote:false, parse-type:false ) = {
-	if parse-type or type(t) != "string" {
-		t = type(t)
-	}
+  if mty.not-is-func(t) and mty.not-is-lambda(t) {
+    if parse-type or type(t) != "string" {
+      t = type(t)
+    }
+  }
 
 	let d = none
-	if t.contains("=>") {
+  if mty.is-func(t) {
+    d = doc("types/function", fnote:fnote)
+		t = "function"
+  } else if mty.is-lambda(t) or t.contains("=>") {
 		d = doc("types/function", name:t, fnote:fnote)
 		t = "function"
 	} else if t == "location" {
@@ -323,6 +324,24 @@
 	arguments += args.named().pairs().map(v => arg(v.at(0), v.at(1)))
 	arguments
 }
+
+#let func( name, module: none ) = {
+  let full-name = if mty.is.not-none(module) { mty.module(module) + `.` + mty.rawc(theme.colors.command, name) } else { mty.rawc(theme.colors.command, name) }
+  mty.mark-func(emph(mty.rawi(sym.hash) + full-name))
+}
+
+#let lambda( ..args, ret:none  ) = {
+  args = args.pos().map(type)
+  if mty.is.arr(ret) and ret.len() > 0 {
+    ret = sym.paren.l + ret.map(type).join(",") + if ret.len() == 1 {","} + sym.paren.r
+  } else if mty.is.dict(ret) and ret.len() > 0 {
+    ret = sym.paren.l + ret.pairs().map(pair => {sym.quote + pair.first() + sym.quote + sym.colon + type(pair.last())}).join(",") + sym.paren.r
+  } else {
+    ret = type(ret)
+  }
+  mty.mark-lambda(sym.paren.l + args.join(",") + sym.paren.r + " => " + ret )
+}
+
 
 #let cmd(name, module:none, ret:none, index:true, unpack:false, ..args) = {
   if index {

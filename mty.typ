@@ -209,6 +209,31 @@
 #let not-is-body( value ) = {return not is-body(value)}
 #let is-choices( value ) = is-a(value, <arg-choices>)
 #let not-is-choices( value ) = {return not is-choices(value)}
+#let is-func( value ) = is-a(value, <mty-func>)
+#let not-is-func( value ) = not is-a(value, <mty-func>)
+#let is-lambda( value ) = is-a(value, <mty-lambda>)
+#let not-is-lambda( value ) = not is-a(value, <mty-lambda>)
+
+#let mark-as( mark, elem ) = {
+  if not is.label(mark) {
+    mark = alias.label(mark)
+  }
+  [#elem#mark]
+}
+#let mark-body( elem ) = [#elem<arg-body>]
+#let mark-choices( elem ) = [#elem<arg-choices>]
+#let mark-func( elem ) = [#elem<mty-func>]
+// #let mark-func = mark-as.with(<mty-func>)
+#let mark-lambda( elem ) = [#elem<mty-lambda>]
+
+#let has-mark( mark, elem ) = {
+  if type(mark) != "label" {
+    mark = label(mark)
+  }
+  return type(elem) == "content" and elem.has("label") and elem.label == mark
+}
+#let is-func = has-mark.with(<mty-func>)
+
 #let place-marker( name ) = {
   raw("", lang:"--meta-" + name + "--")
 }
@@ -222,8 +247,10 @@
 		} else {
 			return rawi(sym.quote.double) + rawc(theme.colors.value, value) + rawi(sym.quote.double)
 		}
-	} else if is-choices(value) {
-		return value
+	} else if is-choices(value) or is-func(value) {
+    return value
+  } else if is-lambda(value) {
+		return rawc(theme.colors.value, value)
 	} else {
 		return rawc(theme.colors.value, repr(value))
 	}
