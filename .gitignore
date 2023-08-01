@@ -1,2 +1,5 @@
 .DS_Store
 Thumbs.db
+
+
+theme.{yml,yaml,toml}

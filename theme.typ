@@ -1,4 +1,3 @@
-
 #let page = (
   paper: "a4",
 	margin: auto
@@ -69,3 +68,62 @@
 		)
 	)
 )
+
+#let color-map = (
+    black: black,
+    gray: gray,
+    silver: silver,
+    white: white,
+    navy: navy,
+    blue: blue,
+    aqua: aqua,
+    teal: teal,
+    eastern: eastern,
+    purple: purple,
+    fuchsia: fuchsia,
+    maroon: maroon,
+    red: red,
+    orange: orange,
+    yellow: yellow,
+    olive: olive,
+    green: green,
+    lime: lime
+)
+
+#let convert-color( v, default:black ) = {
+  if type(v) == "string" and v in color-map {
+    return color-map.at(v)
+  } else if type(v) == "integer" {
+    return luma(v)
+  } else if type(v) == "array" {
+    if v.len() == 3 {
+      return rgb(v.at(0), v.at(1), v.at(2))
+    } else if v.len() == 4 {
+      return cmyk(v.at(0), v.at(1), v.at(2), v.at(3))
+    }
+  }
+  default
+}
+
+#let toml-theme = toml("theme.toml")
+
+#for (k,v) in toml-theme.at("colors", default:(:)) {
+  if type(v) != "dictionary" {
+    toml-theme.at("colors").at(k) = convert-color(v)
+  }
+}
+#for (k, v) in toml-theme.at("colors", default:(:)).at("dtypes", default:(:)) {
+  if k == "color" {
+    for (i, vv) in v.enumerate() {
+      toml-theme.at("colors").at("dtypes").at("color").at(i) = convert-color(vv)
+    }
+  } else {
+    toml-theme.at("colors").at("dtypes").at(k) = convert-color(v)
+  }
+}
+#for (k,v) in toml-theme.at("font-sizes", default:(:)) {
+  toml-theme.at("font-sizes").at(k) = v * 1pt
+}
+#if toml-theme.at("page").at("margin") == "auto" {
+  toml-theme.at("page").at("margin") = auto
+}
