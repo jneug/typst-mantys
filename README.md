@@ -113,6 +113,11 @@ For a full reference of available commands read [the manual](manual.pdf).
 
 ### Version 0.0.3
 
+- It is now possible to load a packages' `typst.toml` file directly into `#mantys`:
+
+	```js
+	#show: mantys.with( ..toml("typst.toml") )
+	```
 - Added some dependencies:
 	- [jneug/typst-tools4typst](https://github.com/jneug/typst-tools4typst) for some common utilities,
 	- [jneug/typst-codelst](https://github.com/jneug/typst-codelst) for rendering examples and source code,
@@ -121,6 +126,7 @@ For a full reference of available commands read [the manual](manual.pdf).
 	- Argument display in command descriptions,
 	- Alert boxes.
 - Added `#version(since:(), until:())` command to add version markers to commands.
+- Styles moved to a separate `theme.typ` file to allow easy customization of colors and styles.
 - Fixes and code improvements.
 
 ### Version 0.0.2
