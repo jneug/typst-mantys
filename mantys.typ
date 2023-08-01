@@ -3,8 +3,6 @@
 
 #import "./theme.typ"
 
-#let colors = theme.colors
-
 #let titlepage(
   name,        // string
   title,       // string|content
@@ -19,7 +17,7 @@
 	#set align(center)
 	#set block(spacing: 2em)
 
-	#block(text(fill:colors.primary, size:2.5em,
+	#block(text(fill:theme.colors.primary, size:2.5em,
 		mty.def.if-none(name, title)
 	))
 	#if mty.is.not-none(subtitle) {
@@ -131,14 +129,14 @@
 	set heading(numbering: "I.1.")
 	show heading: it => block([
 		#v(0.3em)
-		#text(fill:colors.primary, counter(heading).display())
+		#text(fill:theme.colors.primary, counter(heading).display())
 		#it.body
 		#v(0.8em)
 	])
 	show heading.where(level: 1): it => {
 		pagebreak(weak: true)
 		block([
-			#text(fill:colors.primary,
+			#text(fill:theme.colors.primary,
 			[Part #counter(heading).display()])\
 			#it.body
 			#v(1em)
@@ -243,10 +241,10 @@
 				rad = (right:2pt)
 			}
 
-			box(fill:colors.dtypes.color.at(i), radius:rad, inset:ins, outset:(y:2pt), "color".at(i))
+			box(fill:theme.colors.dtypes.color.at(i), radius:rad, inset:ins, outset:(y:2pt), "color".at(i))
 		}
-	} else if t in colors.dtypes {
-		box(fill: colors.dtypes.at(t), radius:2pt, inset: (x: 4pt, y:0pt), outset:(y:2pt), d)
+	} else if t in theme.colors.dtypes {
+		box(fill: theme.colors.dtypes.at(t), radius:2pt, inset: (x: 4pt, y:0pt), outset:(y:2pt), d)
 	} else {
 		d
 	}
@@ -269,14 +267,14 @@
 	[#list.join(box(inset:(left:1pt,right:1pt), sym.bar.v))<arg-choices>]
 }
 
-// #let meta( name ) = mty.rawc(colors.argument, {sym.angle.l + name + sym.angle.r})
-#let meta = mty.rawc.with(colors.argument)
+// #let meta( name ) = mty.rawc(theme.colors.argument, {sym.angle.l + name + sym.angle.r})
+#let meta = mty.rawc.with(theme.colors.argument)
 
 #let opt(name, index:true) = {
 	if index {
-		idx(kind:"option")[#mty.rawc(colors.option, name)]
+		idx(kind:"option")[#mty.rawc(theme.colors.option, name)]
 	} else {
-		mty.rawc(colors.option, name)
+		mty.rawc(theme.colors.option, name)
 	}
 }
 #let opt- = opt.with(index:false)
@@ -364,11 +362,11 @@
 
 #let var( name ) = {
 	mty.rawi(sym.hash)
-	mty.rawc(colors.command, name)
+	mty.rawc(theme.colors.command, name)
 }
 #let var-( name ) = {
 	mty.rawi(sym.hash)
-	mty.rawc(colors.command, name)
+	mty.rawc(theme.colors.command, name)
 }
 
 
@@ -501,10 +499,10 @@
 
 #let codesnippet = mty.sourcecode.with(frame: mty.frame, numbering: none)
 
-#let ibox = mty.alert.with(color:colors.info, icon:emoji.bell)
-#let wbox = mty.alert.with(color:colors.warning, icon:emoji.warning)
-#let ebox = mty.alert.with(color:colors.error, icon:emoji.siren)
-#let sbox = mty.alert.with(color:colors.success, icon:"✓")
+#let ibox = mty.alert.with(color:theme.colors.info, icon:emoji.bell)
+#let wbox = mty.alert.with(color:theme.colors.warning, icon:emoji.warning)
+#let ebox = mty.alert.with(color:theme.colors.error, icon:emoji.siren)
+#let sbox = mty.alert.with(color:theme.colors.success, icon:"✓")
 
 #let version( since:(), until:() ) = {
   if mty.is.not-empty(since) or mty.is.not-empty(until) {

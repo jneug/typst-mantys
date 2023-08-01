@@ -458,7 +458,7 @@ The commands provide some helpful low-level functionality, that might be useful 
 #command("cblock", arg(width:90%), barg[body], sarg[block-args], ret: "content")[
 	Sets #arg[body] inside a centered #doc("layout/block") with the given #arg[width]. Any further arguments will be passed to the `block` command.
 ]
-#command("box", barg[body], ..args(header:none, footer:none, invert-headers:true, stroke-color:colors.primary, bg-color:white, width:100%, padding: 8pt, radius:4pt), ret: "content")[
+#command("box", barg[body], ..args(header:none, footer:none, invert-headers:true, stroke-color:theme.colors.primary, bg-color:white, width:100%, padding: 8pt, radius:4pt), ret: "content")[
 	#lorem(100)
 ]
 #command("alert", barg[body], ..args(color:blue, icon:none, title:none, width:90%, size:.9em), ret: "content")[
