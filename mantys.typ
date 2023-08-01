@@ -12,7 +12,8 @@
   urls,        // array[string]
   version,     // string
   date,        // string|datetime
-  abstract     // string|content
+  abstract,    // string|content
+  license      // string
 ) = [
 	#set align(center)
 	#set block(spacing: 2em)
@@ -21,15 +22,20 @@
 		mty.def.if-none(name, title)
 	))
 	#if is.not-none(subtitle) {
-		block(subtitle)
+		block(above:1em)[
+      #set text(size:1.2em)
+      #subtitle
+    ]
 	}
 
-  #if is.not-none(version, date) {
-	  block({
+  #if (version, date, license).any((v) => v != none) {
+    block({
       set text(size:1.2em)
-      if is.not-none(version) [ v#version ] else { hide("v0.0.0") }
-      h(4em)
-      if is.not-none(version) { mty.date(date) } else { hide("0000-00-00") }
+      (
+        if is.not-none(version) [ v#version ],
+        if is.not-none(version) { mty.date(date) },
+        if is.not-none(version) { license }
+      ).join(h(4em))
     })
   }
 
@@ -37,11 +43,9 @@
 		block(description)
 	}
 
-	#block(if type(authors) == "array" {
-		authors.map(a => mty.author(a)).join([\ ])
-	} else {
-		mty.name(authors)
-	})
+  #block(
+    mty.as-arr(authors).map(mty.author).join( linebreak() )
+  )
 	#if is.not-none(urls) {
 		block(mty.as-arr(urls).map(link).join(linebreak()))
 	}
@@ -186,7 +190,7 @@
 
   show figure.where(kind: raw): set block(breakable: true)
 
-	titlepage(name, title, subtitle, description, authors, (url,repository).filter(is.not-none), version, date, abstract)
+	titlepage(name, title, subtitle, description, authors, (url,repository).filter(is.not-none), version, date, abstract, license)
 
 	body
 
