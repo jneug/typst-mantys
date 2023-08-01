@@ -209,6 +209,11 @@
 #let not-is-body( value ) = {return not is-body(value)}
 #let is-choices( value ) = is-a(value, <arg-choices>)
 #let not-is-choices( value ) = {return not is-choices(value)}
+#let place-marker( name ) = {
+  raw("", lang:"--meta-" + name + "--")
+}
+
+#let marker( name ) = selector(raw.where(lang: "--meta-" + name + "--"))
 
 #let value( value ) = {
 	if is.str(value) {

@@ -325,20 +325,18 @@
 }
 
 #let cmd(name, module:none, ret:none, index:true, unpack:false, ..args) = {
-	// if module != none {
-	// 	// mty.module(module)
-	// 	// mty.rawi(".")
-	// 	mty.marginnote[
-	// 		#mty.module(module)
-	// 		#sym.quote.angle.r.double
-	// 	]
-	// }
-  let full-name = if mty.is.not-none(module) { module + `.` + mty.rawc(colors.command, name) } else { mty.rawc(colors.command, name) }
-	if index {
-		idx(kind:"cmd")[#mty.rawi(sym.hash)#full-name]
-	} else {
-		full-name
-	}
+  if index {
+    idx(kind:"cmd", hide:true)[#mty.rawi(sym.hash)#mty.rawc(theme.colors.command, name)]
+  }
+
+  mty.rawi(sym.hash)
+  if mty.is.not-none(module) {
+    mty.module(module)
+  } else {
+    // raw("", lang:"cmd-module")
+    mty.place-marker("cmd-module")
+  }
+  mty.rawc(theme.colors.command, name)
 
   let pargs = args.pos().filter(mty.not-is-body)
   let bargs = args.pos().filter(mty.is-body)
@@ -424,15 +422,22 @@
 }
 
 #let module-commands(module, body) = [
-	#let add-module = (c) => {
-		mty.marginnote[
-			#mty.module(module)
-			#sym.quote.angle.r.double
-		]
-		c
-	}
-	#show <cmd>: add-module
-	#show <var>: add-module
+	// #let add-module = (c) => {
+	// 	mty.marginnote[
+	// 		#mty.module(module)
+	// 		#sym.quote.angle.r.double
+	// 	]
+	// 	c
+	// }
+	// #show <cmd>: add-module
+	// #show <var>: add-module
+  // #show raw.where(lang:"cmd-module"): (it) => mty.module(module) + mty.rawi(sym.dot.basic)
+  #show <cmd>: (it) => {
+    show mty.marker("cmd-module"): (it) => {
+      mty.module(module) + mty.rawi(sym.dot.basic)
+    }
+    it
+  }
 	#body
 ]
 
