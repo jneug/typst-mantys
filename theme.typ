@@ -6,11 +6,11 @@
 
 
 #let fonts = (
-  serif: ("Linux Libertine"),
+  serif: ("Linux Libertine", "Liberation Serif"),
   sans: ("Liberation Sans", "Helvetica Neue", "Helvetica"),
   mono: ("Liberation Mono"),
 
-  text: ("Linux Libertine"),
+  text: ("Linux Libertine", "Liberation Serif"),
   headings: ("Liberation Sans", "Helvetica Neue", "Helvetica"),
   code: ("Liberation Mono")
 )
