@@ -4,6 +4,8 @@
 
 #import "./theme.typ"
 
+#import "./mty-tidy.typ"
+
 #let titlepage(
   name,        // string
   title,       // string|content
@@ -218,6 +220,22 @@
 #let refrel = relref
 
 
+#let parse-module( data, ..args, tidy: none ) = {
+  import("@preview/tidy:0.1.0")
 
+  let module-doc = tidy.parse-module(
+    data,
+    ..mty.get.args(args)(
+      "name", "scope"
+    )
+  )
+  tidy.show-module(
+    module-doc,
+    ..mty.get.args(args)(
+      style: mty-tidy,
+      first-heading-level: 2,
+      show-module-name: false,
+      sort-functions: false
+    )
   )
 }
