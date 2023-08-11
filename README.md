@@ -127,6 +127,7 @@ For a full reference of available commands read [the manual](manual.pdf).
 	- Alert boxes.
 - Added `#version(since:(), until:())` command to add version markers to commands.
 - Styles moved to a separate `theme.typ` file to allow easy customization of colors and styles.
+- Added `#func()`, `#lambda()` and `#symbol()` commands, to handle special cases for values.
 - Fixes and code improvements.
 
 ### Version 0.0.2
