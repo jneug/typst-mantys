@@ -70,8 +70,7 @@
 
 #let show-function(
   fn, style-args,
-) = {
-  [
+) = [
   #command(
     fn.name,
     ..fn.args.pairs().map(((a, info)) => {
@@ -103,6 +102,5 @@
     ]
   )
   #label(style-args.label-prefix + fn.name + "()")
-  ]
-}
+]
 

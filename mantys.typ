@@ -221,16 +221,21 @@
 #let refrel = relref
 
 
-#let parse-module( data, ..args, tidy: none ) = {
-  import("@preview/tidy:0.1.0")
+#let tidy-module( data, ..args, tidy: none ) = {
+  let _tidy = tidy
+  if is-none(tidy-module) {
+    import("@preview/tidy:0.1.0")
+    _tidy = tidy
+  }
 
-  let module-doc = tidy.parse-module(
+  let scope = (m: api) + args.named().at("scope", default:())
+
+  let module-doc = _tidy.parse-module(
     data,
-    ..mty.get.args(args)(
-      "name", "scope"
-    )
+    ..mty.get.args(args)("name"),
+    scope: scope
   )
-  tidy.show-module(
+  _tidy.show-module(
     module-doc,
     ..mty.get.args(args)(
       style: mty-tidy,
