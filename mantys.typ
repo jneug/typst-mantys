@@ -223,7 +223,7 @@
 
 #let tidy-module( data, ..args, tidy: none ) = {
   let _tidy = tidy
-  if is-none(tidy-module) {
+  if is-none(_tidy) {
     import("@preview/tidy:0.1.0")
     _tidy = tidy
   }
