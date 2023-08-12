@@ -111,6 +111,17 @@ For a full reference of available commands read [the manual](manual.pdf).
 
 ## Changelog
 
+### Version 0.0.4
+
+- Added integration with [tidy](https://github.com/Mc-Zen/tidy).
+- Fixed issue with types in argument boxes.
+
+#### Breaking changes
+
+- Adapted `scope` argument for `eval` in examples.
+	- `#example()`, `#side-by-side()` and `#shortex()` now support the `scope` and `mode` argument.
+	- The option `example-imports` was replaced by `examples-scope`.
+
 ### Version 0.0.3
 
 - It is now possible to load a packages' `typst.toml` file directly into `#mantys`:

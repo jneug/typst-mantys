@@ -1,6 +1,8 @@
 #import "./mty.typ"
 #import "./theme.typ"
 
+#import "./mty.typ": idx, make-index, module, package, value, lineref
+
 #let doc( target, name:none, fnote:false ) = {
 	if name == none {
 		name = target.split("/").last()
@@ -66,10 +68,11 @@
 	}
 }
 
-// #let meta( name ) = mty.mty.rawc(theme.colors.argument, {sym.angle.l + name + sym.angle.r})
+#let cmd-label( name ) = label(name + "()")
+
+// #let meta( name ) = mty.rawc(theme.colors.argument, {sym.angle.l + name + sym.angle.r})
 #let meta = mty.rawc.with(theme.colors.argument)
 
-#let mty-show-values = false
 #let arg(..args) = {
 	let a = none
 	if args.pos().len() == 1 {
@@ -96,7 +99,7 @@
 #let barg( name ) = {
 	let b = {
 		mty.rawi(sym.bracket.l)
-		meta(mty.mty.get.text(name))
+		meta(mty.get.text(name))
 		mty.rawi(sym.bracket.r)
 	}
 	[#b<arg-body>]
@@ -114,7 +117,7 @@
 
   mty.rawi(sym.hash)
   if mty.is.not-none(module) {
-    module(module)
+    mty.module(module) + `.`
   } else {
     // raw("", lang:"cmd-module")
     mty.place-marker("cmd-module")
@@ -167,8 +170,8 @@
 #let opt- = opt.with(index:false)
 
 #let args( ..args ) = {
-	let arguments = args.pos().filter(is.str).map(arg)
-	arguments += args.pos().filter(is.content).map(barg)
+	let arguments = args.pos().filter(mty.is.str).map(arg)
+	arguments += args.pos().filter(mty.is.content).map(barg)
 	arguments += args.named().pairs().map(v => arg(v.at(0), v.at(1)))
 	arguments
 }
@@ -200,16 +203,15 @@
 
 #let lambda( ..args, ret:none  ) = {
   args = args.pos().map(type)
-  if is.arr(ret) and ret.len() > 0 {
+  if mty.is.arr(ret) and ret.len() > 0 {
     ret = sym.paren.l + ret.map(type).join(",") + if ret.len() == 1 {","} + sym.paren.r
-  } else if is.dict(ret) and ret.len() > 0 {
+  } else if mty.is.dict(ret) and ret.len() > 0 {
     ret = sym.paren.l + ret.pairs().map(pair => {sym.quote + pair.first() + sym.quote + sym.colon + type(pair.last())}).join(",") + sym.paren.r
   } else {
     ret = type(ret)
   }
   mty.mark-lambda(sym.paren.l + args.join(",") + sym.paren.r + " => " + ret )
 }
-
 
 #let cmd- = cmd.with(index:false)
 
@@ -230,9 +232,9 @@
   #block(
     below: 0.65em,
     above: 1.3em,
-    text(weight:600)[#cmd(name, unpack:auto, ..args.pos(), ..args.named() )<cmd>]
+    text(weight:600)[#cmd(name, unpack:auto, ..args)<cmd>]
   )
-  #block(inset:(left:1em), spacing: 0pt, breakable:true, body)#label("cmd-"+name+"()")
+  #block(inset:(left:1em), spacing: 0pt, breakable:true, body)#cmd-label(name)
   #__s_mty_command.update(none)
   // #v(.65em, weak:true)
 ]
@@ -246,14 +248,12 @@
 #let argument(
 	name,
 	is-sink: false,
-  // {deprecated}
-  type: none,
 	types: none,
 	choices: none,
 	default: "__none__",
 	body
 ) = {
-  types = mty.def.if-none(type, types)
+  types = (types,).flatten()
 
   v(.65em)
   block(
@@ -275,7 +275,7 @@
       arg(name)
     }
     h(1fr)
-    dtype(if mty.is.not-none(types) { type } else if default != "__none__" { default })
+    if mty.is.not-none(types) { dtypes(..types) } else if default != "__none__" { dtype(default) }
     block(width:100%, below: .65em, inset:(x:.75em), body)
   })
 }
@@ -300,12 +300,12 @@
 	#body
 ]
 
-#let cmd-selector(name) = selector(<cmd>).before(label("cmd-"+name))
+#let cmd-selector(name) = selector(<cmd>).before(cmd-label(name))
 
 #let cmdref(name, format: (name, loc) => [command #cmd(name) on #link(loc)[page #loc.page()]]) = locate(loc => {
 	let res = query(cmd-selector(name), loc)
 	if res == () {
-		panic("No label <cmd-" + name + "> found.")
+		panic("No label <" + str(cmd-label(name)) + "> found.")
 	} else {
 		let e = res.last()
 		format(name, e.location())
@@ -326,26 +326,29 @@
 	}
 })
 
-#let update-example-imports( imports ) = {
-  state("@mty-example-imports").update(example-imports)
+#let update-examples-scope( imports ) = {
+  state("@mty-imports-scope").update(imports)
 }
 
-#let example(..args) = state("@mty-example-imports").display(
-  (imports) => mty.example(imports: imports, ..args)
+// #let example(..args) = state("@mty-example-imports").display(
+//   (imports) => mty.example(scope: imports, ..args)
+// )
+#let example(scope:(:), ..args) = state("@mty-imports-scope").display(
+  (imports) => mty.example(scope: imports + scope, ..args)
 )
 
 #let side-by-side = example.with(side-by-side:true)
 
-#let shortex( code, sep: sym.arrow.r ) = state("@mty-example-imports").display(
-  (imports) => [#raw(code.text, lang:"typ") #sep #eval("[" + mty.build-imports(imports) + code.text + "]")]
+#let shortex( code, sep: sym.arrow.r, mode:"markup", scope:(:) ) = state("@mty-imports-scope").display(
+  (imports) => [#raw(code.text, lang:"typ") #sep #eval(code.text, mode:"markup", scope:imports + scope)]
 )
 
 #let sourcecode( title: none, file: none, ..args, code ) = {
 	let header = ()
-	if is.not-none(title) {
+	if mty.is.not-none(title) {
 		header.push(text(fill:white, title))
 	}
-	if is.not-none(file) {
+	if mty.is.not-none(file) {
 		header.push(h(1fr))
 		header.push(text(fill:white, emoji.folder) + " ")
 		header.push(text(fill:white, emph(file)))
@@ -375,3 +378,50 @@
     })
   }
 }
+
+#let __all__ = (
+  doc: doc,
+  cmd-label: cmd-label,
+  dtype: dtype,
+  dtypes: dtypes,
+  meta: meta,
+  content: content,
+  choices: choices,
+  arg: arg,
+  barg: barg,
+  sarg: sarg,
+  args: args,
+  symbol: symbol,
+  func: func,
+  lambda: lambda,
+  cmd: cmd,
+  cmd-: cmd-,
+  opt: opt,
+  opt-: opt-,
+  var: var,
+  var-: var-,
+  command: command,
+  variable: variable,
+  argument: argument,
+  module-commands: module-commands,
+  cmd-selector: cmd-selector,
+  cmdref: cmdref,
+  relref: relref,
+  update-examples-scope: update-examples-scope,
+  example: example,
+  side-by-side: side-by-side,
+  shortex: shortex,
+  sourcecode: sourcecode,
+  codesnippet: codesnippet,
+  ibox: ibox,
+  wbox: wbox,
+  ebox: ebox,
+  sbox: sbox,
+  version: version,
+  idx: idx,
+  make-index: make-index,
+  module: module,
+  package: package,
+  value: value,
+  lineref: lineref
+)

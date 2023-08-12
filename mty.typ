@@ -264,27 +264,15 @@
 #let sourcecode = codelst.sourcecode.with(frame:none, label-regex: none)
 #let lineref = codelst.lineref
 
-#let build-imports( imports ) = {
-	let import-code = ""
-	for (pkg, scope) in imports {
-		if scope != "" {
-			import-code += "#import \"" + pkg + "\": " + scope + "\n"
-		} else {
-			import-code += "#import \"" + pkg + "\"\n"
-		}
-	}
-	return import-code
-}
-
 #let example(
 	side-by-side: false,
-	imports: (:),
-	is-code: false,
+	scope: (:),
+	mode:"markup",
 	example-code,
 	..args
 ) = {
 	if is.not-empty(args.named()) {
-		panic("unexpected argument", args.named().keys().first())
+		panic("unexpected arguments", args.named().keys().join(", "))
 	}
 	if args.pos().len() > 1 {
 		panic("unexpected argument")
@@ -295,7 +283,7 @@
 		code = example-code.children.find(is.raw)
 	}
 	let cont = (
-		sourcecode(raw(lang:if is-code {"typc"} else {"typ"}, code.text)),
+		sourcecode(raw(lang:if mode == "code" {"typc"} else {"typ"}, code.text)),
 	)
 	if not side-by-side {
 		cont.push(line(length: 100%, stroke: .75pt + theme.colors.text))
@@ -306,11 +294,7 @@
 	if args.pos() != () {
 		cont.push(args.pos().first())
 	} else {
-    if is-code {
-      cont.push(eval(build-imports(imports) + code.text))
-    } else {
-		  cont.push(eval("[" + build-imports(imports) + code.text + "]"))
-    }
+    cont.push(eval(mode:mode, scope: scope, code.text))
 	}
 
   frame(

@@ -1,5 +1,6 @@
 #import "./mty.typ"
-#import "./mty.typ": is-none, is-auto, is, def, idx, make-index, module, package, value, lineref,
+#import "./mty.typ": is-none, is-auto, is, def
+#import "api.typ"
 #import "./api.typ": *
 
 #import "./theme.typ"
@@ -80,31 +81,31 @@
 
 #let mantys(
   // Package info
-	name: none,
-	description: none,
-	authors: (),
+  name: none,
+  description: none,
+  authors: (),
   repository: none,
-	version: none,
+  version: none,
   license: none,
 
   package: none,  // loaded toml file
 
   // Additional info
-	title: none,
-	subtitle: none,
-	url: none,
+  title: none,
+  subtitle: none,
+  url: none,
 
-	date: none,
+  date: none,
   abstract: [],
 
-	titlepage: titlepage,
-	index: auto,
+  titlepage: titlepage,
+  index: auto,
 
-	example-imports: (:),
+  examples-scope: (:),
 
-	..args,
+  ..args,
 
-	body
+  body
 ) = {
   mty.assert.that(
     is.not-none(name) or is.not-none(package),
@@ -184,7 +185,7 @@
 	// show raw.where(block:true, lang:"example"): it => mty.example(imports:example-imports, it)
 	// show raw.where(block:true, lang:"side-by-side"): it => mty.example(side-by-side:true, imports:example-imports, it)
   show raw: set text(font:theme.fonts.code, size:theme.font-sizes.code)
-	state("@mty-example-imports").update(example-imports)
+  state("@mty-imports-scope").update(examples-scope)
 
   // Some common replacements
 	show upper(name): mty.package(name)
