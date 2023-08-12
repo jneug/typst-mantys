@@ -36,21 +36,22 @@
 }
 
 #show: mantys.with(
-	name:		"Mantys",
-	title: 		"The Mantys Package",
-	subtitle: 	[#strong[MAN]uals for #strong[TY]p#strong[S]t],
-	info:		[A Typst template to create consistens and readable manuals for packages and templates.],
-	authors:	((name: "Jonas Neugebauer", email:"github@neugebauer.cc"),),
-	url:		"https://github.com/jneug/typst-mantys",
-	version:	"0.0.3",
-	date:		datetime.today(),
+	..toml("typst.toml"),
+
+  title: "The Mantys Package",
+	subtitle: [#strong[MAN]uals for #strong[TY]p#strong[S]t],
+	date: datetime.today(),
 	abstract: 	[
 		#package[Mantys] is a Typst template to help package and template authors to write manuals. It provides functionality for consistent formatting of commands, variables, options and source code examples. The template automatically creates a table of contents and a commanc index for easy reference and navigation.
 
     The main idea and design was inspired by the #LaTeX package #cnltx by #mty.name[Clemens Niederberger].
 	],
 
-	example-imports: ("@local/mantys:0.0.3": "*"),
+	// example-imports: ("@local/mantys:0.0.3": "*"),
+  examples-scope: (
+    mty: mty,
+    ..api.__all__
+  )
 )
 
 = About
@@ -110,34 +111,40 @@ After importing Mantys the template is initialized by applying a show rule with 
 )
 ```]
 
-#command("mantys", ..args(
-	name:	   none,
-	title:     none,
-	subtitle:  none,
-	info:      none,
-	authors:   (),
-	url:       none,
-	version:   none,
-	date:      none,
-	abstract:  [],
-	titlepage: titlepage,
-	example-imports: (:),
+#cmd-[mantys] takes a bunch of arguments to describe the documented package. These can also be loaded directly from the `typst.toml` file in the packages' root directory:
+#codesnippet[```typ
+#show: mantys.with(
+	..toml("typst.toml"),
+  ...
+)
+```]
+
+#command("mantys", ..args(name:	none, title: none,
+	subtitle: none,
+	info: none,
+	authors: (),
+	url: none,
+	repository: none,
+	license: none,
+	version: none,
+	date: none,
+	abstract: content("[]"),
+	titlepage: func(titlepage),
+	examples-scope: (:),
 	[body]), sarg[args])[
-		#argument("titlepage", default:titlepage)[
-			A function of nine arguments to render a titlepage for the manual. Refer to #refcmd("titlepage") for details.
+		#argument("titlepage", default:func(titlepage))[
+			A function that renders a titlepage for the manual. Refer to #cmdref("titlepage") for details.
 		]
-		#argument("example-imports", default:(:))[
-			Default imports for code examples. Each entry should have the full package identifier as a key and the imports as a value. If the package should be imported es a whole, the value should be #value("").
+		#argument("examples-scope", default:(:))[
+			Default scope for code examples.
 
 			```typc
-			example-imports: (
-			  "@local/mantys:0.0.3": "*",
-			  "@preview/tablex:0.0.1": "",
-			  "@preview/cetz:0.0.1": "canvas"
+			examples-scope: (
+			  cmd: mantys.cmd
 			)
 			```
 
-			For further details refer to #refcmd("example").
+			For further details refer to #cmdref("example").
 		]
 
 		All other arguments will be passed to #cmd-[titlepage].
@@ -151,30 +158,30 @@ After importing Mantys the template is initialized by applying a show rule with 
 
 #command("meta", arg[name], ret:"content")[
 	Used to highlight argument names.
-	#quickex(`#meta[variable]`)
+	#shortex(`#meta[variable]`)
 ]
 #command("value", arg[variable], ret:"content")[
 	Used to display the value of a variable. The command will highlight the value depending on the type.
 
-	- #quickex(`#value[name]`)
-	- #quickex(`#value("name")`)
-	- #quickex(`#value((name: "value"))`)
-	- #quickex(`#value(range(4))`)
+	- #shortex(`#value[name]`)
+	- #shortex(`#value("name")`)
+	- #shortex(`#value((name: "value"))`)
+	- #shortex(`#value(range(4))`)
 ]
 #command("arg", arg[name], ret:"content")[
 	Renders an argument, either positional or named. The argument name is highlighted with #cmd-[meta] and the value with #cmd-[value].
 
-	- #quickex(`#arg[name]`)
-	- #quickex(`#arg("name")`)
-	- #quickex(`#arg(name: "value")`)
+	- #shortex(`#arg[name]`)
+	- #shortex(`#arg("name")`)
+	- #shortex(`#arg(name: "value")`)
 ]
 #command("sarg", arg[name], ret:"array")[
 	Renders an argument sink.
-	#quickex(`#sarg[args]`)
+	#shortex(`#sarg[args]`)
 ]
 #command("barg", arg[name], ret:"content")[
 	Renders a body argument.
-	#quickex(`#barg[body]`)
+	#shortex(`#barg[body]`)
 
 	#ibox(width:100%)[Body arguments are positional arguments that can be given as a separat content block at the end of a command.]
 ]
@@ -187,40 +194,55 @@ After importing Mantys the template is initialized by applying a show rule with 
 	#cmd("my-command", ..args("arg1", arg2: false, [body]))
 	```]
 ]
-#command("dtype", arg[t], arg(fnote: false), arg(parse-type: false), ret:"string")[
+#command("dtype", arg[t], arg(fnote: false), arg(parse-types: false), ret:"string")[
 	Shows the (data-)type of #arg[t] and a link to the Typst documentation of that type.
 
 	#arg(fnote: true) will show the reference link in a footnote (useful for print versions of the manual).
 
 	The type is determined by passing #arg[t] to #doc("foundations/type").
-	If #arg[t] is a string however, it is assumed to already be a type name. For example #value("fraction") will give the type #dtype("fraction"). Setting #arg(parse-type: true) will prevent this and always call `type` on #arg[t].
+	If #arg[t] is a string however, it is assumed to already be a type name. For example #value("fraction") will give the type #dtype("fraction"). Setting #arg(parse-types: true) will prevent this and always call `type` on #arg[t].
 
-	- #quickex(`#dtype(false)`)
-	- #quickex(`#dtype(1%)`)
-	- #quickex(`#dtype(left)`)
-	- #quickex(`#dtype([some content], fnote:true)`)
-	- #quickex(`#dtype("dictionary")`)
-	- #quickex(`#dtype("dictionary", parse-type:true)`)
+	- #shortex(`#dtype(false)`)
+	- #shortex(`#dtype(1%)`)
+	- #shortex(`#dtype(left)`)
+	- #shortex(`#dtype([some content], fnote:true)`)
+	- #shortex(`#dtype("dictionary")`)
+	//- #shortex(`#dtype("dictionary", parse-types:true)`)
 ]
 #command("dtypes", sarg[types], arg(sep:box(inset:(left:1pt,right:1pt), sym.bar.v)), ret:"content")[
 	Will produce a list of types from the provided arguments. Each value is passed to #cmd-[dtype] and the results joined by #arg[sep].
 
-	- #quickex(`#dtypes(false, 1cm, "array", [world])`)
-	- #quickex(`#dtypes(false, 1cm, "array", [world], sep: " or ")`)
+	- #shortex(`#dtypes(false, 1cm, "array", [world])`)
+	- #shortex(`#dtypes(false, 1cm, "array", [world], sep: " or ")`)
 ]
 #command("choices", arg(default:"__none__"), sarg[values])[
 	Creates a list of possible values for an argument.
 
 	If #arg[default] is set to something else than #value("__none__"), the value is highlighted as the default choice. If #arg[default] is already given in #arg[values], the value is highlighted at its current position. Otherwise #arg[default] is added as the first choice in the list.
 
-	- #quickex(`#choices(..range(5))`)
-	- #quickex(`#choices(..range(5), default:3)`)
-	- #quickex(`#choices(..range(5), default:5)`)
+	- #shortex(`#choices(..range(5))`)
+	- #shortex(`#choices(..range(5), default:3)`)
+	- #shortex(`#choices(..range(5), default:5)`)
+]
+#command("func", arg[name])[
+  Can be used as value for an argument to display a function (command) like `emph`. The name can be given as a name or as the function itself.
+
+  - #shortex(`#arg(default: func(strong))`)
+  - #shortex(`#arg(highlight: func("emph"))`)
+  - #shortex(`#arg(titlepage: func("titlepage"))`)
+]
+#command("symbol", arg[name])[
+  Can be used as value for an argument to display a Typst syntax symbol like `sym.arrow.r`.
+
+  - #shortex(`#arg(default: symbol("sym.arrow.r"))`)
+]
+#command("lambda", sarg[args])[
+
 ]
 #command("opt", arg[name], sarg[args], barg[body])[
 	Renders the option #arg[name] and adds an entry to the index.
 
-	- #quickex(`#opt[example-imports]`)
+	- #shortex(`#opt[example-imports]`)
 ]
 #command("opt-", arg[name], sarg[args], barg[body])[
 	Same as #cmd[opt] but does not create an index entry.
@@ -234,8 +256,8 @@ After importing Mantys the template is initialized by applying a show rule with 
 
 	All positional arguments will be rendered first, then named arguemnts and all body arguments will be added after the closing paranthesis.
 
-	- #quickex(`#cmd("cmd", arg[name], sarg[args], barg[body])`)
-	- #quickex(`#cmd("cmd", ..args("name", [body]), sarg[args])`)
+	- #shortex(`#cmd("cmd", arg[name], sarg[args], barg[body])`)
+	- #shortex(`#cmd("cmd", ..args("name", [body]), sarg[args])`)
 ]
 #command("cmd-", arg[name], sarg[args], barg[body])[
 	Same as #cmd[cmd] but does not create an index entry.
@@ -290,81 +312,96 @@ To automatically add imports to every example code, you can set the option #opt[
 #mty.value(false)
 ```]"))
 
-See #refrel(<cmd-example>) for how to use the #cmd-[example] command.
+See #relref(cmd-label("example")) for how to use the #cmd-[example] command.
 
 #ibox[
 	To use fenced code blocks in your example, add an extra backtick to the example code:
 
-	#example(imports:("@local/mantys:0.0.3": "example"), raw("#example[````
-```rust
-fn main() {
-  println!(\"Hello World!\");
-}
-```
-````]"))
+	#example(scope:("@local/mantys:0.0.3": "example"))[`````
+    #example[````
+      ```rust
+      fn main() {
+        println!(\"Hello World!\");
+      }
+      ```
+    ````]
+  `````]
 ]
 
-#command("example", ..args(side-by-side: false, imports:(:), [example-code], [result]))[
-	#argument("example-code", type:"content")[
+#command("example", ..args(side-by-side: false, imports:(:), mode:"code", [example-code], [result]))[
+	#argument("example-code", types:"content")[
 		A block of #doc("text/raw") code representing the example Typst code.
 	]
-	#argument("side-by-side", type:"boolean", default:false)[
+	#argument("side-by-side", default:false)[
 		Usually, the #arg[example-code] is set above the #arg[result] separated by a line. Setting this to #value(true) will set the code on the left side and the result on the right.
 	]
-	#argument("imports", type:"dictionary", default:(:))[
-		A dictionary of package imports that should be added to the evaluated code.
+	#argument("scope", default:(:))[
+		The scope to pass to #doc("foundations/eval").
+
+    Examples will always import the #opt[examples-scope] set in the initial #cmd-[mantys] call. Passing this argument to an #cmd-[example] call will override those imports. If an example should explicitly run without imports, pass #arg(imports: (:)):
+    #sourcecode[````typ
+    #example[`I use #opt[examples-scope].`]
+
+    #example(scope:(:))[```
+    // This will fail: #opt[examples-scope]
+    I can't use `#opt()`, because i don't use `examples-scope`.
+    ```]
+    ````]
 	]
-	#argument("result", type:"content")[
-		The result of the example code. Usually the same code as #arg[example-code] but without the `raw` markup.
+	#argument("mode", default:"code", choices:("code","markup", "math"))[
+		The mode to evaluate the example in.
+	]
+	#argument("result", types:"content")[
+		The result of the example code. Usually the same code as #arg[example-code] but without the `raw` markup. See #relref(<example-result-example>) for an example of using #barg[result].
 
 		#wbox(width:100%)[#arg[result] is optional and will be omitted in most cases!]
 	]
 
 	Sets #barg[example-code] as a #doc("text/raw") block with #arg(lang: "typ") and the result of the code beneath. #barg[example-code] need to be `raw` code itself.
 
-	#example[
-#raw("#example[```
-*Some lorem ipsum:*\
-#lorem(40)
-```]")
-	]
+	#example[````
+    #example[```
+      *Some lorem ipsum:*\
+      #lorem(40)
+    ```]
+	````]
 
 	Setting #arg(side-by-side: true) will set the example on the left side and the result on the right and is useful for short code examples. The command #cmd-[side-by-side] exists as a shortcut.
 
-	#example[
-#raw("#example(side-by-side: true)[```
-*Some lorem ipsum:*\
-#lorem(20)
-```]")
-	]
+	#example[````
+    #example(side-by-side: true)[```
+      *Some lorem ipsum:*\
+      #lorem(20)
+    ```]
+	````]
 
 	#barg[example-code] is passed to #cmd-[mty.sourcecode] for processing.
 
-	If the example-code needs to be different than the code generating the result, #cmd-[example] accepts an optional second positional argument #barg[result]. If provided, #barg[example-code] is not evaluated and #barg[result] ist used instead.
+	If the example-code needs to be different than the code generating the result (for example, because automatic imports do not work or access to the global scope is required), #cmd-[example] accepts an optional second positional argument #barg[result]. If provided, #barg[example-code] is not evaluated and #barg[result] ist used instead.
 
-	#example[
-#raw("#example[```
-#value(range(4))
-```][
-The value is: #mty.value(range(4))
-]")
-	]
+	#example[````
+    #example[```
+      #value(range(4))
+    ```][
+      The value is: #mty.value(range(4))
+    ]
+	````]<example-result-example>
 ]
 
-#command("side-by-side", barg[example-code], barg[result])[
+#command("side-by-side", ..args(scope: (:), mode: "code", [example-code], [result]) )[
 	Shortcut for #cmd("example", arg(side-by-side: true)).
 ]
 
-#command("sourcecode", title:none, file:none, [code])[
+#command("sourcecode", ..args(title:none, file:none, [code]))[
 	If provided, the #arg("title") and #arg("file") argument are set as a titlebar above the content.
 
-	#argument("code", type:dtype("content"))[
+	#argument("code", types:dtype("content"))[
 		A #cmd[raw] block, that will be set inside a bordered block. The `raw` content is not modified and keeps its #arg("lang") attribute, if set.
 	]
-	#argument("title", type:dtype("string"), default:none)[
+	#argument("title", types:dtype("string"), default:none)[
 		A title to show above the code in a titlebar.
 	]
-	#argument("file", type:dtype("string"), default:none)[
+	#argument("file", types:dtype("string"), default:none)[
 		A filename to show above the code in a titlebar.
 	]
 
@@ -389,18 +426,66 @@ The value is: #mty.value(range(4))
   ````]
 ]
 
+#command("shortex", ..args(sep: symbol("sym.arrow.r"), [code]))[
+  Display a very short example to highlight the result of a single command. #arg[sep] changes the separator between code and result.
+
+  #example[```
+  - #shortex(`#emph[emphasis]`)
+  - #shortex(`#strong[strong emphasis]`, sep:"::")
+  - #shortex(`#smallcaps[Small Capitals]`, sep:sym.arrow.r.double.long)
+  ```][
+  - #shortex(`#emph[emphasis]`)
+  - #shortex(`#strong[strong emphasis]`, sep:"::")
+  - #shortex(`#smallcaps[Small Capitals]`, sep:sym.arrow.double.r)
+  ]
+]
+
 === Other commands
 
 #command("package")[
 	Shows a package name:
 
-	#side-by-side()[
-	```
-	#package[tablex]
+  - #shortex(`#package[tablex]`)
+  - #shortex(`#mty.package[tablex]`)
+]
 
-	#mty.package[tablex]
-	```
-	]
+#command("module")[
+	Shows a module name:
+
+  - #shortex(`#module[mty]`)
+  - #shortex(`#mty.module[mty]`)
+]
+
+#command("doc", ..args("target", name:none, fnote:false))[
+  Displays a link to the Typst reference documentation at #link("https://typst.app/docs"). The #arg[target] need to be a relative path to the reference url, like #value("text/raw"). #cmd-[doc] will create an appropriate link URL and cut everything before the last `/` from the link text.
+
+  The text can be explicitly set with #arg[name]. For #(fnote: true) the documentation URL is displayed in an additional footnote.
+
+  #example[```
+  Remember that #doc("meta/query") requires a #doc("meta/locate", name:"location") obtained by #doc("meta/locate", fnote:true) to work.
+  ```]
+
+  #wbox[
+    Footnote links are not yet reused if multiple links to the same reference URL are placed on the same page.
+  ]
+]
+
+#command("command-selector", arg[name])[
+  Creates a #doc("types/selector") for the specified command.
+
+  #example[```
+  // Find the page of a command.
+  #let cmd-page( name ) = locate(loc => {
+    let res = query(cmd-selector(name), loc)
+    if res == () {
+      panic("No command " + name + " found.")
+    } else {
+      return res.last().location().page()
+    }
+  })
+
+  The #cmd-[mantys] command is documented on page #cmd-page("mantys").
+  ```]
 ]
 
 // #let pkg = mty.package
@@ -410,10 +495,22 @@ The value is: #mty.value(range(4))
 
 // #let doc( target, name:none, fnote:false ) = {
 
-=== Templating
+=== Templating and styling
 
-#command("titlepage", ..args("name", "title", "subtitle", "info", "authors", "url", "version", "date", "abstract"))[
+#command("titlepage", ..args("name", "title", "subtitle", "info", "authors", "urls", "version", "date", "abstract", "license"))[
+  The #cmd-[titlepage] command sets the default titlepage of a Mantys document.
 
+  To implement a custom title page, create a function that takes the arguments shown above and pass it to #cmd[mantys] as #arg[titlepage]:
+  #sourcecode[```typ
+  #let my-custom-titlepage( ..args ) = [*My empty title*]
+
+  #show: mantys.with(
+    ..toml("typst.toml"),
+    titlepage: my-custom-titlepage
+  )
+  ```]
+
+  A #arg[titlepage] function gets passed the package information supplied to #cmd-[mantys] with minimal preprocessing. THe function has to check for #value(none) values for itself. The only argument with a guaranteed value is #arg[name].
 ]
 
 === Utilities
@@ -503,7 +600,7 @@ The commands provide some helpful low-level functionality, that might be useful 
 	```
 ]
 #command("date", arg[d], ret: "content")[
-	#side-by-side(imports:("@local/mantys:0.0.3":"mty"))[
+	#side-by-side(scope:("@local/mantys:0.0.3":"mty"))[
 		```
 		- #mty.date("2023-07-15")
 		- #mty.date(datetime(year:2023, month:7, day:15))
@@ -572,23 +669,20 @@ The commands provide some helpful low-level functionality, that might be useful 
 	]
 ]
 
-==== Argument filters
+  ==== Argument filters
 
-#command("is-string", arg[value])[
-	Checks if #arg[value] is a #dtype("string").
-]
-#command("is-content", arg[value])[
-	Checks if #arg[value] is #dtype("content").
-]
-#command("is-choices", arg[value])[
-	Checks if #arg[value] is a choices value created with #cmd[choices].
-]
-#command("is-body", arg[value])[
-	Checks if #arg[value] is a body argument created with #cmd[barg].]
-#command("not-is-body", arg[value])[
-	Negation of #cmd[is-body].
-]
-#command("not-is-choices", arg[value])[
-	Negation of #cmd[is-choices].
-]
-]
+  These utility functions can be used to filter an array of content elements for those created with #cmd-[barg] or #cmd-[choices].
+
+  #command("is-choices", arg[value])[
+    Checks if #arg[value] is a choices value created with #cmd[choices].
+  ]
+  #command("is-body", arg[value])[
+    Checks if #arg[value] is a body argument created with #cmd[barg].
+  ]
+  #command("not-is-body", arg[value])[
+    Negation of #cmd[is-body].
+  ]
+  #command("not-is-choices", arg[value])[
+    Negation of #cmd[is-choices].
+  ]
+] // end module mty
