@@ -1,5 +1,6 @@
 
-#import "./api.typ": dtype, cmd, arg, sarg, barg, command, argument
+#import "./mty.typ": frame
+#import "./api.typ": dtype, cmd, cmd-, arg, sarg, barg, command, argument
 #import "./theme.typ"
 
 // Color to highlight function names in
@@ -13,19 +14,29 @@
 #let show-outline(module-doc) = {
   let prefix = module-doc.label-prefix
   let items = ()
-  for fn in module-doc.functions {
-    items.push(link(label(prefix + fn.name + "()"), fn.name + "()"))
+  for fn in module-doc.functions.sorted(key: (fn) => fn.name) {
+    items.push(link(label(prefix + fn.name + "()"), cmd-(fn.name)))
   }
 
   let cols_num = 3
   let per_col = calc.floor(items.len() / cols_num)
   let cols = ()
   for i in range(cols_num) {
-    cols.push(list(..items.slice(i * per_col,(i+1) * per_col)))
+    cols.push(items.slice(i * per_col,(i+1) * per_col).join(linebreak()))
   }
-  grid(
-    columns: (1fr,) * cols_num,
-    ..cols
+  frame(
+    frame: (
+      border-color: theme.colors.secondary,
+      thickness: .75pt,
+      radius: 4pt
+    ),
+    {
+      set text(.88em)
+      grid(
+        columns: (1fr,) * cols_num,
+        ..cols
+      )
+    }
   )
 }
 
