@@ -1,6 +1,6 @@
 #import "@preview/t4t:0.1.0": *
 #import "@preview/codelst:1.0.0"
-#import "@preview/showybox:0.2.1": showybox
+#import "@preview/showybox:1.1.0": showybox
 
 #import "theme.typ"
 
@@ -25,8 +25,8 @@
 #let frame = showybox.with(
   frame: (
     border-color: theme.colors.primary,
-    upper-color: theme.colors.primary,
-    width: .75pt,
+    title-color: theme.colors.primary,
+    thickness: .75pt,
     radius: 4pt,
     inset: 8pt
   )
