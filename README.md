@@ -30,13 +30,11 @@ To use **Mantys** as a local module for one project only, download the package a
 
 ### Other requirements
 
-Mantys depends on some other packages. All but one are available from the Typst package repository and will get downloaded automatically.
+Mantys depends on some other packages. All are available from the Typst package repository and will get downloaded automatically.
 
 - [jneug/typst-codelst](https://github.com/jneug/typst-codelst)
 - [Pablo-Gonzalez-Calderon/showybox-package](https://github.com/Pablo-Gonzalez-Calderon/showybox-package)
 - [jneug/typst-tools4typst](https://github.com/jneug/typst-tools4typst)
-
-The only one currently waiting for approval is [jneug/typst-tools4typst](https://github.com/jneug/typst-tools4typst). Currently, the package ([v0.1.0](https://github.com/jneug/typst-tool4typst/releases/tag/v0.1.0)) needs to be downloaded and saved in the local repository. (See above for a description of the process.)
 
 ## Writing basics
 
