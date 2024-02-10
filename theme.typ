@@ -21,6 +21,7 @@
   code: 9pt
 )
 
+
 #let colors = (
 	primary:   eastern,   // rgb(31, 158, 173),
 	secondary: teal,      // rgb(18, 120, 133),
@@ -29,6 +30,7 @@
 	value:     rgb(181, 2, 86),
 	command:   blue,      // rgb(75, 105, 197),
 	comment:   gray,      // rgb(128, 128, 128),
+  module: rgb("#8c3fb2"),
 
   text:      rgb(35, 31, 32),
   muted:     luma(210),
@@ -45,7 +47,9 @@
 		float: rgb(230, 218, 255),
 		fraction: rgb(230, 218, 255),
 		ratio: rgb(230, 218, 255),
+		relative: rgb(230, 218, 255),
 		"relative length": rgb(230, 218, 255),
+    angle: rgb(230, 218, 255),
 		"none": rgb(255, 203, 195),
 		"auto": rgb(255, 203, 195),
 		"any": rgb(255, 203, 195),
