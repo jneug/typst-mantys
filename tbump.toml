@@ -44,7 +44,7 @@ src = "manual.typ"
 search = 'mantys:{current_version}'
 [[file]]
 src = "manual.typ"
-search = 'mantys-{current_version}'
+search = 'mantys/{current_version}'
 
 [[before_commit]]
 name = "create local version"
