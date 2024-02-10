@@ -18,13 +18,13 @@ tar -xzf v0.0.3.tar.gz -C mantys-0.0.3
 ```
 
 Now import the package at the beginning of your manual document:
-```js
+```typst
 #import "@local/mantys:0.0.3": *
 ```
 
 To use **Mantys** as a local module for one project only, download the package and unpack into a folder inside your project (e.g. `/mantys`). Then import `mantys/mantys.typ`:
 
-```js
+```typst
 #import "mantys/mantys.typ": *
 ```
 
@@ -40,7 +40,7 @@ Mantys depends on some other packages. All are available from the Typst package 
 
 A basic template for a manual could look like this:
 
-```js
+```typst
 #import "@local/mantys:0.0.3": *
 
 #show: mantys.with(
@@ -74,7 +74,7 @@ A basic template for a manual could look like this:
 
 Use `#command(name, ..args)[description]` to describe commands and `#argument(name, ...)[description]` for arguments:
 
-```js
+```typst
 #command("headline", arg[color], arg(size:1.8em), sarg[other-args], barg[body])[
 	Renders a prominent headline using #doc("meta/heading").
 
@@ -113,6 +113,7 @@ For a full reference of available commands read [the manual](manual.pdf).
 
 - Added integration with [tidy](https://github.com/Mc-Zen/tidy).
 - Fixed issue with types in argument boxes.
+- `#lambda` now uses `#dtype`
 
 #### Breaking changes
 
@@ -123,8 +124,7 @@ For a full reference of available commands read [the manual](manual.pdf).
 ### Version 0.0.3
 
 - It is now possible to load a packages' `typst.toml` file directly into `#mantys`:
-
-	```js
+	```typst
 	#show: mantys.with( ..toml("typst.toml") )
 	```
 - Added some dependencies:
