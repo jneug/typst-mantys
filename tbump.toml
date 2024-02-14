@@ -37,13 +37,13 @@ src = "README.md"
 search = "v{current_version}"
 
 [[file]]
-src = "manual.typ"
+src = "docs/manual.typ"
 search = 'version:\s*"{current_version}",'
 [[file]]
-src = "manual.typ"
+src = "docs/manual.typ"
 search = 'mantys:{current_version}'
 [[file]]
-src = "manual.typ"
+src = "docs/manual.typ"
 search = 'mantys/{current_version}'
 
 [[before_commit]]
@@ -51,5 +51,5 @@ name = "create local version"
 cmd = "mkdir ../mantys-{new_version}; cp -R ./* ../mantys-{new_version}"
 [[before_commit]]
 name = "compile manual"
-cmd = "typst compile manual.typ"
+cmd = "typst compile --root . docs/manual.typ"
 
