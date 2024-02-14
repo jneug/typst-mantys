@@ -6,7 +6,7 @@ Template for documenting [typst](https://github.com/typst/typst) packages and te
 
 ## Usage
 
-Mantys supports **Typst 0.6.0** and newer.
+Mantys supports **Typst 0.8.0** and newer.
 
 Download the [latest version](https://github.com/jneug/typst-mantys/releases/tag/v0.0.3) and unpack it into the [system dependent local package repository](https://github.com/typst/packages#local-packages).
 

@@ -6,3 +6,6 @@ authors = ["J. Neugebauer"]
 license = "MIT"
 description = "Helpers to build manuals for Typst packages."
 repository = "https://github.com/jneug/typst-mantys"
+exclude = ["/docs/*"]
+
+
