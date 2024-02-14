@@ -1,7 +1,7 @@
 [package]
 name = "mantys"
-version = "0.0.3"
-entrypoint = "mantys.typ"
+version = "0.1.0"
+entrypoint = "src/mantys.typ"
 authors = ["J. Neugebauer"]
 license = "MIT"
 description = "Helpers to build manuals for Typst packages."

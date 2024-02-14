@@ -30,7 +30,7 @@
 	value:     rgb(181, 2, 86),
 	command:   blue,      // rgb(75, 105, 197),
 	comment:   gray,      // rgb(128, 128, 128),
-  module: rgb("#8c3fb2"),
+  module:    rgb("#8c3fb2"),
 
   text:      rgb(35, 31, 32),
   muted:     luma(210),
@@ -64,12 +64,14 @@
 		content: rgb(166, 235, 229),
 		string: rgb(209, 255, 226),
 		function: rgb(249, 223, 255),
-		color: (
-			rgb(133, 221, 244),
-			rgb(170, 251, 198),
-			rgb(214, 247, 160),
-			rgb(255, 243, 124),
-			rgb(255, 187, 147)
-		)
+    label: rgb(167, 234, 255),
+    color: gradient.linear(..color.map.spectral, angle:180deg)
+		// color: (
+		// 	rgb(133, 221, 244),
+		// 	rgb(170, 251, 198),
+		// 	rgb(214, 247, 160),
+		// 	rgb(255, 243, 124),
+		// 	rgb(255, 187, 147)
+		// )
 	)
 )

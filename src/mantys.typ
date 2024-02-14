@@ -1,23 +1,44 @@
+
+// Import main library functions
 #import "./mty.typ"
+// Import t4t functions
 #import "./mty.typ": is-none, is-auto, is, def
+// Import main user api
 #import "api.typ"
 #import "./api.typ": *
 
 #import "./theme.typ"
 
+// Import tidy theme
 #import "./mty-tidy.typ"
 
+
+/// Generate the default titlepage for the manual.
+///
+/// - name (string): Name for the package.
+/// - title (string, content): The title for the manual (may differ from #arg[name]).
+/// - subtitle (string, content): A subtitle shown below the title.
+/// - description (string, content): A short description for the package (like the on ein `typst.toml`).
+/// - authors (string, array): Authors for the package.
+/// - urls (string, array): urls
+/// - version (string, array):
+/// - date (datetime):
+/// - abstract (string, content):
+/// - license (string, content):
+/// - toc (boolean):
+/// -> content
 #let titlepage(
-  name,        // string
-  title,       // string|content
-  subtitle,    // string|content
-  description, // string|content
-  authors,     // string|array[string]|array[dict[string, string]]
-  urls,        // array[string]
-  version,     // string
-  date,        // string|datetime
-  abstract,    // string|content
-  license      // string
+  name,
+  title,
+  subtitle,
+  description,
+  authors,
+  urls,
+  version,
+  date,
+  abstract,
+  license,
+  toc: true
 ) = [
 	#set align(center)
 	#set block(spacing: 2em)
@@ -48,10 +69,10 @@
 	}
 
   #block(
-    mty.as-arr(authors).map(mty.author).join( linebreak() )
+    def.as-arr(authors).map(mty.author).join( linebreak() )
   )
 	#if is.not-none(urls) {
-		block(mty.as-arr(urls).map(link).join(linebreak()))
+		block(def.as-arr(urls).map(link).join(linebreak()))
 	}
 
 	#if is.not-none(abstract) {
@@ -64,21 +85,26 @@
 		]
 	}
 
-	#set align(left)
-	#set block(spacing: 0.65em)
-	#show outline.entry.where(level: 1): it => {
-		v(0.85em, weak:true)
-		strong(it.body)
-	}
-	#text(size:1.4em, [*Table of contents*])
-	#columns(2, outline(
-		title: none,
-		indent: auto
-	))
+  #if toc [
+    #set align(left)
+    #set block(spacing: 0.65em)
+    #show outline.entry.where(level: 1): it => {
+      v(0.85em, weak:true)
+      strong(it.body)
+    }
+    #text(size:1.4em, [*Table of contents*])
+    #columns(2, outline(
+      title: none,
+      indent: auto
+    ))
+  ]
 
 	#pagebreak()
 ]
 
+
+/// Main entrypoint for Mantys to use in a global show-rule.
+///
 #let mantys(
   // Package info
   name: none,
@@ -123,7 +149,7 @@
 
 	set document(
 		title: mty.get.text( mty.def.if-none(name, title) ),
-		author: mty.as-arr(mty.def.if-none(authors, "")).map((a) => if is.dict(a) { a.name } else { a }).first()
+		author: def.as-arr(mty.def.if-none(authors, "")).map((a) => if is.dict(a) { a.name } else { a }).first()
 	)
 
 	set page(
@@ -176,14 +202,14 @@
       size://calc.max(theme.font.sizes.text, theme.font-sizes.headings * ( it.level))
         mty.math.map(4, 1, theme.font-sizes.text, theme.font-sizes.headings * 1.4, it.level)
     )
-		it
+    it
 	}
 
   // TODO: This would be a nice short way to set examples, but will
   // have weird formatting due to raw text having set the default
   // font and size before the show rule takes effect.
-	// show raw.where(block:true, lang:"example"): it => mty.example(imports:example-imports, it)
-	// show raw.where(block:true, lang:"side-by-side"): it => mty.example(side-by-side:true, imports:example-imports, it)
+	// show raw.where(block:true, lang:"example"): it => mty.code-example(imports:example-imports, it)
+	// show raw.where(block:true, lang:"side-by-side"): it => mty.code-example(side-by-side:true, imports:example-imports, it)
   show raw: set text(font:theme.fonts.code, size:theme.font-sizes.code)
   state("@mty-imports-scope").update(examples-scope)
 
@@ -214,34 +240,53 @@
 	}
 }
 
-// For backwards compatibility with v0.0.3 and lower
-// {deprecated}
-#let refcmd = cmdref
-// {deprecated}
-#let refrel = relref
+
+#let tidyref(module, name) = {
+  link(cmd-label(name, module:module), cmd-(name, module:module))
+}
 
 
-#let tidy-module( data, ..args, tidy: none ) = {
+/// Show a module with #TIDY.
+/// Wrapper for #cmd-[tidy.show-module].
+#let tidy-module( data, ..args, include-examples-scope: false, extract-headings: 2, tidy: none ) = {
   let _tidy = tidy
   if is-none(_tidy) {
     import("@preview/tidy:0.1.0")
     _tidy = tidy
   }
 
-  let scope = (m: api) + args.named().at("scope", default:())
+  state("@mty-imports-scope").display(
+    (imports) => {
+      let scope = ("tidyref": tidyref) + api.__all__ + args.named().at("scope", default:(:))
+      if include-examples-scope {
+        scope += imports
+      }
 
-  let module-doc = _tidy.parse-module(
-    data,
-    ..mty.get.args(args)("name"),
-    scope: scope
-  )
-  _tidy.show-module(
-    module-doc,
-    ..mty.get.args(args)(
-      style: mty-tidy,
-      first-heading-level: 2,
-      show-module-name: false,
-      sort-functions: false
-    )
+      let module-doc = _tidy.parse-module(
+        data,
+        ..mty.get.args(args)("name"),
+        scope: scope
+      )
+
+      _tidy.show-module(
+        module-doc,
+        ..mty.get.args(args)(
+          style: (
+            get-type-color: mty-tidy.get-type-color,
+            show-outline: mty-tidy.show-outline,
+            show-parameter-list: mty-tidy.show-parameter-list,
+            show-parameter-block: mty-tidy.show-parameter-block,
+            show-function: mty-tidy.show-function.with(tidy: _tidy, extract-headings: extract-headings),
+            show-variable: mty-tidy.show-variable.with(tidy: tidy),
+            show-example: mty-tidy.show-example,
+            show-reference: mty-tidy.show-reference
+          ),
+          first-heading-level: 2,
+          show-module-name: false,
+          sort-functions: false,
+          show-outline: true
+        )
+      )
+    }
   )
 }
