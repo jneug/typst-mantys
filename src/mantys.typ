@@ -251,7 +251,7 @@
 #let tidy-module( data, ..args, include-examples-scope: false, extract-headings: 2, tidy: none ) = {
   let _tidy = tidy
   if is-none(_tidy) {
-    import("@preview/tidy:0.1.0")
+    import("@preview/tidy:0.2.0")
     _tidy = tidy
   }
 
