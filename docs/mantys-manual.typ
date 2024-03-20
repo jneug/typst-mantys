@@ -91,12 +91,12 @@ The best way to use MANTYS is to install the package into the system dependent l
 
 Either download the current release from GitHub#footnote[#link("https://github.com/jneug/typst-typopts/releases/latest")] and unpack the archive into the correct versioned subfolder or clone it directly via `git`:
 #codesnippet[```shell-unix-generic
-git clone https://github.com/jneug/typst-mantys.git mantys/0.1.0
+git clone https://github.com/jneug/typst-mantys.git mantys/0.1.1
 ```]
 
 After installing the package just import it inside your `typ` file:
 #codesnippet[```typ
-#import "@local/mantys:0.1.0": *
+#import "@local/mantys:0.1.1": *
 ```]
 
 === Initializing the template
