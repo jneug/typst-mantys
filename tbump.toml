@@ -53,4 +53,4 @@ name = "compile manual"
 cmd = "typst compile --root . docs/mantys-manual.typ"
 [[before_commit]]
 name = "create thumbnail"
-cmd = "typst compile --root . -f png --ppi 250 template/manual.typ docs/assets/thumbnail-{n}.png; mv docs/assets/thumbnail-1.png docs/assets/thumbnail.png; rm -f docs/assets/thumbnail-2.png"
+cmd = "typst compile --root . -f png --ppi 250 template/manual.typ docs/assets/thumbnail-{{n}}.png; mv docs/assets/thumbnail-1.png docs/assets/thumbnail.png; rm -f docs/assets/thumbnail-2.png"
