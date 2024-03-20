@@ -109,6 +109,16 @@ For a full reference of available commands read [the manual](manual.pdf).
 
 ## Changelog
 
+### Version 0.1.1
+
+- Added template files for submission to _Typst Universe_.
+
+### Verison 0.1.0
+
+- Refactorings and some style changes
+- Updated manual.
+- Restructuring of package repository.
+
 ### Version 0.0.4
 
 - Added integration with [tidy](https://github.com/Mc-Zen/tidy).
