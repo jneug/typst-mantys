@@ -65,7 +65,8 @@
 		string: rgb(209, 255, 226),
 		function: rgb(249, 223, 255),
     label: rgb(167, 234, 255),
-    color: gradient.linear(..color.map.spectral, angle:180deg)
+    color: gradient.linear(..color.map.spectral, angle:180deg),
+    gradient: gradient.linear(..color.map.spectral, angle:180deg),
 		// color: (
 		// 	rgb(133, 221, 244),
 		// 	rgb(170, 251, 198),
