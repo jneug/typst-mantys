@@ -142,9 +142,9 @@
   #let headings = ()
   #if extract-headings != none and descr.has("children") {
     // Extract headings
-    headings = descr.children.filter((e) => e.func() == heading and e.level <= extract-headings)
+    headings = descr.children.filter((e) => e.func() == heading and e.depth <= extract-headings)
     // Filter out extracted headings
-    descr = descr.children.filter((e) => e.func() != heading or e.level > extract-headings).join()
+    descr = descr.children.filter((e) => e.func() != heading or e.depth > extract-headings).join()
   }
 
   #headings.join()
