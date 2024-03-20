@@ -212,7 +212,10 @@
   if not target.ends-with("()") {
     target = target + "()"
   }
-  link(label(target), cmd-(name.slice(0, -2)))
+  if name.ends-with("()") {
+    name = name.slice(0, -2)
+  }
+  link(label(target), cmd-(name))
 }
 
 #let show-example(
