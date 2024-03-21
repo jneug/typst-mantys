@@ -105,7 +105,7 @@ The result might look something like this:
 
 ![Example for a headline command with Mantys](docs/assets/headline-example.png)
 
-For a full reference of available commands read [the manual](manual.pdf).
+For a full reference of available commands read [the manual](docs/mantys-manual.pdf).
 
 ## Changelog
 
