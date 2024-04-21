@@ -1,3 +1,4 @@
+#import "@preview/hydra:0.4.0": hydra
 
 // Import main library functions
 #import "./mty.typ"
@@ -154,21 +155,15 @@
 
 	set page(
 		..theme.page,
-		header: locate(loc => {
-			let elems = query(
-				heading.where(level:2).before(loc),
-				loc,
-			)
-			if elems != () {
-				let elem = elems.last()
-				h(1fr) + emph(counter(heading).at(loc).map(str).join(".") + h(.75em) + elem.body) + h(1fr)
-			}
-		}),
-		footer: [
-			#h(1fr)
-			#counter(page).display("1")
-			#h(1fr)
-		]
+		header: context {
+      let section = context hydra(2, display: (_, it) => {
+        numbering("1.1", ..counter(heading).at(it.location()))
+        [ ]
+        it.body
+      })
+      align(center, emph(section))
+    },
+		footer: align(center, counter(page).display("1"))
 	)
 	set text(
     font: theme.fonts.text,
