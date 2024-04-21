@@ -15,13 +15,16 @@
 
 
 #let _eval-value(v) = {
-  if match-value(v) {
-    eval(v)
-  } else if match-func(v) {
-    "(...) => ..."
-  } else {
-    v
-  }
+  // if match-value(v) {
+  //   eval(v)
+  // } else if match-func(v) {
+  //   "(...) => ..."
+  // } else if v.starts-with("\"") {
+  //   v.slice(1, -1)
+  // } else {
+  //   v
+  // }
+  eval(v)
 }
 
 
