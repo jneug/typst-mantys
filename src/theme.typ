@@ -43,7 +43,7 @@
   // Datatypes taken from typst.app
 	dtypes: (
 		length: rgb(230, 218, 255),
-		integer: rgb(230, 218, 255),
+		int: rgb(230, 218, 255),
 		float: rgb(230, 218, 255),
 		fraction: rgb(230, 218, 255),
 		ratio: rgb(230, 218, 255),
@@ -60,7 +60,7 @@
 		location: rgb(239, 240, 243),
 		alignment: rgb(239, 240, 243),
 		"2d alignment": rgb(239, 240, 243),
-		boolean: rgb(255, 236, 193),
+		bool: rgb(255, 236, 193),
 		content: rgb(166, 235, 229),
 		string: rgb(209, 255, 226),
 		function: rgb(249, 223, 255),

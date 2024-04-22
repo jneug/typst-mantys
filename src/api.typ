@@ -85,7 +85,8 @@
 /// Shows a highlightd data type with a link to the reference page.
 ///
 /// #arg[t] may be any value to pass to #doc("foundations/type") to get the type or a #dtype("string") with the name of a datatype. To show the `string` type, use #raw(lang:"typ", `#dtype("string")`.text). To force the parsing of the values type, set #arg(parse-type: true).
-/// - #shortex(`#dtype("integer")`)
+/// - #shortex(`#dtype("int")`)
+/// - #shortex(`#dtype(1)`)
 /// - #shortex(`#dtype(1deg)`)
 /// - #shortex(`#dtype(true)`)
 /// - #shortex(`#dtype(())`)
@@ -102,29 +103,32 @@
     }
   }
 
+  // some type mappings
+  if is.str(type) {
+    type = (
+      "integer": "int", "boolean": "bool", "dict": "dictionary", "arr": "array"
+    ).at(type, default:type)
+  }
+
 	let d = none
   if mty.is-func(type) {
-    d = doc("types/function", fnote:fnote)
+    d = doc("foundations/function", fnote:fnote)
 		type = "function"
   } else if mty.is-lambda(type) or type.contains("=>") {
-		d = doc("types/function", name:type, fnote:fnote)
+		d = doc("foundations/function", name:type, fnote:fnote)
 		type = "function"
-	} else if type == "location" {
-		d = doc("meta/locate", name:"location", fnote:fnote)
 	} else if type == "any" {
-		d = doc("types", name:"any", fnote:fnote)
-	} else if type == "dict" {
-		type = "dictionary"
-		d = doc("types/dictionary", name:"dictionary", fnote:fnote)
-	} else if type == "arr" {
-		type = "array"
-		d = doc("types/array", name:"array", fnote:fnote)
-	} else if type == "regular experssion" {
-		d = doc("construct/regex", name:"regular expression", fnote:fnote)
+		d = doc("foundations", name:"any", fnote:fnote)
 	} else if type.ends-with("alignment") {
-		d = doc("layout/align/#parameters-alignment", name:type, fnote:fnote)
-	} else {
-		d = doc("types/" + type, fnote:fnote)
+		d = doc("layout/alignment", name:type, fnote:fnote)
+  } else if type == "location" {
+    d = doc("introspection/" + type, fnote:fnote)
+  } else if type in ("angle", "direction", "fraction", "length", "ratio", "relative") {
+    d = doc("layout/" + type, fnote:fnote)
+	} else if type in ("array", "bool", "dictionary", "duration", "float", "function", "int", "label", "regex", "str", "version") {
+		d = doc("foundations/" + type, fnote:fnote)
+	} else if type in ("color", "sroke") {
+		d = doc("visualize/" + type, fnote:fnote)
 	}
 
 	if type in theme.colors.dtypes {
