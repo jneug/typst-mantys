@@ -243,7 +243,9 @@
 
 /// Show a module with #TIDY.
 /// Wrapper for #cmd-[tidy.show-module].
-#let tidy-module( data, ..args, include-examples-scope: false, extract-headings: 2, tidy: none ) = {
+#let tidy-module(data, ..args, include-examples-scope: false, extract-headings: 2, tidy: none ) = {
+  mty.assert.not-none(args.named().at("name", default:none), message: "you have to provide a name for the tidy module, got \"none\"")
+
   let _tidy = tidy
   if is-none(_tidy) {
     import("@preview/tidy:0.2.0")
