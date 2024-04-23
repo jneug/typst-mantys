@@ -88,6 +88,12 @@ For a full reference of available commands read [the manual](docs/mantys-manual.
 
 ## Changelog
 
+### Version 0.1.2
+
+- Added [hydra](https://typst.app/universe/package/hydra) for better detetion of headings in page headers (thanks to @tingerrr for the suggestion).
+- Fixed problem with multiple quots around default string values in tidy docs.
+- Fixed datatypes linking to wrong documentation urls.
+
 ### Version 0.1.1
 
 - Added template files for submission to _Typst Universe_.
