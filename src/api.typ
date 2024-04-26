@@ -106,7 +106,7 @@
   // some type mappings
   if is.str(type) {
     type = (
-      "integer": "int", "boolean": "bool", "dict": "dictionary", "arr": "array"
+      "integer": "int", "boolean": "bool", "dict": "dictionary", "arr": "array", "string": "str"
     ).at(type, default:type)
   }
 

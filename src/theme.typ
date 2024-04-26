@@ -62,7 +62,7 @@
 		"2d alignment": rgb(239, 240, 243),
 		bool: rgb(255, 236, 193),
 		content: rgb(166, 235, 229),
-		string: rgb(209, 255, 226),
+		str: rgb(209, 255, 226),
 		function: rgb(249, 223, 255),
     label: rgb(167, 234, 255),
     color: gradient.linear(..color.map.spectral, angle:180deg),
