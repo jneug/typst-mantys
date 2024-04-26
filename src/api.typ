@@ -129,6 +129,8 @@
 		d = doc("foundations/" + type, fnote:fnote)
 	} else if type in ("color", "sroke") {
 		d = doc("visualize/" + type, fnote:fnote)
+	} else {
+		d = raw(type)
 	}
 
 	if type in theme.colors.dtypes {
