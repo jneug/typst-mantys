@@ -49,7 +49,7 @@
 
   if items != () {
     let cols_num = 3
-    let per_col = calc.max(calc.quo(items.len(), cols_num), 1)
+    let per_col = calc.ceil(items.len() / cols_num)
     let cols = ()
     for i in range(items.len(), step:per_col) {
       cols.push(
