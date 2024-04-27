@@ -91,7 +91,7 @@
     #set block(spacing: 0.65em)
     #show outline.entry.where(level: 1): it => {
       v(0.85em, weak:true)
-      strong(it.body)
+      strong(link(it.element.location(), it.body))
     }
     #text(size:1.4em, [*Table of contents*])
     #columns(2, outline(
