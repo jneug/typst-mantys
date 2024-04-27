@@ -42,6 +42,7 @@
 
   // Datatypes taken from typst.app
 	dtypes: (
+		type: rgb(239, 240, 243),
 		length: rgb(230, 218, 255),
 		int: rgb(230, 218, 255),
 		float: rgb(230, 218, 255),
@@ -54,10 +55,13 @@
 		"auto": rgb(255, 203, 195),
 		"any": rgb(255, 203, 195),
 		"regular expression": rgb(239, 240, 243),
+		arguments: rgb(239, 240, 243),
 		dictionary: rgb(239, 240, 243),
 		array: rgb(239, 240, 243),
+		bytes: rgb(239, 240, 243),
 		stroke: rgb(239, 240, 243),
 		location: rgb(239, 240, 243),
+		selector: rgb(239, 240, 243),
 		alignment: rgb(239, 240, 243),
 		"2d alignment": rgb(239, 240, 243),
 		bool: rgb(255, 236, 193),
@@ -67,6 +71,8 @@
     label: rgb(167, 234, 255),
     color: gradient.linear(..color.map.spectral, angle:180deg),
     gradient: gradient.linear(..color.map.spectral, angle:180deg),
+		plugin: rgb(239, 240, 243),
+		datetime: rgb(239, 240, 243),
 		// color: (
 		// 	rgb(133, 221, 244),
 		// 	rgb(170, 251, 198),

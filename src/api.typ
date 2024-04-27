@@ -125,7 +125,7 @@
     d = doc("introspection/" + type, fnote:fnote)
   } else if type in ("angle", "direction", "fraction", "length", "ratio", "relative") {
     d = doc("layout/" + type, fnote:fnote)
-	} else if type in ("array", "bool", "content", "dictionary", "duration", "float", "function", "int", "label", "regex", "str", "version") {
+	} else if type in ("array", "bool", "bytes", "content", "datetime", "dictionary", "duration", "float", "function", "int", "label", "plugin", "regex", "selector", "str", "type", "version") {
 		d = doc("foundations/" + type, fnote:fnote)
 	} else if type in ("color", "sroke") {
 		d = doc("visualize/" + type, fnote:fnote)
