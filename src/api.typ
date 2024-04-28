@@ -127,7 +127,7 @@
     d = doc("layout/" + type, fnote:fnote)
 	} else if type in ("array", "bool", "bytes", "content", "datetime", "dictionary", "duration", "float", "function", "int", "label", "plugin", "regex", "selector", "str", "type", "version") {
 		d = doc("foundations/" + type, fnote:fnote)
-	} else if type in ("color", "sroke") {
+	} else if type in ("color", "stroke") {
 		d = doc("visualize/" + type, fnote:fnote)
 	} else {
 		d = raw(type)
