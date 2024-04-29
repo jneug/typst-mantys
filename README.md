@@ -88,6 +88,11 @@ For a full reference of available commands read [the manual](docs/mantys-manual.
 
 ## Changelog
 
+### Version 0.1.3
+
+- Fix for some datatypes not being displayed properly (thanks to @tingerrr).
+- Fix for impbalanced outline columns (thanks again to @tingerrr).
+
 ### Version 0.1.2
 
 - Added [hydra](https://typst.app/universe/package/hydra) for better detetion of headings in page headers (thanks to @tingerrr for the suggestion).
