@@ -1,4 +1,4 @@
-# Mantys (v0.1.2)
+# Mantys (v0.1.3)
 
 > **MAN**uals for **TY**p**S**t
 
@@ -8,7 +8,7 @@ Template for documenting [typst](https://github.com/typst/typst) packages and te
 
 Just import the package at the beginning of your manual:
 ```typst
-#import "@preview/mantys:0.1.2": *
+#import "@preview/mantys:0.1.3": *
 ```
 
 Mantys supports **Typst 0.11.0** and newer.
@@ -18,7 +18,7 @@ Mantys supports **Typst 0.11.0** and newer.
 A basic template for a manual could look like this:
 
 ```typst
-#import "@local/mantys:0.1.2": *
+#import "@local/mantys:0.1.3": *
 
 #import "your-package.typ"
 
