@@ -81,6 +81,18 @@
 	}
 }
 
+/// Adds a custom type to link to a type definition in the manual.
+#let add-type( name, target:none, color:theme.colors.dtypes.type) = {
+  state("@mty-custom-types").update(types => {
+    let t = types
+    if not mty.is.dict(types) {
+      t = (:)
+    }
+    t.insert(name, (name: name, target: target, color: color))
+    t
+  })
+}
+
 
 /// Shows a highlightd data type with a link to the reference page.
 ///
@@ -110,34 +122,52 @@
     ).at(type, default:type)
   }
 
-	let d = none
-  if mty.is-func(type) {
-    d = doc("foundations/function", fnote:fnote)
-		type = "function"
-  } else if mty.is-lambda(type) or type.contains("=>") {
-		d = doc("foundations/function", name:type, fnote:fnote)
-		type = "function"
-	} else if type == "any" {
-		d = doc("foundations", name:"any", fnote:fnote)
-	} else if type.ends-with("alignment") {
-		d = doc("layout/alignment", name:type, fnote:fnote)
-  } else if type == "location" {
-    d = doc("introspection/" + type, fnote:fnote)
-  } else if type in ("angle", "direction", "fraction", "length", "ratio", "relative") {
-    d = doc("layout/" + type, fnote:fnote)
-	} else if type in ("array", "bool", "bytes", "content", "datetime", "dictionary", "duration", "float", "function", "int", "label", "plugin", "regex", "selector", "str", "type", "version") {
-		d = doc("foundations/" + type, fnote:fnote)
-	} else if type in ("color", "stroke") {
-		d = doc("visualize/" + type, fnote:fnote)
-	} else {
-		d = mty.rawi(type)
-	}
 
-	if type in theme.colors.dtypes {
-		box(fill: theme.colors.dtypes.at(type), radius:2pt, inset: (x: 4pt, y:0pt), outset:(y:2pt), d)
-	} else {
-		d
-	}
+  context {
+    let custom-types = state("@mty-custom-types").final()
+    let color = auto
+
+    let d = none
+    if mty.is-func(type) {
+      d = doc("foundations/function", fnote:fnote)
+      type = "function"
+    } else if mty.is-lambda(type) or type.contains("=>") {
+      d = doc("foundations/function", name:type, fnote:fnote)
+      type = "function"
+    } else if type == "any" {
+      d = doc("foundations", name:"any", fnote:fnote)
+    } else if type.ends-with("alignment") {
+      d = doc("layout/alignment", name:type, fnote:fnote)
+    } else if type == "location" {
+      d = doc("introspection/" + type, fnote:fnote)
+    } else if type in ("angle", "direction", "fraction", "length", "ratio", "relative") {
+      d = doc("layout/" + type, fnote:fnote)
+    } else if type in ("array", "bool", "bytes", "content", "datetime", "dictionary", "duration", "float", "function", "int", "label", "plugin", "regex", "selector", "str", "type", "version") {
+      d = doc("foundations/" + type, fnote:fnote)
+    } else if type in ("color", "stroke") {
+      d = doc("visualize/" + type, fnote:fnote)
+    } else {
+      if type in custom-types {
+        if not mty.is-none(custom-types.at(type).target) {
+          d = link(custom-types.at(type).target, mty.rawi(type))
+        } else {
+          d = mty.rawi(type)
+        }
+
+        if not mty.is-none(custom-types.at(type).color) {
+          color = custom-types.at(type).color
+        }
+      } else {
+        d = mty.rawi(type)
+      }
+    }
+
+    if mty.is-auto(color) {
+      color = theme.colors.dtypes.at(type, default: theme.colors.dtypes.type)
+    }
+
+    box(fill: color, radius:2pt, inset: (x: 4pt, y:0pt), outset:(y:2pt), d)
+  }
 }
 
 
@@ -657,6 +687,7 @@
   arg: arg,
   args: args,
   argument: argument,
+  add-type: add-type,
   barg: barg,
   choices: choices,
   cmd-: cmd-,
