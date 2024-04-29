@@ -130,7 +130,7 @@
 	} else if type in ("color", "stroke") {
 		d = doc("visualize/" + type, fnote:fnote)
 	} else {
-		d = raw(type)
+		d = mty.rawi(type)
 	}
 
 	if type in theme.colors.dtypes {
