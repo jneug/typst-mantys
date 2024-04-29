@@ -67,7 +67,15 @@
   )
 )
 
-= About
+= About <about>
+
+// #state("@mty-dtypes").update((:))
+// #state("@mty-dtypes").update(v => {v.insert("a", (name: "a")); v})
+// #state("@mty-dtypes").update(v => if not is.dict(v) { ("a": (name: "a")) } else {v.insert("a", (name: "a")); v})
+
+#add-type("queryable", target:label("about"), color:rgb("#dc322b"))
+#add-type("automaton")
+
 
 Mantys is a Typst package to help package and template authors to write consistently formatted manuals. The idea is that, as many Typst users are switching over from #TeX, they are used to the way packages provide a PDF manual for reference. Though in a modern ecosystem there are other ways to write documentation (like #mty.footlink("https://rust-lang.github.io/mdBook/")[mdBook] or #mty.footlink("https://asciidoc.org")[AsciiDoc]), having a manual in PDF format might still be beneficial, since many users of Typst will generate PDFs as their main output.
 

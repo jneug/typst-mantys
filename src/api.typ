@@ -82,6 +82,10 @@
 }
 
 /// Adds a custom type to link to a type definition in the manual.
+///
+/// - name (string): Name for the new type.
+/// - target (str, label, location, dictionary): Target to link the type to. Can be anything the #doc("link") function accepts.
+/// - color (color): A color for the type.
 #let add-type( name, target:none, color:theme.colors.dtypes.type) = {
   state("@mty-custom-types").update(types => {
     let t = types
@@ -103,6 +107,7 @@
 /// - #shortex(`#dtype(true)`)
 /// - #shortex(`#dtype(())`)
 /// - #shortex(`#dtype(red)`)
+/// Custom types can be added with @@add-type.
 ///
 /// - type (any): Either a value to take the type from or a string with the dataype name.
 /// - fnote (boolean): If #value(true), the reference lin kis shown in a footnote.
