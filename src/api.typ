@@ -129,7 +129,7 @@
 
 
   context {
-    let custom-types = state("@mty-custom-types").final()
+    let custom-types = state("@mty-custom-types", ()).final()
     let color = auto
 
     let d = none
