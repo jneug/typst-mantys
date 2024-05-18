@@ -58,6 +58,7 @@
       block({
         if it.numbering != none {
           text(fill: theme.colors.primary, counter(heading).display())
+          [ ]
         }
         it.body
       })
