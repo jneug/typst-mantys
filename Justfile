@@ -11,8 +11,8 @@ alias u := update
 
 # list recipes
 [private]
-default:
-	just --list
+@default:
+	just --list --unsorted --no-aliases
 
 # run typst with the correct environment variables
 typst *args:
@@ -20,7 +20,7 @@ typst *args:
 
 # run typst-test with the correct environment variables
 typst-test *args:
-	typst {{ args }}
+	typst-test {{ args }}
 
 # generate the manual
 doc cmd='compile':
@@ -40,5 +40,5 @@ update filter='':
 	typst-test update {{ filter }}
 
 # run the ci test suite
-ci: examples
+ci: assets
 	typst-test run
