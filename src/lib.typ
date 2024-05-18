@@ -1,144 +1,67 @@
 #import "packages.typ" as _pkg
+
 #import "component.typ"
+#import "theme.typ"
+#import "style.typ"
 
-// Import main library functions
-#import "./mty.typ"
-// Import t4t functions
-#import "./mty.typ": is-none, is-auto, is, def
-// Import main user api
-#import "api.typ"
-#import "./api.typ": *
+#let _version = version
 
-#import "./theme.typ"
-
-// Import tidy theme
-#import "./mty-tidy.typ"
+// TODO: cleanup
+// #import "mty.typ"
+// #import "api.typ"
 
 /// The main template function.
 #let mantodea(
-  name: none,
-  description: none,
-  authors: (),
-  repository: none,
-  version: none,
-  license: none,
+  title: [Title],
+  subtitle: [Subtitle],
+  authors: "John Doe <john@doe.com>",
+  urls: "https://github.com/typst-community/mantodea",
+  date: datetime(year: 1970, month: 1, day: 1),
+  version: version(0, 1, 0),
+  abstract: lorem(100),
+  license: "MIT",
+  theme: theme.default,
+) = body => {
+  let assert-text = _pkg.t4t.assert.any-type.with(str, content)
+  assert-text(title)
+  assert-text(type(none), subtitle)
+  assert-text(array, authors)
+  _pkg.t4t.assert.any-type(str, array, type(none), urls)
+  assert-text(abstract)
+  _pkg.t4t.assert.any-type(_version, version)
+  assert-text(license)
+  _pkg.t4t.assert.any-type(dictionary, theme)
 
-  package: none,  // loaded toml file
-
-  // Additional info
-  title: none,
-  subtitle: none,
-  url: none,
-
-  date: none,
-  abstract: [],
-
-  titlepage: titlepage,
-  index: auto,
-
-  examples-scope: (:),
-
-  ..args,
-
-  body
-) = {
-  mty.assert.that(
-    is.not-none(name) or is.not-none(package),
-    message:"You need to specifiy the package name or load the package info via ..toml(\"typst.toml\")."
-  )
-
-  if is-none(name) {
-    ( name, description, authors,
-      repository, version, license
-    ) = ( "name", "description", "authors",
-          "repository", "version", "license").map(
-              (k) => package.at(k, default:none)
-            )
+  let authors = authors
+  if authors != none {
+    authors = _pkg.t4t.def.as-arr(authors)
   }
 
-	set document(
-		title: mty.get.text( mty.def.if-none(name, title) ),
-		author: def.as-arr(mty.def.if-none(authors, "")).map((a) => if is.dict(a) { a.name } else { a }).first()
-	)
+  let urls = urls
+  if urls != none {
+    urls = _pkg.t4t.def.as-arr(urls)
+  }
 
-	set page(
-		..theme.page,
-		header: context {
-      let section = context hydra(2, display: (_, it) => {
-        numbering("1.1", ..counter(heading).at(it.location()))
-        [ ]
-        it.body
-      })
-      align(center, emph(section))
-    },
-		footer: align(center, counter(page).display("1"))
-	)
-	set text(
-    font: theme.fonts.text,
-		size: theme.font-sizes.text,
-		lang: "en",
-		region: "EN",
-    fill: theme.colors.text
-	)
-	set par(
-		justify:true,
-	)
-	set heading(numbering: "I.1.")
-	show heading: it => block([
-		#v(0.3em)
-		#text(fill:theme.colors.primary, counter(heading).display())
-		#it.body
-		#v(0.8em)
-	])
-	show heading.where(level: 1): it => {
-		pagebreak(weak: true)
-		block([
-			#text(fill:theme.colors.primary,
-			[Part #counter(heading).display()])\
-			#it.body
-			#v(1em)
-		])
-	}
-	show heading: it => {
-		set text(
-      font:theme.fonts.headings,
-      size://calc.max(theme.font.sizes.text, theme.font-sizes.headings * ( it.level))
-        mty.math.map(4, 1, theme.font-sizes.text, theme.font-sizes.headings * 1.4, it.level)
-    )
-    it
-	}
+  set document(title: title, author: authors)
+  show: style.default(theme: theme)
 
-  // TODO: This would be a nice short way to set examples, but will
-  // have weird formatting due to raw text having set the default
-  // font and size before the show rule takes effect.
-	// show raw.where(block:true, lang:"example"): it => mty.code-example(imports:example-imports, it)
-	// show raw.where(block:true, lang:"side-by-side"): it => mty.code-example(side-by-side:true, imports:example-imports, it)
-  show raw: set text(font:theme.fonts.code, size:theme.font-sizes.code)
-  state("@mty-imports-scope").update(examples-scope)
+  component.make-title-page(
+    title: title,
+    subtitle: subtitle,
+    authors: authors,
+    urls: urls,
+    version: version,
+    date: date,
+    abstract: abstract,
+    license: license,
+    theme: theme,
+  )
 
-  // Some common replacements
-	show upper(name): mty.package(name)
-	show "Mantys": mty.package
-  // show "Typst": it => text(font: "Liberation Sans", weight: "semibold", fill: eastern)[typst] // smallcaps(strong(it))
+  component.make-table-of-contents(
+    title: heading(outlined: false, numbering: none, level: 2)[Table of Contents],
+    columns: 1,
+    theme: theme,
+  )
 
-  show figure.where(kind: raw): set block(breakable: true)
-
-	titlepage(name, title, subtitle, description, authors, (url,repository).filter(is.not-none), version, date, abstract, license)
-
-	body
-
-	if index != none and index != () and index != (:) {
-		[= Index]
-    set text(.88em)
-		if type(index) == "array" or type(index) == "string" {
-			mty.make-index(kind:(index,).flatten())
-		} else if type(index) == "dictionary" {
-			for (header, kind) in index {
-				[== #header]
-				mty.make-index(kind:(kind,).flatten())
-			}
-		} else {
-			mty.make-index()
-		}
-	}
+  body
 }
