@@ -1,19 +1,20 @@
 #import "/src/packages.typ" as _pkg
+#import "/src/theme.typ" as _theme
 
 #let _version = version
 
 /// Generate the default title page.
 ///
 /// - title (str, content): The title for of this document.
-/// - subtitle (str, content): A subtitle shown below the title.
+/// - subtitle (str, content, none): A subtitle shown below the title.
 /// - authors (str, content, array): The authors of the document.
-/// - urls (str, array): One or more URLs relevant to this document.
+/// - urls (str, array, none): One or more URLs relevant to this document.
 /// - version (str, version): The version of this document. A string can be
 ///   passed explicitly to avoid the automatic `v` prefix.
 /// - date (datetime): The date at which this document was created.
 /// - abstract (str, content): An abstract outlining the purpose and contents
 ///   of this document.
-/// - license (str, content): The license of this document or a related piece
+/// - license (str, content, none): The license of this document or a related piece
 ///   of intellectual property.
 /// - theme (theme): The color theme to use for the title page.
 /// -> content
@@ -23,14 +24,14 @@
   authors: "John Doe <john@doe.com>",
   urls: "https://github.com/typst-community/mantodea",
   version: version(0, 1, 0),
-  date: datetime.today(),
+  date: datetime(year: 1970, month: 1, day: 1),
   abstract: lorem(100),
   license: "MIT",
-  theme: (colors: (primary: eastern)),
+  theme: _theme.default,
 ) = {
   let assert-text = _pkg.t4t.assert.any-type.with(str, content)
   assert-text(title)
-  assert-text(subtitle)
+  assert-text(type(none), subtitle)
   assert-text(array, authors)
   _pkg.t4t.assert.any-type(str, array, type(none), urls)
   assert-text(abstract)
@@ -68,7 +69,7 @@
       },
       if date != none { date.display() },
       // TODO: license link
-      if license != none { license },
+      if license != none { license } else { "UNLICENSED" },
     ).filter(it => it != none)
 
     if info.len() != 0 {

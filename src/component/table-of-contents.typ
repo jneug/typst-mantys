@@ -1,4 +1,5 @@
 #import "/src/packages.typ" as _pkg
+#import "/src/theme.typ" as _theme
 
 #let _columns = columns
 
@@ -10,8 +11,8 @@
 
 /// Generate the default table of contents.
 ///
-/// - title (str, content): The title to use, if this is a `heading` itself it
-///   will not be passed to @@outline.
+/// - title (str, content, none): The title to use, if this is a `heading`
+///   itself it will not be passed to @@outline.
 /// - target (selector, function): The target to show, this is primarily used
 ///   to restrict the search space of the default selector. If something other
 ///   than a heading selector is passed, then this may not work.
@@ -19,23 +20,23 @@
 /// - theme (theme): The theme to use for this table of contents.
 /// -> content
 #let make-table-of-contents(
-  title: [Table of Contents],
-	target: heading.where(outlined: true),
+  title: heading(outlined: false, numbering: none)[Table of Contents],
+  target: heading.where(outlined: true),
   columns: 1,
-  theme: (:),
+  theme: _theme.default,
 ) = {
   _pkg.t4t.assert.any-type(str, content, title)
   _pkg.t4t.assert.any-type(selector, function, target)
   _pkg.t4t.assert.any-type(int, columns)
   _pkg.t4t.assert.any-type(dictionary, theme)
 
+  // NOTE: unsure if this looks good, this also doens't work in CI for now
+  // set text(font: theme.fonts.headings)
   set block(spacing: 0.65em)
+  set _columns(columns)
 
-	set _columns(columns)
-  if _pkg.t4t.is.elem(heading, title) {
+  if title != none {
     title
-  } else {
-    heading(outlined: false, numbering: none, title)
   }
 
   let _numbering(part) = {
