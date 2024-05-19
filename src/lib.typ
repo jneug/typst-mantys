@@ -3,12 +3,9 @@
 #import "component.typ"
 #import "theme.typ"
 #import "style.typ"
+#import "util.typ"
 
 #let _version = version
-
-// TODO: cleanup
-// #import "mty.typ"
-// #import "api.typ"
 
 /// The main template function.
 #let mantodea(

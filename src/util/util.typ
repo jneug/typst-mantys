@@ -221,39 +221,6 @@
 	}
 }
 
-/// Show a package name.
-/// - #shortex(`#mty.package("codelst")`)
-///
-/// - name (string): Name of the package.
-#let package( name ) = primary(smallcaps(name))
-
-
-/// Creates a #doc("text/link") with an attached footnote showing the #arg[url].
-/// - #shortex(`#mty.footlink("https://neugebauer.cc", "neugebauer.cc")`)
-///
-/// - url (string): The url for the link and the footnote.
-/// - label (string): The label for the link.
-/// -> content
-#let footlink( url, label ) = [#link(url, label)#footnote(link(url))]
-
-/// Creates a #doc("text/link") to a GitHub repository given in the format
-/// `user/repository` and shows the url in a footnote.
-/// - #shortex(`#mty.gitlink("jneug/typst-mantys")`)
-///
-/// - repo (string): Identifier of the repository.
-/// -> content
-#let gitlink( repo ) = footlink("https://github.com/" + repo, repo)
-
-/// Creates a #doc("text/link") to a Typst package in the Typst package repository
-/// at #link("https://github.com/typst/packages", "typst/packages").
-/// - #shortex(`#mty.pkglink("codelst", (2,0,0))`)
-///
-/// - name (string): Name of the package.
-/// - version (string): Version string of the package as an array of ints (e.g. (0,0,1)).
-/// - namespace (string): The namespace to use. Defaults to `preview`.
-/// -> content
-#let pkglink( name, version, namespace:"preview" ) = footlink("https://github.com/typst/packages/tree/main/packages/" + namespace + "/" + name + "/" + version.map(str).join("."), package(name + sym.colon + version.map(str).join(".")))
-
 /// Shows sourcecode in a frame.
 /// #ibox[Uses #package[codelst] to render the code.]
 /// See @sourcecode-examples for more information on sourcecode and examples.
