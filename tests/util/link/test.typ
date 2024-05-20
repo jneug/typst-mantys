@@ -31,3 +31,16 @@
 #link.package("Hydra")
 
 #link.package-repo("Hydra", version(0, 1, 0))
+
+= Types from Values
+#link.type(with-footnote: true, str)
+#link.type(with-footnote: true, red)
+#link.type(with-footnote: true, left + horizon)
+
+= Types
+#let l = link.type.with(with-footnote: true)
+#block(width: 200pt,
+  for t in link.typst.types.keys() [
+    #l(t)
+  ]
+)
