@@ -1,5 +1,3 @@
-
-// Import dependencies
 #import "packages.typ": *
 #import t4t: *
 #import codelst
@@ -186,40 +184,6 @@
 		}
 	)
 })
-
-/// Highlight human names (with first- and lastnames).
-/// - #shortex(`#mty.name("Jonas Neugebauer")`)
-/// - #shortex(`#mty.name("J.", last:"Neugebauer")`)
-///
-/// - name (string): First or full name.
-/// - last (string): Optional last name.
-/// -> content
-#let name( name, last:none ) = {
-	if last == none {
-		let parts = get.text(name).split(" ")
-		last = parts.pop()
-		name = parts.join(" ")
-	}
-	[#name #smallcaps(last)]
-}
-
-
-/// Show author information.
-/// - #shortex(`#mty.author("Jonas Neugebauer")`)
-/// - #shortex(`#mty.author((name:"Jonas Neugebauer"))`)
-/// - #shortex(`#mty.author((name:"Jonas Neugebauer", email:"github@neugebauer.cc"))`)
-///
-/// - info (string, dictionary): Either a string with an author name or a dictionary with the `name` and `email` keys.
-/// -> content
-#let author( info ) = {
-	if type(info) == "string" {
-		return name(info)
-	} else if "email" in info {
-		return [#name(info.name) #link("mailto:" + info.email, rawi("<" + info.email + ">"))]
-	} else {
-		return name(info.name)
-	}
-}
 
 /// Shows sourcecode in a frame.
 /// #ibox[Uses #package[codelst] to render the code.]
