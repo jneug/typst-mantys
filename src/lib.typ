@@ -28,9 +28,9 @@
 /// -> function
 #let mantodea(
   title: [Title],
-  subtitle: [Subtitle],
+  subtitle: none,
   authors: "John Doe <john@doe.com>",
-  urls: "https://github.com/typst-community/mantodea",
+  urls: none,
   date: datetime(year: 1970, month: 1, day: 1),
   version: version(0, 1, 0),
   abstract: lorem(100),

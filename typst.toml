@@ -1,6 +1,6 @@
 [package]
 name = "mantodea"
-version = "0.1.3"
+version = "0.1.0"
 entrypoint = "src/lib.typ"
 compiler = "0.11.0"
 license = "MIT"
@@ -8,9 +8,9 @@ repository = "https://github.com/typst-community/mantodea"
 
 # universe info
 authors = ["Typst Community Contributors <@typst-community>"]
-description = "A template & package for specification-like documents."
+description = "A template & package for documents targeting the typst devloper community."
 categories = ["report", "components", "model"]
-keywords = ["specification", "documentation"]
+keywords = ["specification", "specs", "documentation", "docs"]
 
 # bundler info
 exclude = [
