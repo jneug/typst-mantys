@@ -12,7 +12,7 @@
 /// Generate the default table of contents.
 ///
 /// - title (str, content, none): The title to use, if this is a `heading`
-///   itself it will not be passed to @@outline.
+///   itself it will not be passed to `outline`.
 /// - target (selector, function): The target to show, this is primarily used
 ///   to restrict the search space of the default selector. If something other
 ///   than a heading selector is passed, then this may not work.

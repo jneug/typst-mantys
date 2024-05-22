@@ -7,7 +7,22 @@
 
 #let _version = version
 
-/// The main template function.
+/// The main template function, this returns a function which is used in a
+/// `show`-all rule.
+///
+/// - title (str, content): The title for of this document.
+/// - subtitle (str, content, none): A subtitle shown below the title.
+/// - authors (str, content, array): The authors of the document.
+/// - urls (str, array, none): One or more URLs relevant to this document.
+/// - version (str, version): The version of this document. A string can be
+///   passed explicitly to avoid the automatic `v` prefix.
+/// - date (datetime): The date at which this document was created.
+/// - abstract (str, content, none): An abstract outlining the purpose and
+///   contents of this document.
+/// - license (str, content, none): The license of this document or a related
+///   piece of intellectual property.
+/// - theme (theme): The theme to use for this document.
+/// -> function
 #let mantodea(
   title: [Title],
   subtitle: [Subtitle],
@@ -20,13 +35,15 @@
   theme: theme.default,
 ) = body => {
   let assert-text = _pkg.t4t.assert.any-type.with(str, content)
+  let assert-maybe-text = _pkg.t4t.assert.any-type.with(str, content, type(none))
+
   assert-text(title)
-  assert-text(type(none), subtitle)
+  assert-maybe-text(subtitle)
   assert-text(array, authors)
   _pkg.t4t.assert.any-type(str, array, type(none), urls)
-  assert-text(abstract)
+  assert-maybe-text(abstract)
   _pkg.t4t.assert.any-type(_version, version)
-  assert-text(license)
+  assert-maybe-text(license)
   _pkg.t4t.assert.any-type(dictionary, theme)
 
   let authors = authors

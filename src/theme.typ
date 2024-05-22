@@ -1,12 +1,12 @@
 #let default = (
   fonts: (
     serif: ("Linux Libertine", "Liberation Serif"),
-    sans: ("Liberation Sans", "Helvetica Neue", "Helvetica"),
-    mono: ("Liberation Mono"),
+    sans:  ("Liberation Sans", "Helvetica Neue", "Helvetica"),
+    mono:  ("Liberation Mono", ),
 
-    text: ("Linux Libertine", "Liberation Serif"),
+    text:     ("Linux Libertine", "Liberation Serif"),
     headings: ("Liberation Sans", "Helvetica Neue", "Helvetica"),
-    code: ("Liberation Mono")
+    code:     ("Liberation Mono", ),
   ),
   colors: (
     primary:   eastern,

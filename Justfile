@@ -24,7 +24,7 @@ typst-test *args:
 
 # generate the manual
 doc cmd='compile':
-	typst {{ cmd }} doc/manual.typ doc/manual.pdf
+	typst {{ cmd }} docs/manual.typ docs/manual.pdf
 
 # generate the examples
 assets:

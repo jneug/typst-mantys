@@ -12,10 +12,10 @@
 /// - version (str, version): The version of this document. A string can be
 ///   passed explicitly to avoid the automatic `v` prefix.
 /// - date (datetime): The date at which this document was created.
-/// - abstract (str, content): An abstract outlining the purpose and contents
-///   of this document.
-/// - license (str, content, none): The license of this document or a related piece
-///   of intellectual property.
+/// - abstract (str, content, none): An abstract outlining the purpose and
+///   contents of this document.
+/// - license (str, content, none): The license of this document or a related
+///   piece of intellectual property.
 /// - theme (theme): The color theme to use for the title page.
 /// -> content
 #let make-title-page(
@@ -30,13 +30,15 @@
   theme: _theme.default,
 ) = {
   let assert-text = _pkg.t4t.assert.any-type.with(str, content)
+  let assert-maybe-text = _pkg.t4t.assert.any-type.with(str, content, type(none))
+
   assert-text(title)
-  assert-text(type(none), subtitle)
+  assert-maybe-text(subtitle)
   assert-text(array, authors)
   _pkg.t4t.assert.any-type(str, array, type(none), urls)
-  assert-text(abstract)
+  assert-maybe-text(abstract)
   _pkg.t4t.assert.any-type(_version, version)
-  assert-text(license)
+  assert-maybe-text(license)
   _pkg.t4t.assert.any-type(dictionary, theme)
 
   if authors != none {

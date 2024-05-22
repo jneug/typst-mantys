@@ -1,4 +1,4 @@
-/// The marks used in @@author for automatic mark numbering.
+/// The marks used in `author` for automatic mark numbering.
 ///
 /// Can be used to add new or alter existing marks, marks come in the form of
 /// arbitrary content which is placed as a superscript.
@@ -50,7 +50,7 @@
   smallcaps(last.join(" "))
 }
 
-/// Show full author information, see also @@name.
+/// Show full author information, see also `name`.
 ///
 /// - ..first (str, none): The first and middle names.
 /// - last (str, array): The last names.
@@ -58,7 +58,7 @@
 ///   - `0`: do not shorten any names
 ///   - `1`: shorten middle names
 ///   - `2`: shorten middle and first names
-/// - label (label, none): The label to use for email attribution, see @@email.
+/// - label (label, none): The label to use for email attribution, see `email`.
 /// - email (str, content, none): The email to attribute the user to.
 /// -> content
 #let author(
@@ -81,11 +81,11 @@
 }
 
 /// Display an email attribution, i.e. a mark that can be linked to from
-/// @@author.
+/// `author`.
 ///
 /// - mark (content, auto): A symbol used for attribution, the linked authors
 ///   will have this displayed as a super script. Uses `*` numbering if `auto`.
-/// - label (label): The label to use in @@author for automatic attribution.
+/// - label (label): The label to use in `author` for automatic attribution.
 /// - body (str, content): The body to attribute the authors to, this is often
 ///   a generic email pattern such as `"<name>@university.com"`, but doesn't
 ///   have to be.

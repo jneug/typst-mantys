@@ -2,7 +2,7 @@
 
 #let _type = type
 
-/// The type links supported by @@type.
+/// The type links supported by `type`.
 ///
 /// Can be used to add new or alter exisiting type links.
 ///
@@ -185,7 +185,7 @@
   )
 }
 
-/// The forges supported by @@forge.
+/// The forges supported by `forge`.
 ///
 /// Can be used to add new, or alter existing matchers, matchers come in the
 /// form of a function which takes a url and either returns a `str` or `none`
@@ -216,7 +216,7 @@
 /// Creates a link with footnote to a source forge and optional repo.
 ///
 /// - base (str): The forge base url.
-/// - label (str, auto): The label to use for the forge, uses @@forges if
+/// - label (str, auto): The label to use for the forge, uses `forges` if
 ///   `auto`.
 /// - ..relative (str): An optional author or repository path.
 /// -> content
