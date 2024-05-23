@@ -90,14 +90,13 @@ For a full reference of available commands read [the manual](docs/mantys-manual.
 
 ### Version 0.1.4
 
--
 - Fix missing links in outline (@tingerrr).
+- Fixed problem when evaluating default values with Tidy.
 
 ### Version 0.1.3
 
 - Fix for some datatypes not being displayed properly (thanks to @tingerrr).
 - Fix for imbalanced outline columns (thanks again to @tingerrr).
-- Fixed problem when evaluating default values with Tidy.
 
 ### Version 0.1.2
 
