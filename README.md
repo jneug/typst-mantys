@@ -88,22 +88,28 @@ For a full reference of available commands read [the manual](docs/mantys-manual.
 
 ## Changelog
 
+### Version 0.1.4
+
+-
+- Fix missing links in outline (@tingerrr).
+
 ### Version 0.1.3
 
 - Fix for some datatypes not being displayed properly (thanks to @tingerrr).
-- Fix for impbalanced outline columns (thanks again to @tingerrr).
+- Fix for imbalanced outline columns (thanks again to @tingerrr).
+- Fixed problem when evaluating default values with Tidy.
 
 ### Version 0.1.2
 
-- Added [hydra](https://typst.app/universe/package/hydra) for better detetion of headings in page headers (thanks to @tingerrr for the suggestion).
-- Fixed problem with multiple quots around default string values in tidy docs.
+- Added [hydra](https://typst.app/universe/package/hydra) for better detection of headings in page headers (thanks to @tingerrr for the suggestion).
+- Fixed problem with multiple quotes around default string values in tidy docs.
 - Fixed datatypes linking to wrong documentation urls.
 
 ### Version 0.1.1
 
 - Added template files for submission to _Typst Universe_.
 
-### Verison 0.1.0
+### Version 0.1.0
 
 - Refactorings and some style changes
 - Updated manual.
