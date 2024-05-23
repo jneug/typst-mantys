@@ -95,7 +95,7 @@ This manual is supposed to be a complete reference of Mantys, but might be out o
 
 Just import MANTYS inside your `typ` file:
 #codesnippet[```typ
-#import "@preview/mantys:0.1.3": *
+#import "@preview/mantys:0.1.4": *
 ```]
 
 === Initializing the template

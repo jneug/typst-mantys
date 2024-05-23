@@ -1,4 +1,4 @@
-#import "@preview/mantys:0.1.3": *
+#import "@preview/mantys:0.1.4": *
 
 #show: mantys.with(
   name: "mantys",
