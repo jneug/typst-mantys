@@ -15,7 +15,7 @@ jobs:
       - name: Probe runner package cache
         uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: imagemagick cargo fonts-noto-cjk
+          packages: imagemagick cargo fonts-liberation
           version: 1.0
 
       - name: Install oxipng from crates.io
