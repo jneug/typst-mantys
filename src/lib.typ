@@ -1,6 +1,9 @@
 #import "packages.typ" as _pkg
 
+#import "author.typ"
 #import "component.typ"
+#import "example.typ"
+#import "link.typ"
 #import "theme.typ"
 #import "style.typ"
 #import "util.typ"

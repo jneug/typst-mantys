@@ -1,6 +1,6 @@
 #import "util.typ": mantys, package, issues
 #import "/src/lib.typ" as mantodea
-#import mantodea.util.link: footlink
+#import mantodea.link: footlink
 
 #show: mantys.mantys.with(
   ..package,
@@ -48,11 +48,14 @@ The default can be found at `mantodea.theme.default` and serves as the defacto s
   ("mantodea", "/src/lib.typ", [
     The package entry point, containing the top level sub modules and the template main function.
   ]),
-  ("style", "/src/style.typ", [
-    Styles for the template, namely the default style in use for the template body.
+  ("author", "/src/author.typ", [
+    Utlities for handling author rendering.
   ]),
   ("component", "/src/component/table-of-contents.typ", [
     Parts of the template's components, while usable independently, they assume certain styles found in the `style` module.
+  ]),
+  ("exmaple", "/src/example.typ", [
+    Utlities for rendering examples with and without evaluation of Typst code.
   ]),
   ("component/table-of-contents", "/src/component/table-of-contents.typ", [
     Contains an outline implementation with improved alignment.
@@ -60,20 +63,17 @@ The default can be found at `mantodea.theme.default` and serves as the defacto s
   ("component/title-page", "/src/component/table-of-contents.typ", [
     Contains the title page component.
   ]),
+  ("link", "/src/link.typ", [
+    Utlities for linking to Typst resources or source forges.
+  ]),
   ("theme", "/src/theme.typ", [
     Theming related values, namely the default style dictionary used when not style is given.
   ]),
   ("util", "/src/util.typ", [
     General utlities.
   ]),
-  ("util/author", "/src/util/author.typ", [
-    Utlities for handling author rendering.
-  ]),
-  ("util/exmaple", "/src/util/example.typ", [
-    Utlities for rendering examples with and without evaluation of Typst code.
-  ]),
-  ("util/link", "/src/util/link.typ", [
-    Utlities for linking to Typst resources or source forges.
+  ("style", "/src/style.typ", [
+    Styles for the template, namely the default style in use for the template body.
   ]),
 )
 

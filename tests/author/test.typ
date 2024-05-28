@@ -1,4 +1,4 @@
-#import "/src/util/author.typ"
+#import "/src/author.typ"
 
 #show heading.where(level: 1): it => pagebreak(weak: true) + it
 #set page(width: auto, height: auto)

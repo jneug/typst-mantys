@@ -1,4 +1,4 @@
-#import "/src/util/link.typ"
+#import "/src/link.typ"
 
 #show heading.where(level: 1): it => pagebreak(weak: true) + it
 #set page(width: auto, height: auto, header: counter(footnote).update(0))

@@ -1,9 +1,5 @@
 #import "/src/packages.typ" as _pkg
 
-#import "util/author.typ"
-#import "util/example.typ"
-#import "util/link.typ"
-
 /// Draw an alert box.
 ///
 /// - color (color): The color to use for the box and text color.
