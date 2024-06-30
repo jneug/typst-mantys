@@ -1,8 +1,8 @@
-#import "@preview/mantys:0.1.4": *
+#import "@preview/mantys:1.0.0": *
 
 #show: mantys.with(
   name: "mantys",
-  version: "0.1.0",
+  version: "1.0.0",
   authors: (
     "Jonas Neugebauer",
   ),
