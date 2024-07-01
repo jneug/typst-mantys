@@ -1,6 +1,7 @@
 
 #import "core/document.typ"
 #import "core/themes.typ"
+#import "core/index.typ": *
 #import "layout/main.typ" as layout
 #import "api/tidy.typ": *
 
@@ -34,16 +35,24 @@
       #doc
     ]
   }
-  pagebreak()
+  pagebreak(weak: true)
 
   body
+
+  // Show index if enabled and at least one entry
+  context {
+    if doc.show-index and index-len() > 0 {
+      pagebreak(weak: true)
+      [= Index]
+      columns(3, make-index())
+    }
+  }
 }
 
-// TODO: move?
-#let typst-toml = "../typst.toml"
+// TODO: (re)move?
+#let toml-file = "../typst.toml"
 #let git-file = "../.git/HEAD"
 #let git-head-file(head-data) = {
   let m = head-data.match(regex("^ref: (\S+)"))
   return "../.git/" + m.captures.at(0)
 }
-

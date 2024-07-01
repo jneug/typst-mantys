@@ -148,7 +148,7 @@
     // Configuration options
     show-index: t.boolean(default: true),
     show-outline: t.boolean(default: true),
-    show-urls-in-footnote: t.boolean(default: true),
+    show-urls-in-footnotes: t.boolean(default: true),
     examples-scope: t.dictionary(
       (
         scope: t.dictionary((:)),
@@ -191,12 +191,12 @@
     // TODO: remove git info?
     git: t.string(
       optional: true,
-      // post-transform: (self, it) => {
-      //   if is.str(it) {
-      //     return it.split("\n").map(v => v.split("\t"))
-      //   }
-      //   it
-      // }
+      post-transform: (self, it) => {
+        if is.str(it) {
+          return it.trim()
+        }
+        it
+      }
     ),
   ),
   pre-transform: (self, it) => {

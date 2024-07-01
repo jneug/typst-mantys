@@ -44,10 +44,11 @@
   set text(..theme.text)
   set heading(numbering: "I.1.1.a")
   show heading: set text(..theme.heading)
-  show heading.where(level: 1): it => [
-    #pagebreak(weak: true)
-    #it
-  ]
+  show heading.where(level: 1): it => {
+    pagebreak(weak: true)
+    it
+  }
+
   show link: set text(theme.emph.link)
   // Show (some) urls in footnotes
   show <mantys:link>: it => {
