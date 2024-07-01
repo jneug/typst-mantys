@@ -1,6 +1,7 @@
 
 #import "../util/is.typ"
 #import "../util/utils.typ"
+#import "../core/index.typ": idx
 #import "../core/themes.typ": themable
 
 #import "values.typ": value
@@ -97,10 +98,6 @@
   s
 }
 
-#let option(..args, index: true) = { }
-
-#let option- = option.with(index: false)
-
 /// Renders the command #arg[name] with arguments and adds an entry with
 /// #arg(kind:"command") to the index.
 ///
@@ -123,6 +120,16 @@
 #let cmd(name, module: none, ret: none, index: true, unpack: false, ..args) = {
   if index {
     // mty.idx(kind: "cmd", hide: true)[#utils.rawi(sym.hash)#mty.rawc(theme.colors.command, name)]
+    idx(
+      kind: "cmd",
+      term: name,
+      {
+        themable(theme => {
+          text(theme.text.fill, utils.rawi(sym.hash))
+          text(theme.commands.command, utils.rawi(name))
+        })
+      },
+    )
   }
 
   utils.rawi(sym.hash)

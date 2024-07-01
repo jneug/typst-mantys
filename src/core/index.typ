@@ -1,6 +1,5 @@
-// persistent state for index entries
-#let __s_mty_index = state("@mty-index", ())
-
+#import "../util/utils.typ"
+#import "../_deps.typ" as deps
 
 /// Removes special characters from #arg[term] to make it
 /// a valid format for the index.
@@ -8,7 +7,7 @@
 /// - term (string, content): The term to sanitize.
 /// -> string
 #let idx-term(term) = {
-  get.text(term).replace(regex("[#_()]"), "")
+  utils.get-text(term).replace(regex("[#_()]"), "")
 }
 
 
@@ -26,22 +25,37 @@
   term: none,
   hide: false,
   kind: "term",
+  main: false,
   body,
-) = locate(loc => {
-  __s_mty_index.update(arr => {
-    arr.push((
-      term: idx-term(def.if-none(term, body)),
-      body: def.if-none(term, body),
-      kind: kind,
-      loc: loc,
-    ))
-    arr
-  })
+) = {
+  let entry = (
+    term: idx-term(if term != none {
+      term
+    } else {
+      body
+    }),
+    body: body,
+    main: main,
+    kind: kind,
+  )
   if not hide {
     body
   }
-})
+  [#metadata(entry)<mantys:index>]
+}
 
+/// #property(context: true)
+#let index-len(kind: auto) = {
+  let terms = (:)
+
+  let index-entries = query(<mantys:index>)
+  if kind != auto {
+    let kinds = (kind,).flatten()
+    index-entries = index-entries.filter(entry => entry.value.kind in kinds)
+  }
+
+  return index-entries.len()
+}
 
 /// Creates an index from previously set entries.
 ///
@@ -55,53 +69,60 @@
 ///   #lambda("string", "content", "location", ret:"content")
 /// -> content
 #let make-index(
-  kind: none,
-  cols: 3,
-  headings: h => heading(level: 2, numbering: none, outlined: false, h),
+  kind: auto,
+  headings: text => heading(depth: 2, numbering: none, outlined: false, bookmarked: false, text),
   entries: (term, body, locs) => [
     #link(locs.first(), body) #box(width: 1fr, repeat[.]) #{
       locs.map(loc => link(loc, strong(str(loc.page())))).join([, ])
     }\
   ],
-) = locate(loc => {
-  let index = __s_mty_index.final(loc)
+) = context {
+  // TODO: Improve index generation:
+  //       - Add "main" index entry
+  //       - Simplify (?)
+  //       - Add "sort" option (by term, by (first) page)
+  let index-entries = query(<mantys:index>)
   let terms = (:)
-
   let kinds = (kind,).flatten()
-  for idx in index {
-    if is.not-none(kind) and idx.kind not in kinds {
+
+  for entry in index-entries {
+    let idx = entry.value
+    if kind != auto and idx.kind not in kinds {
       continue
     }
-    let term = idx.term
-    let l = upper(term.first())
-    let p = idx.loc.page()
 
-    if l not in terms {
-      terms.insert(l, (:))
+    let letter = upper(idx.term.first())
+    let page = entry.location().page()
+
+    if letter not in terms {
+      terms.insert(letter, (:))
     }
-    if term in terms.at(l) {
-      if p not in terms.at(l).at(term).pages {
-        terms.at(l).at(term).pages.push(p)
-        terms.at(l).at(term).locs.push(idx.loc)
+    if idx.term in terms.at(letter) {
+      // Update list of locations
+      if page not in terms.at(letter).at(idx.term).pages {
+        terms.at(letter).at(idx.term).pages.push(p)
+        terms.at(letter).at(idx.term).locations.push(entry.location())
       }
     } else {
-      terms.at(l).insert(term, (term: term, body: idx.body, pages: (p,), locs: (idx.loc,)))
+      // Insert term
+      terms.at(letter).insert(
+        idx.term,
+        (
+          term: idx.term,
+          body: idx.body,
+          pages: (page,), // TODO ?
+          locations: (entry.location(),),
+        ),
+      )
     }
   }
 
-  show heading: it => block([
-    #block(spacing: 0.3em, text(font: ("Liberation Sans"), fill: theme.colors.secondary, it.body))
-  ])
-  columns(
-    cols,
-    for l in terms.keys().sorted() {
-      headings(l)
+  for letter in terms.keys().sorted() {
+    headings(letter)
 
-      // for (_, term) in terms.at(l) {
-      for term-key in terms.at(l).keys().sorted() {
-        let term = terms.at(l).at(term-key)
-        entries(term.term, term.body, term.locs)
-      }
-    },
-  )
-})
+    for term-key in terms.at(letter).keys().sorted() {
+      let term = terms.at(letter).at(term-key)
+      entries(term.term, term.body, term.locations)
+    }
+  }
+}

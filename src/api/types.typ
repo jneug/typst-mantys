@@ -2,6 +2,7 @@
 #import "../util/utils.typ": rawi, get-text-color
 #import "../util/is.typ"
 #import "../core/themes.typ": themable
+#import "../core/index.typ"
 #import "links.typ"
 
 #let _type-map = (
@@ -57,6 +58,7 @@
   outset: (y: 2pt),
   text(
     .88em,
+    get-text-color(color),
     rawi(name),
   ),
 )
@@ -64,6 +66,11 @@
 #let custom-type(name, color: auto) = [
   #metadata((name: name, color: color))
   #label("mantys:custom-type-" + name)
+  #index.idx(
+    term: name,
+    kind: "type",
+    themable(theme => type-box(name, theme.types.custom)),
+  )
 ]
 
 #let is-custom-type(name) = query(label("mantys:custom-type-" + name)) != ()
