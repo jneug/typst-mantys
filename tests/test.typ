@@ -23,7 +23,7 @@
 #let TIDY = package("Tidy")
 
 #show: mantys(
-  ..toml(typst-toml),
+  ..toml(toml-file),
 
   subtitle: [#strong[MAN]uals for #strong[TY]p#strong[S]t],
   date: datetime.today(),
