@@ -65,13 +65,38 @@
   }
 }
 
-#let github(repo) = link("https://github.com/" + repo, repo)
-#let universe(pkg) = link("https://typst.app/universe/package/" + pgk, package(pkg))
-#let preview(pkg, version: none) = link(
-  "https://github.com/typst/packages/tree/main/packages/preview/" + pgk + if version != none {
-    "/" + str(version)
-  } else {
-    ""
-  },
-  package(pkg),
-)
+#let github(repo) = {
+  if repo.starts-with("https://github.com/") {
+    repo = repo.slice(19)
+  }
+  link("https://github.com/" + repo, repo)
+}
+
+#let universe(pkg) = link("https://typst.app/universe/package/" + pkg, package(pkg))
+
+#let preview(pkg, ver: auto) = {
+  if ver == auto {
+    let m = pkg.match(regex("\d+\.\d+\.\d+$"))
+    if m != none {
+      ver = m.text
+      pkg = pkg.slice(0, ver.len() + 1)
+    } else {
+      ver = none
+    }
+  }
+  if type(ver) == str {
+    ver = version(..ver.split(".").map(int))
+  }
+  link(
+    "https://github.com/typst/packages/tree/main/packages/preview/" + pkg + if ver != none {
+      "/" + str(ver)
+    } else {
+      ""
+    },
+    package(pkg + if ver != none {
+      ":" + str(ver)
+    } else {
+      ""
+    }),
+  )
+}
