@@ -5,7 +5,7 @@
 #import "../core/themes.typ": themable
 
 #import "values.typ": value
-#import "types.typ": dtype
+#import "types.typ": dtype, dtypes
 #import "links.typ": link-builtin
 #import "elements.typ": module as _module
 
@@ -193,3 +193,82 @@
   // #__s_mty_command.update(none)
   // #v(.65em, weak:true)
 ]
+
+/// Displays information for a variable defintion.
+/// #example[```
+/// #variable("primary", types:("color",), value:green)[
+///   Primary color.
+/// ]
+/// ```]
+///
+/// - name (string): Name of the variable.
+/// - types (array): Array of types to be passed to @@dtypes.
+/// - value (any): Default value.
+/// - body (content): Description of the variable.
+/// -> content
+#let variable(name, types: none, value: none, label: auto, body) = [
+  #set terms(hanging-indent: 0pt)
+  #set par(first-line-indent: 0.65pt, hanging-indent: 0pt)
+  / #var(name)#{
+    if value != none {
+      " " + sym.colon + " " + _v(value)
+    }
+  }#{
+    if types != none {
+      h(1fr) + dtypes(..types)
+    }
+  }<var>: #block(inset: (left: 2em), body)#var-label(mty.def.if-auto(name, label))
+]
+
+/// Displays information for a command argument.
+/// See the argument list below for an example.
+///
+/// - name (string): Name of the argument.
+/// - is-sink (boolean): If this is a sink argument.
+/// - types (array): Array of types to be passed to @@dtypes.
+/// - choices (array): Optional array of valid values for this argument.
+/// - default (any): Optional default value for this argument.
+/// - body (content): Description of the argument.
+/// -> content
+#let argument(
+  name,
+  is-sink: false,
+  types: none,
+  choices: none,
+  default: "__none__",
+  title: "Argument",
+  body,
+) = {
+  types = (types,).flatten()
+
+  v(.65em)
+  themable(theme => block(
+    above: .65em,
+    stroke: .75pt + theme.muted.fill,
+    inset: (top: 10pt, left: -1em + 8pt, rest: 8pt),
+    outset: (left: 1em),
+    radius: 2pt,
+    {
+      place(
+        top + left,
+        dy: -15.5pt,
+        dx: 5.75pt,
+        box(inset: 2pt, fill: white, text(size: .75em, font: theme.fonts.sans, theme.muted.fill, title)),
+      )
+      if is-sink {
+        sarg(name)
+      } else if default != "__none__" {
+        arg(name, default)
+      } else {
+        arg(name)
+      }
+      h(1fr)
+      if types != (none,) {
+        dtypes(..types)
+      } else if default != "__none__" {
+        dtype(default)
+      }
+      block(width: 100%, below: .65em, inset: (x: .75em), body)
+    },
+  ))
+}

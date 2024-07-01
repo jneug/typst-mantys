@@ -110,6 +110,10 @@
   return themable((theme => links.link-dtype(_type, type-box(_type, theme.types.at(_type)))))
 }
 
+#let dtypes(..types, link: true, sep: box(inset: (left: 1pt, right: 1pt), sym.bar.v)) = {
+  types.pos().map(dtype.with(link: link)).join(sep)
+}
+
 
 // TODO Adding schemas as cutsom types
 #let _parse-dict-schema(schema) = {
