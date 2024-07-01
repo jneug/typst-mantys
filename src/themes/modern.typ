@@ -3,9 +3,15 @@
 #let primary = rgb("#ed592f")
 #let secondary = rgb("#05b5da")
 
+#let fonts = (
+  serif: ("Linux Libertine", "Liberation Serif"),
+  sans: ("Source Sans Pro", "Roboto"),
+  mono: ("Fira Code", "Liberation Mono"),
+)
+
 #let text = (
   size: 12pt,
-  font: ("Source Sans Pro", "Roboto"),
+  font: fonts.sans,
   fill: rgb("#333333"),
 )
 
@@ -15,21 +21,40 @@
 
 #let heading = (
   size: 15pt,
-  font: ("Source Sans Pro", "Roboto"),
+  font: fonts.sans,
   fill: primary,
+)
+
+#let alerts = (
+  info: rgb(23, 162, 184),
+  warning: rgb(255, 193, 7),
+  error: rgb(220, 53, 69),
+  success: rgb(40, 167, 69),
 )
 
 #let code = (
   size: 12pt,
-  font: (),
+  font: fonts.mono,
   fill: rgb("#999999"),
 )
 
 #let emph = (
   link: secondary,
+  package: primary,
+  module: rgb("#8c3fb2"),
 )
 
-#let package = primary
+#let commands = (
+  argument:  rgb("#3c5c99"),
+  option:    rgb(214, 182, 93),
+	command:   blue,      // rgb(75, 105, 197),
+	builtin:   eastern,
+	comment:   gray,      // rgb(128, 128, 128),
+)
+
+#let values = (
+  default: rgb(181, 2, 86),
+)
 
 #let types = {
   let red = rgb(255, 203, 195)
@@ -64,6 +89,7 @@
     string: rgb(209, 255, 226),
     type: gray,
     label: rgb(167, 234, 255),
+    version: gray,
 
     // layout
     alignment: gray,
@@ -76,8 +102,18 @@
     relative: purple,
 
     // visualize
-    color: gradient.linear(..color.map.spectral, angle: 180deg),
-    gradient: gradient.linear(..color.map.spectral, angle: 180deg),
+    color: gradient.linear(
+      (rgb("#7cd5ff"), 0%),
+      (rgb("#a6fbca"), 33%),
+      (rgb("#fff37c"), 66%),
+      (rgb("#ffa49d"), 100%)
+    ),
+    gradient: gradient.linear(
+      (rgb("#7cd5ff"), 0%),
+      (rgb("#a6fbca"), 33%),
+      (rgb("#fff37c"), 66%),
+      (rgb("#ffa49d"), 100%)
+    ),
     stroke: gray,
   )
 }
@@ -85,16 +121,18 @@
 
 #let page-init(doc) = body => {
   show typst.heading.where(level: 1): it => {
+    pagebreak(weak: true)
     set typst.text(fill: primary)
     block(
       width: 100%,
+      breakable: false,
       inset: (bottom: .33em),
       stroke: (bottom: .6pt + secondary),
       [#if it.numbering != none {
           typst.text(
             weight: "semibold",
             secondary,
-            counter(typst.heading.where(level: it.level)).display(it.numbering),
+            [Part ] + counter(typst.heading.where(level: it.level)).display(it.numbering),
           ) + h(1.28em)
         } #it.body],
     )

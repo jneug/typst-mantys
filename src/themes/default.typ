@@ -1,22 +1,35 @@
 #import "../util/typst.typ"
 
-#let primary = rgb("#ed592f")
-#let secondary = rgb("#05b5da")
+#let primary = eastern
+#let secondary = teal
+
+
+#let fonts = (
+  serif: ("Linux Libertine", "Liberation Serif"),
+  sans: ("Liberation Sans", "Helvetica Neue", "Helvetica"),
+  mono: ("Liberation Mono",),
+)
 
 #let text = (
   size: 12pt,
-  font: ("Source Sans Pro", "Roboto"),
-  fill: rgb("#333333"),
+  font: fonts.serif,
+  fill: rgb(35, 31, 32),
 )
 
 #let muted = (
-  fill: luma(80%),
+  fill: luma(210),
 )
 
 #let heading = (
   size: 15pt,
-  font: ("Source Sans Pro", "Roboto"),
+  font: fonts.sans,
   fill: primary,
+)
+
+#let code = (
+  size: 9pt,
+  font: fonts.mono,
+  fill: rgb("#999999"),
 )
 
 #let alerts = (
@@ -26,12 +39,6 @@
   success: rgb(40, 167, 69),
 )
 
-#let code = (
-  size: 12pt,
-  font: (),
-  fill: rgb("#999999"),
-)
-
 #let emph = (
   link: secondary,
   package: primary,
@@ -39,11 +46,11 @@
 )
 
 #let commands = (
-  argument:  rgb("#3c5c99"),
-  option:    rgb(214, 182, 93),
-	command:   blue,      // rgb(75, 105, 197),
-	builtin:   eastern,
-	comment:   gray,      // rgb(128, 128, 128),
+  argument: navy,
+  option: rgb(214, 182, 93),
+  command: blue,
+  builtin: eastern,
+  comment: gray,
 )
 
 #let values = (
@@ -115,19 +122,20 @@
 
 #let page-init(doc) = body => {
   show typst.heading.where(level: 1): it => {
-    set typst.text(fill: primary)
+    pagebreak(weak: true)
+    set typst.text(fill: text.fill)
     block(
       width: 100%,
-      inset: (bottom: .33em),
-      stroke: (bottom: .6pt + secondary),
+      breakable: false,
       [#if it.numbering != none {
           typst.text(
             weight: "semibold",
-            secondary,
-            counter(typst.heading.where(level: it.level)).display(it.numbering),
+            primary,
+            [Part ] + counter(typst.heading.where(level: it.level)).display(it.numbering),
           ) + h(1.28em)
-        } #it.body],
-    )
+        }\
+        #it.body],
+    ) + v(.64em)
   }
   body
 }
