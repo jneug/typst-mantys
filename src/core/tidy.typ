@@ -11,6 +11,10 @@
 
 #let get-type-color(type) = rgb("#eff0f3")
 
+#let _property(..args) = {
+  api.info-alert(args.named().pairs().map(((k, v)) => [/ #k: #v]))
+}
+
 
 #let show-outline(module-doc, style-args: (:)) = {
   let prefix = module-doc.label-prefix
@@ -160,6 +164,7 @@
 ) = {
   // add mantys api to scope
   style-args.scope.insert("mantys", api)
+  style-args.scope.insert("property", _property)
 
   // evaluate docstring
   let descr = deps.tidy.utilities.eval-docstring(

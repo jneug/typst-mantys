@@ -13,7 +13,7 @@
       doc.examples-scope
     } else {
       (:)
-    } + scope // + (api: api) // TODO: Move to tidy-style
+    } + scope
 
     let module-doc = deps.tidy.parse-module(
       data,
