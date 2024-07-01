@@ -1,7 +1,6 @@
 #import "../_deps.typ" as deps
 #import "../_api.typ" as api
-
-#let _api_preamble = "#import mantys: *\n"
+#import "../util/utils.typ": rawi
 
 #import deps.tidy.utilities: *
 
@@ -11,8 +10,25 @@
 
 #let get-type-color(type) = rgb("#eff0f3")
 
+// TODO: REplace with build-preamble?
+#let _api_preamble = "#import mantys: *\n"
+#let eval-docstring(docstring, style-args) = deps.tidy.utilities.eval-docstring(
+  _api_preamble + docstring,
+  style-args,
+)
+
+#let _properties = (
+  default: (k, v) => api.info-alert[*#rawi(k)*: #rawi(v)],
+  requires-context: (_, v) => api.warning-alert[#emoji.warning *`requires-context`*],
+)
 #let _property(..args) = {
-  api.info-alert(args.named().pairs().map(((k, v)) => [/ #k: #v]))
+  for (k, v) in args.named() {
+    if k in _properties {
+      (_properties.at(k))(k, v)
+    } else {
+      (_properties.default)(k, v)
+    }
+  }
 }
 
 
@@ -93,22 +109,20 @@
   style-args,
   show-default: false,
   default: none,
-) = block(
-  inset: 0pt,
-  width: 100%,
-  breakable: style-args.break-param-descriptions,
-  [
-    #[
-      #set text(fill: fn-color)
-      #raw(name, lang: none)
-    ]
-    (#h(-.2em)
-    #types.map(x => (style-args.style.show-type)(x)).join([ #text("or", size: .6em) ])
-    #if show-default [\= #raw(lang: "typc", default) ]
-    #h(-.2em)) --
-    #content
-
-  ],
+) = api.argument(
+  if name.starts-with("..") {
+    name.slice(2)
+  } else {
+    name
+  },
+  is-sink: name.starts-with(".."),
+  types: types,
+  default: if show-default {
+    raw(lang: "typc", block: false, default)
+  } else {
+    "__none__"
+  },
+  content,
 )
 
 
@@ -167,10 +181,7 @@
   style-args.scope.insert("property", _property)
 
   // evaluate docstring
-  let descr = deps.tidy.utilities.eval-docstring(
-    _api_preamble + fn.description,
-    style-args,
-  )
+  let descr = eval-docstring(fn.description, style-args)
 
   [
     #api.command(
@@ -191,6 +202,21 @@
       ret: fn.return-types,
       {
         descr
+
+        for (name, info) in fn.args {
+          let description = info.at("description", default: "")
+          if description in ("", []) and style-args.omit-empty-param-descriptions {
+            continue
+          }
+          (style-args.style.show-parameter-block)(
+            name,
+            info.at("types", default: ()),
+            eval-docstring(description, style-args),
+            style-args,
+            show-default: "default" in info,
+            default: info.at("default", default: none),
+          )
+        }
       },
     )
     #label(style-args.label-prefix + fn.name + "()")
