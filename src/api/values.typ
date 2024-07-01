@@ -14,10 +14,10 @@
 ///
 /// - value (any): Value to show.
 /// -> content
-#let value(value, repr: true) = if repr {
+#let value(value, repr: false) = if repr {
   themable(theme => text(theme.values.default, rawi(typst.repr(value))))
 } else {
-  themable(theme => text(theme.values.default, rawi(value)))
+  themable(theme => text(theme.values.default, rawi(lang: "typc", value)))
 }
 
 #let _v = value
