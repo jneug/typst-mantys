@@ -51,8 +51,24 @@
 
 // TODO: (re)move?
 #let toml-file = "../typst.toml"
-#let git-file = "../.git/HEAD"
-#let git-head-file(head-data) = {
+
+#let git-info(read, git-root: "../.git") = {
+  if git-root.at(-1) != "/" {
+    git-root += "/"
+  }
+  let head-data = read(git-root + "HEAD")
   let m = head-data.match(regex("^ref: (\S+)"))
-  return "../.git/" + m.captures.at(0)
+  if m == none {
+    return none
+  }
+
+  let ref = m.captures.at(0)
+
+  let branch = ref.split("/").last()
+  let hash = read(git-root + ref).trim()
+
+  return (
+    branch: branch,
+    hash: hash,
+  )
 }

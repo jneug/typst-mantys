@@ -5,22 +5,23 @@
 #import "../api/types.typ": type-box, _type-map
 
 #let page-header(doc, theme) = {
-  grid(
-    columns: (auto, 1fr, auto),
-    align: (left + top, center + top, right + top),
-    context hydra.hydra(1), [], context emph(hydra.hydra(2)),
-  )
+  context {
+    set text(..theme.header)
+    hydra.hydra(1) + h(1fr) + emph(hydra.hydra(2))
+  }
 }
 
 #let page-footer(doc, theme) = {
   counter(page).display((n, ..) => if n > 1 {
-    set text(.88em, theme.muted.fill)
+    set text(..theme.footer)
     grid(
       columns: (5fr, 1fr),
       align: (left + bottom, right + bottom),
       {
         [compiled: #datetime.today().display()]
-        if doc.git != none [, git #doc.git.slice(0,8)]
+        if doc.git != none {
+          if doc.package.repository != none [, git #link(doc.package.repository + "/tree/" + doc.git.hash, doc.git.hash.slice(0,8))] else [, git #doc.git.hash.slice(0,8)]
+        }
       },
       [#n],
     )

@@ -188,15 +188,13 @@
     ),
 
     // Git info
-    // TODO: remove git info?
-    git: t.string(
+    git: t.dictionary(
+      (
+        branch: t.string(default: "main"),
+        hash: t.string(),
+      ),
       optional: true,
-      post-transform: (self, it) => {
-        if is.str(it) {
-          return it.trim()
-        }
-        it
-      }
+      post-transform: t.coerce.dictionary(it => (hash: it))
     ),
   ),
   pre-transform: (self, it) => {
