@@ -13,6 +13,14 @@
   let doc = document.create(..args)
   document.save(doc)
 
+  // Add assets metadata to document
+  for asset in doc.assets [#metadata(asset)<mantys:asset>]
+
+  // Asset mode skips rendering the body
+  if sys.inputs.at("mode", default: "full") == "assets" {
+    return []
+  }
+
   // theme.page-init(doc)
   // set page(paper: "a4")
   show: layout.page-init(doc, theme)

@@ -163,6 +163,29 @@
         return (scope:(:), imports:(:)) + it
       }
     ),
+    assets: t.array(
+      t.dictionary((
+        id: t.string(),
+        src: t.string(),
+        dest: t.string()
+      )),
+      default: (),
+      pre-transform: (_, it) => {
+        if type(it) == dictionary {
+          let assets = ()
+          for (id, spec) in it {
+            assets.push((
+              id: id,
+              src: if type(spec) == str { spec } else { spec.src },
+              dest: if type(spec) == str { id } else { spec.at("dest", default: id) }
+            ))
+          }
+          return assets
+        } else {
+          return it
+        }
+      }
+    ),
 
     // Git info
     // TODO: remove git info?
