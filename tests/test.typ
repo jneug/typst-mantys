@@ -41,15 +41,22 @@
     scope: (utils: utils, api: api),
     imports: (utils: "get-text", api: "*"),
   ),
+  assets: (
+    "pages": (
+      src: "examples/pages.typ",
+      dest: "examples/pages/{n}.png",
+    ),
+    "examples/ab.png": "examples/ab.typ",
+  ),
 )
 
 #pagebreak(weak: true)
 = About <about>
 
 
-Mantys is a Typst package to help package and template authors to write consistently formatted manuals. The idea is that, as many Typst users are switching over from #TeX, they are used to the way packages provide a PDF manual for reference. Though in a modern ecosystem there are other ways to write documentation (like mty.footlink("https://rust-lang.github.io/mdBook/")[mdBook] or mty.footlink("https://asciidoc.org")[AsciiDoc]), having a manual in PDF format might still be beneficial, since many users of Typst will generate PDFs as their main output.
+Mantys is a Typst package to help package and template authors to write consistently formatted manuals. The idea is that, as many Typst users are switching over from #TeX, they are used to the way packages provide a PDF manual for reference. Though in a modern ecosystem there are other ways to write documentation (like #link("https://rust-lang.github.io/mdBook/")[mdBook] or #link("https://asciidoc.org")[AsciiDoc]), having a manual in PDF format might still be beneficial, since many users of Typst will generate PDFs as their main output.
 
-The design and functionality of Mantys was inspired by the fantastic #LaTeX package #link("https://ctan.org/pkg/cnltx")[#cnltx] by #name[Clemens Niederberger]#footnote[#link("mailto:clemens@cnltx.de", "clemens@cnltx.de")].
+The design and functionality of Mantys was inspired by the fantastic #LaTeX package #link("https://ctan.org/pkg/cnltx")[#cnltx] by #name[Clemens Niederberger]#footnote[#link("*mailto:clemens@cnltx.de", "clemens@cnltx.de")].
 
 This manual is supposed to be a complete reference of Mantys, but might be out of date for the most recent additions and changes. On the other hand, the source file of this document is a great example of the things Mantys can do. Other than that, refer to the README file in the GitHub repository and the source code for Mantys.
 
@@ -62,6 +69,7 @@ This manual is supposed to be a complete reference of Mantys, but might be out o
 
 = Tutorial
 
+== Example pages
 
 = My second Part
 #lorem(100)
