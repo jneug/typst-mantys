@@ -13,12 +13,18 @@
 
 /// Displays #arg[code] as inline #builtin[raw]
 /// - #shortex(`#utils.rawi("my-code")`)
-#let rawi(code) = raw(block: false, get-text(code))
+/// - code (string, content): The content to show as inline raw.
+/// -> content
+#let rawi(code, lang: none) = raw(block: false, lang: lang, get-text(code))
 
 /// Returns a light or dark color, depending on the provided #arg[clr].
 /// #example[```
 /// #utils.get-text-color(red)
 /// ```]
+/// - clr (color, gradient): Paint to get the text color for.
+/// - light (color): Color to use, if #arg[clr] is a dark color.
+/// - dark (color): Color to use, if #arg[clr] is a light color.
+/// -> color
 #let get-text-color(clr, light: white, dark: black) = {
   if type(clr) == gradient {
     clr = clr.sample(50%)
@@ -31,6 +37,8 @@
 }
 
 
+/// Creates a preamble
+/// #property(since: "1.0.0", requires-context: true)
 #let build-preamble(imports) = {
   return imports.pairs().map(((mod, imp)) => {
     "#import " + mod + ": " + imp
