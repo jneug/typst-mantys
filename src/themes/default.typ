@@ -10,14 +10,23 @@
   mono: ("Liberation Mono",),
 )
 
+#let muted = (
+  fill: luma(210),
+)
+
 #let text = (
   size: 12pt,
   font: fonts.serif,
   fill: rgb(35, 31, 32),
 )
 
-#let muted = (
-  fill: luma(210),
+#let header = (
+  size: 10pt,
+  fill: text.fill,
+)
+#let footer = (
+  size: 9pt,
+  fill: muted.fill,
 )
 
 #let heading = (
@@ -51,6 +60,7 @@
   command: blue,
   builtin: eastern,
   comment: gray,
+  symbol: text.fill,
 )
 
 #let values = (
@@ -140,48 +150,92 @@
   body
 }
 
+#let _display-author(author) = block({
+  smallcaps(author.name)
+  set typst.text(.88em)
+  if author.email != none {
+    linebreak()
+    " " + sym.lt + link("mailto://" + author.email, author.email) + sym.gt
+  }
+  if author.affiliation != () {
+    linebreak()
+    smallcaps(author.affiliation)
+  }
+  if author.urls != () {
+    linebreak()
+    author.urls.map(link).join(linebreak())
+  }
+  if author.github != none {
+    linebreak()
+    [GitHub: ] + link("https://github.com/" + author.github, author.github)
+  }
+})
+
 #let title-page(doc) = {
   set align(center)
-  v(2fr)
+  set block(spacing: 2em)
 
   block(
-    width: 100%,
-    inset: (y: 1.28em),
-    stroke: (bottom: 2pt + secondary),
-    [
-      #set typst.text(40pt)
-      #doc.title
-    ],
+    typst.text(
+      40pt,
+      primary,
+      if doc.title == none {
+        doc.package.name
+      } else {
+        doc.title
+      },
+    ),
   )
-
   if doc.subtitle != none {
-    typst.text(18pt, doc.subtitle)
-    v(1em)
+    block(above: 1em, typst.text(18pt, doc.subtitle))
   }
 
-  typst.text(14pt)[Version #doc.package.version]
+  typst.text(14pt)[v#doc.package.version]
   if doc.date != none {
-    h(3em)
+    h(4em)
     typst.text(14pt, doc.date.display())
   }
-  h(3em)
+  h(4em)
   typst.text(14pt, doc.package.license)
 
-  v(1fr)
-  pad(
-    x: 10%,
-    {
-      set align(left)
-      doc.abstract
-    },
+  if doc.package.description != none {
+    block(doc.package.description)
+  }
+
+  grid(
+    columns: calc.min(4, doc.package.authors.len()),
+    gutter: .64em,
+    ..doc.package.authors.map(_display-author)
   )
-  v(1fr)
-  if doc.show-outline {
-    typst.heading(level: 2, outlined: false, numbering: none, "Table of Contents")
-    columns(
-      2,
-      outline(title: none),
+
+  if doc.urls != none {
+    block(doc.urls.map(link).join(linebreak()))
+  }
+
+  if doc.abstract != none {
+    pad(
+      x: 10%,
+      {
+        set align(left)
+        // set par(justify: true)
+        // show par: set block(spacing: 1.3em)
+        doc.abstract
+      },
     )
   }
-  v(2fr)
+
+  if doc.show-outline {
+    set align(left)
+    set block(spacing: 0.65em)
+    show outline.entry.where(level: 1): it => {
+      v(0.85em, weak: true)
+      strong(link(it.element.location(), it.body))
+    }
+
+    typst.heading(level: 2, outlined: false, bookmarked: false, numbering: none, "Table of Contents")
+    columns(
+      2,
+      outline(title: none, indent: auto),
+    )
+  }
 }

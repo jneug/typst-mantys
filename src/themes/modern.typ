@@ -9,14 +9,23 @@
   mono: ("Fira Code", "Liberation Mono"),
 )
 
+#let muted = (
+  fill: luma(80%),
+)
+
 #let text = (
   size: 12pt,
   font: fonts.sans,
   fill: rgb("#333333"),
 )
 
-#let muted = (
-  fill: luma(80%),
+#let header = (
+  size: 10pt,
+  fill: text.fill,
+)
+#let footer = (
+  size: 9pt,
+  fill: muted.fill,
 )
 
 #let heading = (
@@ -50,6 +59,7 @@
 	command:   blue,      // rgb(75, 105, 197),
 	builtin:   eastern,
 	comment:   gray,      // rgb(128, 128, 128),
+  symbol: text.fill,
 )
 
 #let values = (
