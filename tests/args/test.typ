@@ -1,5 +1,5 @@
 #import "../../src/api/commands.typ": *
-#import "../../src/layout/main.typ" as layout
+#import "../../src/core/layout.typ"
 #import "../../src/core/themes.typ"
 
 #show: layout.page-init((package: (name: "Test")), themes.default)

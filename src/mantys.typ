@@ -2,7 +2,7 @@
 #import "core/document.typ"
 #import "core/themes.typ"
 #import "core/index.typ": *
-#import "layout/main.typ" as layout
+#import "core/layout.typ"
 #import "api/tidy.typ": *
 
 #import "_api.typ": *

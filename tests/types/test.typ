@@ -1,6 +1,6 @@
 #import "../../src/api/types.typ": *
 #import "../../src/core/schema.typ" as s
-#import "../../src/layout/main.typ" as layout
+#import "../../src/core/layout.typ"
 #import "../../src/core/themes.typ": default
 
 #show: layout.page-init((package: (name: "Test"), git: none), default)

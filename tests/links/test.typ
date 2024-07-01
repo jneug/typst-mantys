@@ -1,5 +1,5 @@
 #import "../../src/core/document.typ"
-#import "../../src/layout/main.typ" as layout
+#import "../../src/core/layout.typ"
 #import "../../src/core/themes.typ"
 
 #import "../../src/api/links.typ": *
