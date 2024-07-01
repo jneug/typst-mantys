@@ -122,6 +122,7 @@
     // mty.idx(kind: "cmd", hide: true)[#utils.rawi(sym.hash)#mty.rawc(theme.colors.command, name)]
     idx(
       kind: "cmd",
+      hide: true,
       term: name,
       {
         themable(theme => {
