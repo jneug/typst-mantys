@@ -5,16 +5,29 @@ export TYPST_ROOT := root
 default:
 	@just --list --unsorted
 
+compile *ARGS:
+	typst compile "{{ ARGS }}"
+
+watch *ARGS:
+	typst watch "{{ ARGS }}"
+
+test FILTER="":
+	typst-test run {{ FILTER }}
+
+update FILTER="":
+	typst-test update {{ FILTER }}
+
+
 build FILE: (assets FILE)
-	typst compile "{{FILE}}"
+	typst compile "{{ FILE }}"
 
 assets FILE:
 	#!/usr/bin/env bash
-	FILE_ROOT=`dirname "{{FILE}}"`
+	FILE_ROOT=`dirname "{{ FILE }}"`
 
 	# Query for asset data
-	if ! typst query "{{FILE}}" "<mantys:asset>" &>/dev/null; then
-		ERRORS=`typst query "{{FILE}}" "<mantys:asset>" --diagnostic-format short 2>&1`
+	if ! typst query "{{ FILE }}" "<mantys:asset>" &>/dev/null; then
+		ERRORS=`typst query "{{ FILE }}" "<mantys:asset>" --diagnostic-format short 2>&1`
 		RE='(.*)searched at ([^)]+)(.*)'
 
 		while [[ $ERRORS =~ $RE ]]; do
@@ -24,7 +37,7 @@ assets FILE:
 		done
 	fi
 
-	ASSETS=`typst query "{{FILE}}" "<mantys:asset>"`
+	ASSETS=`typst query "{{ FILE }}" "<mantys:asset>"`
 	echo $ASSETS | jq -c '.[].value' | while read ASSET;
 	do
 		ID=$(echo $ASSET | jq -r '.["id"]')
