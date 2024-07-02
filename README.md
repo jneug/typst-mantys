@@ -6,12 +6,10 @@ Template for documenting [typst](https://github.com/typst/typst) packages and te
 
 ## Usage
 
-Just import the package at the beginning of your manual:
-```typst
-#import "@preview/mantys:0.1.4": *
+Quickstart your manual using `typst init`:
+```shell
+typst init @preview/mantys
 ```
-
-Mantys supports **Typst 0.11.0** and newer.
 
 ## Writing basics
 
