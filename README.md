@@ -88,6 +88,11 @@ For a full reference of available commands read [the manual](docs/mantys-manual.
 
 ## Changelog
 
+### Version 0.1.5
+
+- Fixed `#cmdref` not showing command name (by @freundTech).
+- Made colors of datatype blocks look closer to the Typst website (by @tingerrr).
+
 ### Version 0.1.4
 
 - Fix missing links in outline (@tingerrr).
