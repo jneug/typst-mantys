@@ -597,7 +597,7 @@
 #let cmdref(name, module: none, format: (name, loc) => [command #cmd(name) on #link(loc)[page #loc.page()]]) = if module != none {
   // TODO use module in reference
 } else {
-  link(cmd-label(name), cmd-[name])
+  link(cmd-label(name), cmd-(name))
 }
 // locate(loc => {
 // 	let res = query(cmd-selector(name), loc)
