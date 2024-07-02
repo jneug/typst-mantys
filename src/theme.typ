@@ -1,7 +1,7 @@
 
 #let page = (
   paper: "a4",
-	margin: auto
+  margin: auto
 )
 
 
@@ -23,62 +23,73 @@
 
 
 #let colors = (
-	primary:   eastern,   // rgb(31, 158, 173),
-	secondary: teal,      // rgb(18, 120, 133),
-	argument:  navy,      // rgb(0, 29, 87),
-	option:    rgb(214, 182, 93),
-	value:     rgb(181, 2, 86),
-	command:   blue,      // rgb(75, 105, 197),
-	comment:   gray,      // rgb(128, 128, 128),
+  primary:   eastern,   // rgb(31, 158, 173),
+  secondary: teal,      // rgb(18, 120, 133),
+  argument:  navy,      // rgb(0, 29, 87),
+  option:    rgb(214, 182, 93),
+  value:     rgb(181, 2, 86),
+  command:   blue,      // rgb(75, 105, 197),
+  comment:   gray,      // rgb(128, 128, 128),
   module:    rgb("#8c3fb2"),
 
   text:      rgb(35, 31, 32),
   muted:     luma(210),
 
-	info:      rgb(23, 162, 184),
-	warning:   rgb(255, 193, 7),
-	error:     rgb(220, 53, 69),
-	success:   rgb(40, 167, 69),
+  info:      rgb(23, 162, 184),
+  warning:   rgb(255, 193, 7),
+  error:     rgb(220, 53, 69),
+  success:   rgb(40, 167, 69),
 
   // Datatypes taken from typst.app
-	dtypes: (
-		type: rgb(239, 240, 243),
-		length: rgb(230, 218, 255),
-		int: rgb(230, 218, 255),
-		float: rgb(230, 218, 255),
-		fraction: rgb(230, 218, 255),
-		ratio: rgb(230, 218, 255),
-		relative: rgb(230, 218, 255),
-		"relative length": rgb(230, 218, 255),
-    angle: rgb(230, 218, 255),
-		"none": rgb(255, 203, 195),
-		"auto": rgb(255, 203, 195),
-		"any": rgb(255, 203, 195),
-		"regular expression": rgb(239, 240, 243),
-		arguments: rgb(239, 240, 243),
-		dictionary: rgb(239, 240, 243),
-		array: rgb(239, 240, 243),
-		bytes: rgb(239, 240, 243),
-		stroke: rgb(239, 240, 243),
-		location: rgb(239, 240, 243),
-		selector: rgb(239, 240, 243),
-		alignment: rgb(239, 240, 243),
-		"2d alignment": rgb(239, 240, 243),
-		bool: rgb(255, 236, 193),
-		content: rgb(166, 235, 229),
-		str: rgb(209, 255, 226),
-		function: rgb(249, 223, 255),
-    label: rgb(167, 234, 255),
-    color: gradient.linear(..color.map.spectral, angle:180deg),
-    gradient: gradient.linear(..color.map.spectral, angle:180deg),
-		plugin: rgb(239, 240, 243),
-		datetime: rgb(239, 240, 243),
-		// color: (
-		// 	rgb(133, 221, 244),
-		// 	rgb(170, 251, 198),
-		// 	rgb(214, 247, 160),
-		// 	rgb(255, 243, 124),
-		// 	rgb(255, 187, 147)
-		// )
-	)
+  dtypes: {
+    let red = rgb(255, 203, 195)
+    let gray = rgb(239, 240, 243)
+    let purple = rgb(230, 218, 255)
+    let gradient-colors = (
+      (rgb("#7cd5ff"), 0%),
+      (rgb("#a6fbca"), 33%),
+      (rgb("#fff37c"), 66%),
+      (rgb("#ffa49d"), 100%),
+    )
+
+    (
+      // special
+      any: gray,
+      "auto": red,
+      "none": red,
+
+      // foundations
+      arguments: gray,
+      array: gray,
+      bool: rgb(255, 236, 193),
+      bytes: gray,
+      content: rgb(166, 235, 229),
+      datetime: gray,
+      dictionary: gray,
+      float: purple,
+      function: gray,
+      int: purple,
+      location: gray,
+      plugin: gray,
+      regex: gray,
+      selector: gray,
+      str: rgb(209, 255, 226),
+      type: gray,
+      label: rgb(167, 234, 255),
+
+      // layout
+      alignment: gray,
+      angle: purple,
+      direction: gray,
+      fraction: purple,
+      length: purple,
+      ratio: purple,
+      relative: purple,
+
+      // visualize
+      color: gradient.linear(..gradient-colors),
+      gradient: gradient.linear(..gradient-colors),
+      stroke: gray,
+    )
+  }
 )
