@@ -7,11 +7,11 @@
 
 #let fonts = (
   serif: ("Linux Libertine", "Liberation Serif"),
-  sans: ("Liberation Sans", "Helvetica Neue", "Helvetica"),
+  sans: ("Liberation Sans", "TeX Gyre Heros"),
   mono: ("Liberation Mono"),
 
   text: ("Linux Libertine", "Liberation Serif"),
-  headings: ("Liberation Sans", "Helvetica Neue", "Helvetica"),
+  headings: ("Liberation Sans", "TeX Gyre Heros"),
   code: ("Liberation Mono")
 )
 
