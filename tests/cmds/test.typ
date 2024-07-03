@@ -14,6 +14,12 @@
 - #cmd[cmd-name]
 - #cmd(module: "foo")[cmd-name]
 
+== `#builtin`
+
+- #builtin("raw")
+- #builtin[raw]
+- #builtin("clamp", module: "math")
+- #builtin(module: "math")[clamp]
 
 == `#command`
 

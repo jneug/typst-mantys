@@ -1,3 +1,4 @@
+#import "../../src/core/document.typ"
 #import "../../src/core/layout.typ"
 #import "../../src/core/themes.typ"
 
