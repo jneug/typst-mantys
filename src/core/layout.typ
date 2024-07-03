@@ -1,8 +1,12 @@
 #import "../_deps.typ": typearea, hydra
+
+#import "styles.typ"
+
 #import "../util/utils.typ"
 #import "../util/typst.typ"
 #import "../api/elements.typ": package
-#import "../api/types.typ": type-box, _type-map
+#import "../api/examples.typ": codesnippet
+#import "../api/types.typ": link-custom-type, type-box, _type-map
 
 #let page-header(doc, theme) = {
   context {
@@ -39,14 +43,17 @@
     footer: page-footer(doc, theme),
   )
 
-  // Setup look&feel
+  // Setup look & feel
   set par(justify: true)
 
   set text(..theme.text)
   set heading(numbering: "I.1.1.a")
-  show heading: set text(..theme.heading)
-  show heading.where(level: 1): it => {
-    pagebreak(weak: true)
+  show heading: it => {
+    // TODO: Style headings (teext size ...)
+    if it.at("level", default: it.at("depth", default: 2)) == 1 {
+      pagebreak(weak: true)
+    }
+    set text(..theme.heading)
     it
   }
 
@@ -68,6 +75,9 @@
     }
   }
 
+  // TODO: let the user do this?
+  show raw.where(block: true): codesnippet
+
   // Allow theme overrides
   // TODO: Should theme call be in mantys.typ?
   show: theme.page-init(doc)
@@ -76,6 +86,20 @@
   show <mantys:themable>: it => {
     let element = it.value
     (element.func)(theme, ..element.args)
+  }
+
+  show ref: it => {
+    if it.element.func() == figure {
+      if it.element.kind == "cmd" {
+        return link(
+          it.target,
+          styles.cmd(str(it.target)),
+        )
+      } else if it.element.kind == "type" {
+        return link-custom-type(str(it.target))
+      }
+    }
+    it
   }
 
   show upper(doc.package.name): it => package(doc.package.name)
