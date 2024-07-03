@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+if (( $# < 1 )) || [[ "${1:-}" == "help" ]]; then
+  echo "assets FILE"
+  echo ""
+  echo "Query FILE for assets and compile them with 'typst compile'."
+  exit 1
+fi
+
+ROOT=$(pwd)
+FILE="${1}"
+FILE_ROOT=`dirname $FILE`
+
+RE='(.*)searched at ([^)]+\.(png|svg|pdf))(.*)'
+
+# Query for asset data
+EXIT=1
+while [ $EXIT -ne 0 ]; do
+	STDOUT=$(typst query --root . "$FILE" "<mantys:asset>" --diagnostic-format short 2>&1)
+	EXIT="$?"
+
+	if [ $EXIT -ne 0 ]; then
+		if [[ $STDOUT =~ $RE ]]; then
+			# Create fake asset to execute query
+			ASSET_FILE="${BASH_REMATCH[2]}"
+			ASSET_FOLDER=$(dirname "$ASSET_FILE")
+
+			echo "Creating fake asset at $ASSET_FILE"
+			echo mkdir -p "$ASSET_FOLDER"
+			echo "" | typst c - "$ASSET_FILE"
+		else
+			break
+		fi
+	fi
+done
+
+# still errors? than something else went wrong ..
+if [ $EXIT -ne 0 ]; then
+  echo "error querying source file. command exited with error:"
+  echo $STDOUT
+  exit 1
+fi
+
+# query and compile assets
+ASSETS=`typst query "$FILE" "<mantys:asset>"`
+echo $ASSETS | jq -c '.[].value' | while read ASSET;
+do
+	ID=$(echo $ASSET | jq -r '.["id"]')
+	SRC=$FILE_ROOT"/"$(echo $ASSET | jq -r '.["src"]')
+	DEST=$FILE_ROOT"/"$(echo $ASSET | jq -r '.["dest"]')
+
+	if test -f "$SRC"; then
+		mkdir -p `dirname "$DEST"`
+		typst compile "$SRC" "$DEST" --ppi 250
+		echo "Created asset $ID"
+	else
+		echo "Asset $SRC not found!"
+	fi
+done
+
