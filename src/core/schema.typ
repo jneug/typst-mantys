@@ -194,14 +194,14 @@
         hash: t.string(),
       ),
       optional: true,
-      post-transform: t.coerce.dictionary(it => (hash: it))
+      pre-transform: t.coerce.dictionary(it => if it != none { (hash: it) } else { none })
     ),
   ),
   pre-transform: (self, it) => {
     // If package info is not loaded from typst.toml,
     // the keys are moved to the "package" dictionary.
     if "package" not in it {
-      it.insert("package", (:))
+      it.insert("package", (entrypoint: ""))
 
       for key in ("name", "description", "repository", "version", "license") {
         if key in it {
