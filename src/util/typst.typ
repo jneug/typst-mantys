@@ -4,6 +4,8 @@
 #let dict = dictionary
 #let arr = array
 #let content = content
+#let version = version
+#let label = label
 
 
 // Functions

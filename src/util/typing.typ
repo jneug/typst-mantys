@@ -2,6 +2,7 @@
 #let typst-regex = regex
 
 #import "is.typ"
+#import "typst.typ"
 #import "../_deps.typ": valkyrie
 #import valkyrie: *
 
@@ -33,10 +34,10 @@
 /// Type for Typst build-in #dtype("version").
 #let version = base-type.with(
   name: "version",
-  types: (version,),
+  types: (typst.version,),
   pre-transform: (self, it) => {
     if is.str(it) {
-      version(..it.split(".").map(int))
+      typst.version(..it.split(".").map(int))
     } else {
       it
     }

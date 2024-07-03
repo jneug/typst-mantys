@@ -1,13 +1,13 @@
-
-
 /// Extract text from content.
 /// - it (content): A content item.
 /// -> string
 #let get-text(it) = {
-  if type(it) == content {
+  if type(it) == content and it.has("text") {
     return it.text
+  } else if type(it) in (symbol, int, float, version, bytes, label, type, str) {
+    return str(it)
   } else {
-    return it
+    return repr(it)
   }
 }
 
@@ -16,6 +16,15 @@
 /// - code (string, content): The content to show as inline raw.
 /// -> content
 #let rawi(code, lang: none) = raw(block: false, lang: lang, get-text(code))
+
+/// Shows #arg[code] as inline #builtin[raw] text (with #arg(block: false)) and with the given #arg[color]. This
+/// supports no language argument, since #arg[code] will have a uniform color.
+/// - #shortex(`#utils.rawc(purple, "some inline code")`)
+///
+/// - color (color): Color for the `raw` text.
+/// - code (content): String content to be displayed as `raw`.
+/// -> content
+#let rawc(color, code) = text(fill: color, rawi(code))
 
 /// Returns a light or dark color, depending on the provided #arg[clr].
 /// #example[```
@@ -36,16 +45,39 @@
   }
 }
 
+/// Places a hidden #builtin[figure] in the document, that can be referenced via the
+/// usual `@label-name` syntax.
+/// - label (label): Label to reference.
+/// - kind (str): Kind for the reference to properly step counters.
+/// - supplement (str): Supplement to show when referencing.
+/// - numbering (str): Numbering schema to use.
+/// -> content
+#let place-reference(
+  label,
+  kind,
+  supplement,
+  numbering: "1",
+) = place()[#figure(
+    kind: kind,
+    supplement: supplement,
+    numbering: numbering,
+    [],
+  )#label]
 
 /// Creates a preamble
 /// #property(since: "1.0.0", requires-context: true)
 #let build-preamble(imports) = {
-  return imports.pairs().map(((mod, imp)) => {
-    "#import " + mod + ": " + imp
-  }).join(";") + ";"
+  if imports != (:) {
+    return imports.pairs().map(((mod, imp)) => {
+      "#import " + mod + ": " + imp
+    }).join(";") + ";"
+  } else {
+    return ""
+  }
 }
 
-#let add-pramble(code, imports) = {
+// Adds a preamble for cutoms imports to #arg[code].
+#let add-preamble(code, imports) = {
   if type(code) != str {
     code = code.text
   }
