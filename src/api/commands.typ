@@ -1,8 +1,10 @@
 
 #import "../util/is.typ"
 #import "../util/utils.typ"
+#import "../util/typst.typ"
 #import "../core/index.typ": idx
 #import "../core/themes.typ": themable
+#import "../core/styles.typ"
 
 #import "values.typ": value
 #import "types.typ": dtype, dtypes
@@ -14,13 +16,7 @@
 ///
 /// - name (string, content): Name of the argument.
 /// -> content
-#let meta(name, l: sym.angle.l, r: sym.angle.r, ..args) = themable(
-  theme => text(
-    theme.commands.argument,
-    utils.rawi(l + name + r),
-  ),
-  ..args,
-)
+#let meta(name, l: sym.angle.l, r: sym.angle.r, ..args) = styles.meta(name, l: l, r: r, ..args)
 
 /// Shows an argument, either positional or named. The argument name is highlighted with #cmd-[meta] and the value with #cmd-[value].
 ///
@@ -34,16 +30,16 @@
 #let arg(..args) = {
   let a = none
   if args.pos().len() == 1 {
-    a = meta(utils.get-text(args.pos().first()), kind: "arg")
+    a = styles.arg(utils.get-text(args.pos().first()))
   } else if args.named() != (:) {
     a = {
-      meta(args.named().keys().first(), kind: "arg")
+      styles.arg(args.named().keys().first())
       utils.rawi(sym.colon + " ")
       value(args.named().values().first())
     }
   } else if args.pos().len() == 2 {
     a = {
-      meta(args.pos().first(), kind: "arg")
+      styles.arg(args.pos().first())
       utils.rawi(sym.colon + " ")
       value(args.pos().at(1))
     }
@@ -64,12 +60,7 @@
 ///
 /// - name (string): Name of the argument.
 /// -> content
-#let barg(name) = {
-  let b = {
-    meta(utils.get-text(name), l: sym.bracket.l, r: sym.bracket.r, kind: "barg")
-  }
-  b
-}
+#let barg(name) = styles.barg(name)
 
 
 /// Shows a "code" argument.
@@ -80,12 +71,7 @@
 ///
 /// - name (string): Name of the argument.
 /// -> content
-#let carg(name) = {
-  let c = {
-    meta(utils.get-text(name), l: sym.brace.l, r: sym.brace.r, kind: "carg")
-  }
-  c
-}
+#let carg(name) = styles.carg(name)
 
 
 /// Shows an argument sink.
@@ -93,9 +79,23 @@
 ///
 /// - name (string): Name of the argument.
 /// -> content
-#let sarg(name) = {
-  let s = ".." + meta(utils.get-text(name), kind: "sarg")
-  s
+#let sarg(name) = styles.sarg(name)
+
+/// Creates a list of arguments from a set of positional and/or named arguments.
+///
+/// #dtype("string")s and named arguments are passed to #cmd-[arg], while #dtype("content")
+/// is passed to #cmd-[barg].
+/// The result is to be unpacked as arguments to #cmd-[cmd].
+/// #example[```
+/// #cmd( "conditional-show", ..args(hide: false, [body]) )
+/// ```]
+/// - ..args (any): Either an argument name (#dtype("string")) or a (`name`: `value`) pair either as a named argument or as exactly two positional arguments.
+/// -> array
+#let args(..args) = {
+  let arguments = args.pos().filter(is.str).map(arg)
+  arguments += args.pos().filter(is.content).map(barg)
+  arguments += args.named().pairs().map(v => arg(v.at(0), v.at(1)))
+  arguments
 }
 
 /// Renders the command #arg[name] with arguments and adds an entry with
@@ -127,13 +127,9 @@
     )
   }
 
-  utils.rawi(sym.hash)
-  if module != none {
-    _module(module) + `.`
-  } else {
-    // mty.place-marker("cmd-module")
-  }
-  themable(theme => text(theme.commands.command, utils.rawi(name)))
+  // TODO: Add module marker ?
+  // themable(theme => text(theme.commands.command, utils.rawi(name)))
+  styles.cmd(name, module: module)
 
   let fargs = args.pos().filter(arg => not is.barg(arg))
   let bargs = args.pos().filter(is.barg)
@@ -157,16 +153,15 @@
 
 #let cmd- = cmd.with(index: false)
 
-/// Displays a built-in Typst function with a
-/// link to the documentation.
+// TODO: add link to docs
+/// Displays a built-in Typst function with a link to the documentation.
 /// - name (string, content): Name of the function (eg. `raw`).
 /// -> content
-#let builtin(name) = {
-  themable(theme => {
-    utils.rawi(sym.hash)
-    link-builtin(utils.get-text(name), text(theme.commands.builtin, name))
-  })
+#let builtin(name, module: none) = {
+  let name = utils.get-text(name)
+  link-builtin(name, styles.cmd(name, color: "builtin", module: module))
 }
+
 
 /// Displays information of a command by formatting the name, description and arguments.
 /// See this command description for an example.
@@ -176,17 +171,19 @@
 /// - ..args (content): List of arguments created with the argument functions like @@arg.
 /// - body (content): Description for the command.
 /// -> content
-#let command(name, label: auto, ..args, body) = [
+#let command(name, label: auto, ..args, body) = block()[
   // #__s_mty_command.update(name)
+  #utils.place-reference(typst.label(name), "cmd", "command")
   #block(
     below: 0.65em,
     above: 1.3em,
     breakable: false,
     text(weight: 600)[#cmd(name, unpack: auto, index: "main", ..args)<cmd>],
   )
-  #pad(left: 1em, body)//#cmd-label(mty.def.if-auto(name, label))
+  //#pad(left: 1em, body)//#cmd-label(mty.def.if-auto(name, label))
   // #__s_mty_command.update(none)
   // #v(.65em, weak:true)
+  #block(inset: (left: 1em), width: 100%, body)
 ]
 
 /// Displays information for a variable defintion.
@@ -238,6 +235,7 @@
 
   v(.65em)
   themable(theme => block(
+    width: 100%,
     above: .65em,
     stroke: .75pt + theme.muted.fill,
     inset: (top: 10pt, left: -1em + 8pt, rest: 8pt),
