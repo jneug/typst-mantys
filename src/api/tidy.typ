@@ -22,13 +22,13 @@
     )
 
     deps.tidy.show-module(
-    module-doc,
-    style: tidy-style,
-    // first-heading-level: 2,
-    // show-module-name: false,
-    // sort-functions: false,
-    // show-outline: true,
-    // ..tidy-args.named(),
-  )
+      module-doc,
+      style: tidy-style,
+      // first-heading-level: 2,
+      // show-module-name: false,
+      // sort-functions: false,
+      // show-outline: true,
+      ..tidy-args.named(),
+    )
   }
 }

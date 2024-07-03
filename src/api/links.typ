@@ -41,7 +41,11 @@
 )
 
 #let _builtin-map = (
+  // text
   raw: "text/raw",
+
+  // math
+  clamp: "foundations/calc#functions-clamp",
 )
 
 

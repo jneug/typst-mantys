@@ -50,6 +50,15 @@
 // TODO: (re)move?
 #let toml-file = "../typst.toml"
 
+/// Reads some information about the current commit from the
+/// local `.git` directory. The result can be passed to #cmd-[mantys] with the #arg[git] key.
+///
+/// Since MANTYS can't read files from outside its package directory,
+/// #cmd-[git-info] needs the #builtin[read] function to be
+/// passed in.
+/// - read (function): The builtin #builtin[read] function.
+/// - git-root (string): relative path to the `.git` directory.
+/// -> dictionary
 #let git-info(read, git-root: "../.git") = {
   if git-root.at(-1) != "/" {
     git-root += "/"

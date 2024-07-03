@@ -33,7 +33,7 @@
   )
 }
 
-#let codesnippet = deps.codelst.sourcecode.with(frame: frame, numbering: none)
+#let codesnippet(body) = frame(body)
 
 /// Show an example by evaluating the given raw code with Typst and showing the source and result in a frame.
 ///
@@ -41,6 +41,7 @@
 ///
 /// - side-by-side (boolean): Shows the source and example in two columns instead of the result beneath the source.
 /// - scope (dictionary): A scope to pass to #doc("foundations/eval").
+/// - use-examples-scope (boolean): Set to #value(false) to not use the gloabl examples scope.
 /// - mode (string): The evaulation mode: #choices("markup", "code", "math")
 /// - breakable (boolean): If the frame may brake over multiple pages.
 /// - example-code (content): A #doc("text/raw") block of Typst code.
@@ -48,6 +49,8 @@
 #let example(
   side-by-side: false,
   scope: (:),
+  imports: (:),
+  use-examples-scope: true,
   mode: "markup",
   breakable: false,
   example-code,
@@ -85,15 +88,26 @@
   // otherwise eval the given example as code or content.
   if args.pos() != () {
     cont.push(args.pos().first())
+  } else if not use-examples-scope {
+    cont.push(
+      eval(
+        mode: mode,
+        scope: scope,
+        utils.add-preamble(
+          code.text,
+          imports,
+        ),
+      ),
+    )
   } else {
     let doc = document.get()
     cont.push(
       eval(
         mode: mode,
         scope: doc.examples-scope.scope + scope,
-        utils.add-pramble(
+        utils.add-preamble(
           code.text,
-          doc.examples-scope.imports,
+          doc.examples-scope.imports + imports,
         ),
       ),
     )
