@@ -56,8 +56,8 @@
 
 #let commands = (
   argument: navy,
-  option: rgb(214, 182, 93),
   command: blue,
+  variable: rgb("#9346ff"),
   builtin: eastern,
   comment: gray,
   symbol: text.fill,
