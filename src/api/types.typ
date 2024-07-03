@@ -1,8 +1,10 @@
 
-#import "../util/utils.typ": rawi, get-text-color
 #import "../util/is.typ"
+#import "../util/utils.typ"
+#import "../util/valkyrie.typ"
 #import "../core/themes.typ": themable
 #import "../core/index.typ"
+
 #import "links.typ"
 
 #let _type-map = (
@@ -58,21 +60,12 @@
   outset: (y: 2pt),
   text(
     .88em,
-    get-text-color(color),
-    rawi(name),
+    utils.get-text-color(color),
+    utils.rawi(name),
   ),
 )
 
-#let custom-type(name, color: auto) = [
-  #metadata((name: name, color: color))
-  #label("mantys:custom-type-" + name)
-  #index.idx(
-    term: name,
-    kind: "type",
-    themable(theme => type-box(name, theme.types.custom)),
-  )
-]
-
+/// #property(requires-context: true)
 #let is-custom-type(name) = query(label("mantys:custom-type-" + name)) != ()
 
 #let link-custom-type(name) = context {
@@ -114,6 +107,10 @@
   types.pos().map(dtype.with(link: link)).join(sep)
 }
 
+#let custom-type(name, color: auto) = [
+  #metadata((name: name, color: color))
+  #label("mantys:custom-type-" + name)
+  #utils.place-reference(label(name), "type", "type")
   #index.idx(
     name,
     kind: "type",
@@ -129,83 +126,17 @@
 // TODO Adding schemas as cutsom types
 #let _parse-dict-schema(schema) = {
   for (key, el) in schema [
-    *#rawi(key)*: #dtype(el)\
+    *#utils.rawi(key)*: #dtype(el)\
   ]
 }
 
-#let _parse-valkyie-schema(schema, expand-schemas: false, expand-choices: 2) = {
-  // [#schema]
-
-  let el = schema
-  if "dictionary-schema" in el {
-    if el.dictionary-schema != (:) {
-
-      block(
-        fill: luma(88%),
-        radius: 4pt,
-        pad(
-          left: 1em,
-          grid(columns: (auto, 1fr),
-          // row-gutter: .5em,
-          // column-gutter: 20pt,
-          inset: .33em,
-          fill: (c, r) => if calc.odd(r) {
-            rgb(95%,95%,95%,66%)
-          } else {
-            rgb(100%,100%,100%,80%)
-          },
-          grid.cell(colspan:2, fill: none, `(`),
-          ..for (key, el) in el.dictionary-schema {
-            (
-              strong(rawi(key)) + ": ",
-              _parse-valkyie-schema(el, expand-schemas: expand-schemas, expand-choices: expand-choices)
-              // if "dictionary-schema" in el {
-              //   _parse-valkyie-schema(el)
-              // } else if el.name.starts-with("array") {
-              //   dtype(array) + " of " + _parse-valkyie-schema(el.descendents-schema, expand-schemas: expand-schemas, expand-choices: expand-choices)
-              // } else {
-              //   _parse-valkyie-schema(el, expand-schemas: expand-schemas, expand-choices: expand-choices)
-              // },
-            )
-          },
-          grid.cell(colspan:2, fill: none, `)`),
-        ),
-        ),
-      )
-    } else {
-      dtype(dictionary)
-      // `(:)`
-    }
-  } else if "descendents-schema" in el {
-    dtype(array) + " of " + _parse-valkyie-schema(
-      el.descendents-schema,
-      expand-schemas: expand-schemas,
-      expand-choices: expand-choices,
-    )
-  } else if el.name == "enum" {
-    [one of ]
-    `(`
-    if expand-choices not in (false, 0) {
-      if type(expand-choices) == int and el.choices.len() > expand-choices {
-        el.choices.slice(0, expand-choices).map(c => ["#c"]).join(", ") + [ ... ]
-      } else {
-        el.choices.map(c => ["#c"]).join(", ")
-      }
-    } else [
-      ...
-    ]
-    `)`
-  } else {
-    dtype(el.name)
-  }
-}
-
+// TODO: Merge with #custom-type ?
 #let schema(name, definition, color: auto) = {
   assert(is.dict(definition))
 
   custom-type(name, color: color)
   if "valkyrie-type" in definition {
-    _parse-valkyie-schema(definition)
+    valkyrie.parse-schema(definition, dtype: dtype)
   } else {
     _parse-dict-schema(definition)
   }
