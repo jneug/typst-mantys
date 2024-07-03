@@ -118,18 +118,12 @@
 /// - ..args (any): Arguments for the command, created with the argument commands above or @@args.
 /// -> content
 #let cmd(name, module: none, ret: none, index: true, unpack: false, ..args) = {
-  if index {
-    // mty.idx(kind: "cmd", hide: true)[#utils.rawi(sym.hash)#mty.rawc(theme.colors.command, name)]
+  if index in (true, "main") {
     idx(
+      name,
       kind: "cmd",
-      hide: true,
-      term: name,
-      {
-        themable(theme => {
-          text(theme.text.fill, utils.rawi(sym.hash))
-          text(theme.commands.command, utils.rawi(name))
-        })
-      },
+      main: index == "main",
+      display: styles.cmd(name, module: module),
     )
   }
 
@@ -188,7 +182,7 @@
     below: 0.65em,
     above: 1.3em,
     breakable: false,
-    text(weight: 600)[#cmd(name, unpack: auto, ..args)<cmd>],
+    text(weight: 600)[#cmd(name, unpack: auto, index: "main", ..args)<cmd>],
   )
   #pad(left: 1em, body)//#cmd-label(mty.def.if-auto(name, label))
   // #__s_mty_command.update(none)

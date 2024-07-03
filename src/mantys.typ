@@ -40,12 +40,10 @@
   body
 
   // Show index if enabled and at least one entry
-  context {
-    if doc.show-index and index-len() > 0 {
-      pagebreak(weak: true)
-      [= Index]
-      columns(3, make-index())
-    }
+  if doc.show-index {
+    pagebreak(weak: true)
+    [= Index]
+    columns(3, make-index())
   }
 }
 

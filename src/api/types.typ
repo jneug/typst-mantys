@@ -114,6 +114,17 @@
   types.pos().map(dtype.with(link: link)).join(sep)
 }
 
+  #index.idx(
+    name,
+    kind: "type",
+    main: true,
+    display: if color == auto {
+      themable(theme => type-box(name, theme.types.custom))
+    } else {
+      type-box(name, color)
+    },
+  )
+]
 
 // TODO Adding schemas as cutsom types
 #let _parse-dict-schema(schema) = {
