@@ -6,8 +6,8 @@
 #import "../api/elements.typ": frame
 
 /// Shows sourcecode in a frame.
-/// #info-alert[Uses #universe[codelst] to render the code.]
-/// See @sourcecode-examples for more information on sourcecode and examples.
+/// #info-alert[Uses #universe("codelst") to render the code.]
+/// // See @sourcecode-examples for more information on sourcecode and examples.
 ///
 /// - ..args (any): Argumente für #cmd-(module:"codelst")[sourcecode]
 /// -> content
@@ -40,11 +40,11 @@
 /// See section II.2.3 for more information on sourcecode and examples.
 ///
 /// - side-by-side (boolean): Shows the source and example in two columns instead of the result beneath the source.
-/// - scope (dictionary): A scope to pass to #doc("foundations/eval").
+/// - scope (dictionary): A scope to pass to #builtin[eval].
 /// - use-examples-scope (boolean): Set to #value(false) to not use the gloabl examples scope.
 /// - mode (string): The evaulation mode: #choices("markup", "code", "math")
 /// - breakable (boolean): If the frame may brake over multiple pages.
-/// - example-code (content): A #doc("text/raw") block of Typst code.
+/// - example-code (content): A #builtin[raw] block of Typst code.
 /// - ..args (content): An optional second positional argument that overwrites the evaluation result. This can be used to show the result of a sourcecode, that can not evaulated directly.
 #let example(
   side-by-side: false,

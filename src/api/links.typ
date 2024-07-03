@@ -41,6 +41,8 @@
 )
 
 #let _builtin-map = (
+  "context": "context",
+
   // text
   raw: "text/raw",
 
