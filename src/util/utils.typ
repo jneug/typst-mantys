@@ -17,6 +17,7 @@
 /// -> content
 #let rawi(code, lang: none) = raw(block: false, lang: lang, get-text(code))
 
+
 /// Shows #arg[code] as inline #builtin[raw] text (with #arg(block: false)) and with the given #arg[color]. This
 /// supports no language argument, since #arg[code] will have a uniform color.
 /// - #shortex(`#utils.rawc(purple, "some inline code")`)
@@ -24,7 +25,8 @@
 /// - color (color): Color for the `raw` text.
 /// - code (content): String content to be displayed as `raw`.
 /// -> content
-#let rawc(color, code) = text(fill: color, rawi(code))
+#let rawc(color, code, lang: none) = text(fill: color, rawi(lang: lang, code))
+
 
 /// Returns a light or dark color, depending on the provided #arg[clr].
 /// #example[```
