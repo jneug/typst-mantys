@@ -103,6 +103,7 @@
   return themable((theme => links.link-dtype(_type, type-box(_type, theme.types.at(_type)))))
 }
 
+/// Creates a list of datatypes.
 #let dtypes(..types, link: true, sep: box(inset: (left: 1pt, right: 1pt), sym.bar.v)) = {
   types.pos().map(dtype.with(link: link)).join(sep)
 }
@@ -110,7 +111,7 @@
 #let custom-type(name, color: auto) = [
   #metadata((name: name, color: color))
   #label("mantys:custom-type-" + name)
-  #utils.place-reference(label(name), "type", "type")
+  #utils.place-reference(label("type:" + name), "type", "type")
   #index.idx(
     name,
     kind: "type",

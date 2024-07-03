@@ -89,14 +89,14 @@
   }
 
   show ref: it => {
-    if it.element.func() == figure {
+    if it.element != none and it.element.func() == figure {
       if it.element.kind == "cmd" {
         return link(
           it.target,
-          styles.cmd(str(it.target)),
+          styles.cmd(str(it.target).slice(4)),
         )
       } else if it.element.kind == "type" {
-        return link-custom-type(str(it.target))
+        return link-custom-type(str(it.target).slice(5))
       }
     }
     it

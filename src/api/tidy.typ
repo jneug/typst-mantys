@@ -10,7 +10,7 @@
   context {
     let doc = document.get()
     let scope = if doc.examples-scope != none {
-      doc.examples-scope
+      doc.examples-scope.scope
     } else {
       (:)
     } + scope
@@ -19,6 +19,7 @@
       data,
       name: name,
       scope: scope,
+      // label-prefix: "",
     )
 
     deps.tidy.show-module(
