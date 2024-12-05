@@ -7,47 +7,56 @@
 
 #import "_api.typ": *
 
-#let mantys(
+#let mantys-init(
   theme: themes.default,
   ..args,
-) = body => {
+) = {
   let doc = document.create(..args)
-  document.save(doc)
 
-  // Add assets metadata to document
-  for asset in doc.assets [#metadata(asset)<mantys:asset>]
+  let mantys-func = body => {
+    document.save(doc)
 
-  // Asset mode skips rendering the body
-  if sys.inputs.at("mode", default: "full") == "assets" {
-    return []
-  }
+    // Add assets metadata to document
+    for asset in doc.assets [#metadata(asset)<mantys:asset>]
 
-  // theme.page-init(doc)
-  // set page(paper: "a4")
-  show: layout.page-init(doc, theme)
+    // Asset mode skips rendering the body
+    if sys.inputs.at("mode", default: "full") == "assets" {
+      return []
+    }
 
-  theme.title-page(doc)
-  pagebreak()
+    // theme.page-init(doc)
+    // set page(paper: "a4")
+    show: layout.page-init(doc, theme)
 
-  if sys.inputs.at("debug", default: "false") in ("true", "1") {
-    page(flipped: true, columns: 2)[
-      #set text(10pt)
-      #doc
-    ]
-  }
-  pagebreak(weak: true)
+    theme.title-page(doc)
+    pagebreak()
 
-  body
-
-  // Show index if enabled and at least one entry
-  if doc.show-index {
+    if sys.inputs.at("debug", default: "false") in ("true", "1") {
+      page(flipped: true, columns: 2)[
+        #set text(10pt)
+        #doc
+      ]
+    }
     pagebreak(weak: true)
-    [= Index]
-    columns(3, make-index())
+
+    body
+
+    // Show index if enabled and at least one entry
+    if doc.show-index {
+      pagebreak(weak: true)
+      [= Index]
+      columns(3, make-index())
+    }
   }
+
+  return (doc, mantys-func)
 }
 
-// TODO: (re)move?
+#let mantys(..args) = {
+  let (_, mantys) = mantys-init(..args)
+  return mantys
+}
+
 #let toml-file = "../typst.toml"
 
 /// Reads some information about the current commit from the
@@ -79,3 +88,4 @@
     hash: hash,
   )
 }
+

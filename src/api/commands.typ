@@ -107,6 +107,46 @@
   arguments
 }
 
+
+/// Create a lambda function argument.
+/// Lambda arguments may be used as an argument value with arg.
+/// To show a lambda function with an argument sink, prefix the type with two dots.
+///
+/// - #shortex(`#lambda(int, str)`)
+/// - #shortex(`#lambda("ratio", "length")`)
+/// - #shortex(`#lambda("int", int, ret:bool)`)
+/// - #shortex(`#lambda("int", int, ret:(int,str))`)
+/// - #shortex(`#lambda("int", int, ret:(name: str))`)
+///
+/// - ..args (type, string): Argument types of the function parameters.
+/// - ret (type): Type of the returned value.
+/// -> content
+#let lambda(..args, ret: none) = {
+  // TODO: improve implementation
+  args = args.pos().map(v => {
+    if type(v) == str and v.starts-with("..") {
+      ".." + dtype(v.slice(2))
+    } else {
+      dtype(v)
+    }
+  })
+  if type(ret) == array and ret.len() > 0 {
+    ret = sym.paren.l + ret.map(dtype).join(",") + if ret.len() == 1 {
+      ","
+    } + sym.paren.r
+  } else if type(ret) == dictionary and ret.len() > 0 {
+    ret = sym.paren.l + ret.pairs().map(pair => {
+      pair.first() + sym.colon + dtype(pair.last())
+    }).join(",") + sym.paren.r
+  } else {
+    ret = dtype(ret)
+  }
+  // mty.mark-lambda(sym.paren.l + args.join(",") + sym.paren.r + " => " + ret)
+  //return box(sym.paren.l + args.join(",") + sym.paren.r + sym.arrow.r + ret)
+  styles.lambda(args, ret)
+}
+
+
 /// Renders the command #arg[name] with arguments and adds an entry with
 /// #arg(kind:"cmd") to the index.
 ///
@@ -166,6 +206,7 @@
 
 
 /// Same as @@cmd, but does not create an index entry.
+/// -> content
 #let cmd- = cmd.with(index: false)
 
 
@@ -190,6 +231,7 @@
 
 
 /// Same as @@var, but does not create an index entry.
+/// -> content
 #let var- = var.with(index: false)
 
 
@@ -218,9 +260,20 @@
 /// - body (content): A description for the command.
 /// -> content
 #let command(name, label: auto, ..args, body) = block()[
-  // #__s_mty_command.update(name)
-  // TODO: prefix labels with "cmd:" / "type:" ?
-  #utils.place-reference(typst.label("cmd:" + name), "cmd", "command")
+  // TODO refactor to use less mode changes
+  #if args.named().at("module", default: none) != none {
+    utils.place-reference(
+      typst.label("cmd:" + args.named().module + "." + name),
+      "cmd",
+      "command",
+    )
+  } else {
+    utils.place-reference(
+      typst.label("cmd:" + name),
+      "cmd",
+      "command",
+    )
+  }
   #block(
     below: 0.65em,
     above: 1.3em,
@@ -247,11 +300,13 @@
 /// - body (content): Description of the variable.
 /// -> content
 #let variable(name, types: none, value: none, label: auto, body) = [
+  // TODO also use terms for #argument?
   #set terms(hanging-indent: 0pt)
   #set par(first-line-indent: 0.65pt, hanging-indent: 0pt)
-  / #var(name)#if value != none {
+  #let types = (types,).flatten()
+  / #var(name, index: "main")#if value != none {
     sym.colon + " " + values.value(value)
-  }#if types != none {
+  }#if types != (none,) {
     h(1fr) + dtypes(..types)
   }: #block(inset: (left: 2em), body)
 ]
@@ -340,7 +395,11 @@
 /// This is equivalent to using `@cmd:name`.
 /// - #shortex(`#cmdref("builtin")`)
 /// - #shortex(`@cmd:builtin`)
-#let cmdref(name) = ref(label("cmd:" + name))
+#let cmdref(name, module: none) = if module == none {
+  ref(label("cmd:" + name))
+} else {
+  ref(label("cmd:" + module + "." + name))
+}
 
 
 /// Creates a reference to the custom type #arg[name].
@@ -368,17 +427,17 @@
   ) => elements.info-alert(spacing: _property-spacing)[#emoji.arrow.tr see #{v.map(t => if is.str(t) { link(t, t) } else { ref(t) } ).join(", ")}],
   todo: (_, v) => elements.alert(spacing: _property-spacing)[#emoji.checkmark.box TODO: #v],
 )
-#let _properties = (
-  default: (k, v) => [- #themable(t => [#utils.rawc(t.alerts.info, k): #v])],
-  requires-context: (k, _) => [- #themable(t => utils.rawc(t.alerts.error, k)) ],
-  see: (k, v) => [- #themable(t => utils.rawc(t.alerts.info, k))#list(
-        ..v.map(t => if is.str(t) {
-          link(t, t)
-        } else {
-          ref(t)
-        }),
-      )],
-)
+// #let _properties = (
+//   default: (k, v) => [- #themable(t => [#utils.rawc(t.alerts.info, k): #v])],
+//   requires-context: (k, _) => [- #themable(t => utils.rawc(t.alerts.error, k)) ],
+//   see: (k, v) => [- #themable(t => utils.rawc(t.alerts.info, k))#list(
+//         ..v.map(t => if is.str(t) {
+//           link(t, t)
+//         } else {
+//           ref(t)
+//         }),
+//       )],
+// )
 
 
 /// Shows a command propertie (annotation).
@@ -414,4 +473,3 @@
     }
   }
 }
-

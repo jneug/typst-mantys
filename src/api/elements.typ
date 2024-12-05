@@ -23,10 +23,15 @@
 ))
 
 /// An alert box to highlight some content.
-/// #info-alert[Uses #package("showybox") and can take any arguments the #cmd-[showybox] command can take.]
 /// #example[```
 /// #alert(color:purple, width:4cm)[#lorem(10)]
 /// ```]
+/// - color (color): Color of the alert.
+/// - width (length, ratio): Width of the alert box.
+/// - size (length): Size of the text.
+/// - body (content): Content of the alert.
+/// - ..style (any): Style arguments to be passed to #builtin[block].
+/// -> content
 #let alert(
   color: blue,
   width: 100%,
@@ -41,6 +46,7 @@
   ..style,
   text(size: size, fill: color.darken(60%), body),
 )
+
 
 #let info-alert = alert.with(color: rgb(23, 162, 184))
 #let warning-alert = alert.with(color: rgb(255, 193, 7))

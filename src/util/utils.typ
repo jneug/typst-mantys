@@ -11,9 +11,11 @@
   }
 }
 
-/// Displays #arg[code] as inline #builtin[raw]
+/// Displays #arg[code] as inline #builtin[raw] code (with #arg(inline: true)).
 /// - #shortex(`#utils.rawi("my-code")`)
+///
 /// - code (string, content): The content to show as inline raw.
+/// - lang (str): Optional language for highlighting.
 /// -> content
 #let rawi(code, lang: none) = raw(block: false, lang: lang, get-text(code))
 
@@ -47,6 +49,7 @@
   }
 }
 
+
 /// Places a hidden #builtin[figure] in the document, that can be referenced via the
 /// usual `@label-name` syntax.
 /// - label (label): Label to reference.
@@ -66,8 +69,10 @@
     [],
   )#label]
 
-/// Creates a preamble
-/// #property(since: "1.0.0", requires-context: true)
+
+/// Creates a preamble to attach to code before evaluating.
+/// - imports (dict): Module name - imports pairs, like #utils.rawi(lang:"typc", `(mantys: "*")`.text).
+/// -> str
 #let build-preamble(imports) = {
   if imports != (:) {
     return imports.pairs().map(((mod, imp)) => {
@@ -78,10 +83,31 @@
   }
 }
 
-// Adds a preamble for cutoms imports to #arg[code].
+
+/// Adds a preamble for cutoms imports to #arg[code].
+/// -> str
 #let add-preamble(code, imports) = {
   if type(code) != str {
     code = code.text
   }
   return build-preamble(imports) + code
+}
+
+
+/// Splits a string into a dictionary with the command name and module (if present).
+/// A string of the form `"cmd:utils.split-cmd-name"` will be split into\
+/// `(name: "split-cmd-name", module: "utils")`\
+/// Note, that the prefix `cmd:` is removed.
+///
+/// - name (str): The command optionally with module and `cmd:` prefix.
+/// -> dictionary
+#let split-cmd-name(name) = {
+  let cmd = (name: name, module: none)
+  if name.starts-with("cmd:") {
+    cmd.name = name.slice(4)
+  }
+  if cmd.name.contains(".") {
+    (cmd.name, cmd.module) = (name.split(".").slice(1).join("."), name.split(".").first())
+  }
+  return cmd
 }

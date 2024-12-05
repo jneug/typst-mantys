@@ -4,8 +4,10 @@
 #import "../util/valkyrie.typ"
 #import "../core/themes.typ": themable
 #import "../core/index.typ"
+#import "../core/styles.typ"
 
 #import "links.typ"
+#import "values.typ"
 
 #let _type-map = (
   "auto": auto,
@@ -124,21 +126,41 @@
   )
 ]
 
-// TODO Adding schemas as cutsom types
-#let _parse-dict-schema(schema) = {
-  for (key, el) in schema [
-    *#utils.rawi(key)*: #dtype(el)\
-  ]
+// TODO Adding schemas as custom types
+// TODO: move into sub-module (like valkyrie)?
+#let _parse-dict-schema(schema, ..options, _dtype: none, _value: none) = {
+  `(`
+  terms(
+    hanging-indent: 1.28em,
+    indent: .64em,
+    ..for (key, el) in schema {
+      (
+        terms.item(
+          styles.arg(key),
+          if type(el) == dictionary {
+            if el == (:) {
+              _dtype(dictionary)
+            } else {
+              _parse-dict-schema(el, ..options, _dtype: none, _value: none)
+            }
+          } else {
+            _dtype(el)
+          },
+        ),
+      )
+    },
+  )
+  `)`
 }
 
 // TODO: Merge with #custom-type ?
-#let schema(name, definition, color: auto) = {
+#let schema(name, definition, color: auto, ..args) = {
   assert(is.dict(definition))
 
   custom-type(name, color: color)
   if "valkyrie-type" in definition {
-    valkyrie.parse-schema(definition, dtype: dtype)
+    valkyrie.parse-schema(definition, ..args, _dtype: dtype, _value: values.value)
   } else {
-    _parse-dict-schema(definition)
+    _parse-dict-schema(definition, ..args, _dtype: dtype, _value: values.value)
   }
 }

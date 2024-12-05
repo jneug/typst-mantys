@@ -1,7 +1,6 @@
 #import "themes.typ": themable
-#import "../util/utils.typ": rawi
+#import "../util/utils.typ": rawi, rawc
 
-#let rawc(fill, code) = text(fill, rawi(code))
 
 #let meta(name, l: none, r: none, kind: "arg") = themable(
   theme => {
@@ -16,14 +15,19 @@
   kind: kind,
 )
 
+
 // TODO: Use styles consistently
 #let arg = meta.with(l: sym.angle.l, r: sym.angle.r, kind: "arg")
 
+
 #let sarg = meta.with(l: ".." + sym.angle.l, r: sym.angle.r, kind: "sarg")
+
 
 #let barg = meta.with(l: sym.bracket.l, r: sym.bracket.r, kind: "barg")
 
+
 #let carg = meta.with(l: sym.brace.l, r: sym.brace.r, kind: "carg")
+
 
 #let cmd(name, module: none, color: "command") = themable(
   theme => {
@@ -35,4 +39,17 @@
     rawc(theme.commands.at(color, default: theme.commands.command), name)
   },
   kind: "cmd",
+)
+
+
+#let lambda(args, ret) = themable(
+  theme => {
+    box({
+      rawc(theme.commands.symbol, sym.paren.l)
+      args.join(",")
+      rawc(theme.commands.symbol, sym.paren.r + sym.arrow.r)
+      ret
+    })
+  },
+  kind: "lambda",
 )

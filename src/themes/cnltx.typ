@@ -1,38 +1,43 @@
 #import "../util/typst.typ"
 
-#let primary = eastern
-#let secondary = teal
+#let primary = rgb(166, 9, 18)
+#let secondary = primary
 
 
 #let fonts = (
-  serif: ("Liberation Serif",),
-  sans: ("Liberation Sans", "Helvetica Neue", "Helvetica"),
+  serif: ("New Computer Modern", "Computer Modern", "Linux Libertine", "Liberation Serif"),
+  sans: ("New Computer Modern Sans", "Computer Modern Sans", "Liberation Sans", "Helvetica Neue", "Helvetica"),
   mono: ("Liberation Mono",),
 )
 
 #let muted = (
-  fill: luma(210),
+  fill: rgb(128, 128, 128),
 )
 
 #let text = (
   size: 12pt,
   font: fonts.serif,
-  fill: rgb(35, 31, 32),
-)
-
-#let heading = (
-  font: fonts.sans,
-  fill: text.fill,
+  fill: rgb(0, 0, 0),
 )
 
 #let header = (
   size: 10pt,
   fill: text.fill,
 )
-
 #let footer = (
   size: 9pt,
   fill: muted.fill,
+)
+
+#let heading = (
+  font: fonts.serif,
+  fill: text.fill,
+)
+
+#let emph = (
+  link: primary,
+  package: primary,
+  module: rgb(5, 10, 122),
 )
 
 #let code = (
@@ -48,18 +53,13 @@
   success: rgb(40, 167, 69),
 )
 
-#let emph = (
-  link: secondary,
-  package: primary,
-  module: rgb("#8c3fb2"),
-)
 
 #let commands = (
   argument: navy,
-  command: blue,
-  variable: rgb("#9346ff"),
+  command: rgb(153, 64, 39),
+  variable: rgb(214, 181, 93),
   builtin: eastern,
-  comment: gray,
+  comment: rgb(128, 128, 128),
   symbol: text.fill,
 )
 
@@ -67,8 +67,6 @@
   default: rgb(181, 2, 86),
 )
 
-
-// TODO: Move type colors to types.typ?
 #let types = {
   let red = rgb(255, 203, 195)
   let gray = rgb(239, 240, 243)
@@ -78,10 +76,12 @@
     // fallback
     default: rgb(239, 240, 243),
     custom: rgb("#fcfdb7"),
+
     // special
     any: gray,
     "auto": red,
     "none": red,
+
     // foundations
     arguments: gray,
     array: gray,
@@ -101,6 +101,7 @@
     type: gray,
     label: rgb(167, 234, 255),
     version: gray,
+
     // layout
     alignment: gray,
     angle: purple,
@@ -110,99 +111,70 @@
     "relative length": purple,
     ratio: purple,
     relative: purple,
+
     // visualize
     color: gradient.linear(
       (rgb("#7cd5ff"), 0%),
       (rgb("#a6fbca"), 33%),
       (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%),
+      (rgb("#ffa49d"), 100%)
     ),
     gradient: gradient.linear(
       (rgb("#7cd5ff"), 0%),
       (rgb("#a6fbca"), 33%),
       (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%),
+      (rgb("#ffa49d"), 100%)
     ),
     stroke: gray,
   )
 }
 
 
-#let page-init(doc) = (
-  body => {
-    show typst.heading: it => {
-      let level = it.at("level", default: it.at("depth", default: 2))
-      let scale = (1.6, 1.4, 1.2).at(level - 1, default: 1.0)
 
-      let size = 1em * scale
-      let above = if level == 1 {
-        1.8em
-      } else {
-        1.44em
-      } / scale
-      let below = 0.75em / scale
+#let page-init(doc) = body => {
+  show typst.heading: it => {
+    let level = it.at("level", default: it.at("depth", default: 2))
+    let scale = (1.6, 1.4, 1.2).at(level - 1, default: 1.0)
 
-      set typst.text(size: size, ..heading)
-      set block(above: above, below: below)
+    let size = 1em * scale
+    let above = if level == 1 {
+      1.8em
+    } else {
+      1.44em
+    } / scale
+    let below = 0.75em / scale
 
-      if level == 1 {
-        pagebreak(weak: true)
-        block({
-          if it.numbering != none {
-            typst.text(
-              fill: primary,
-              {
-                [Part ]
-                counter(typst.heading).display()
-              },
-            )
-            linebreak()
-          }
-          it.body
-        })
-      } else {
-        block({
-          if it.numbering != none {
-            typst.text(fill: primary, counter(typst.heading).display())
-            [ ]
-          }
-          it.body
-        })
-      }
+    set typst.text(size: size, ..heading)
+    set block(above: above, below: below)
+
+    if level == 1 {
+      pagebreak(weak: true)
+      block({
+        if it.numbering != none {
+          typst.text(
+            fill: primary,
+            {
+              [Part ]
+              counter(typst.heading).display()
+            },
+          )
+          linebreak()
+        }
+        it.body
+      })
+    } else {
+      block({
+        if it.numbering != none {
+          typst.text(fill: primary, counter(typst.heading).display())
+          [ ]
+        }
+        set typst.text(size: size, ..heading)
+        it.body
+      })
     }
-    // show typst.heading: it => {
-    //   let level = it.at("level", default: it.at("depth", default: 2))
-    //   let scale = (1.6, 1.4, 1.2).at(level - 1, default: 1.0)
-
-    //   if level == 1 {
-    //     pagebreak(weak: true)
-    //     set typst.text(1em * scale, ..heading)
-    //     block(
-    //       width: 100%,
-    //       breakable: false,
-    //       [#if it.numbering != none {
-    //           typst.text(
-    //             weight: "semibold",
-    //             fill: primary,
-    //             [Part ] + counter(typst.heading.where(level: it.level)).display(it.numbering),
-    //           )
-    //         }\
-    //         #it.body],
-    //     ) + v(.64em)
-    //   } else {
-    //     set typst.text(1em * scale, ..heading)
-    //     block()[
-    //       // #typst.text(
-    //       //   primary,
-    //       //   counter(typst.heading.where(level: level)).display(it.numbering),
-    //       // )
-    //       #it.body
-    //     ]
-    //   }
-    // }
-    body
   }
-)
+  body
+}
 
 #let _display-author(author) = block({
   smallcaps(author.name)
@@ -230,14 +202,16 @@
   set block(spacing: 2em)
 
   block(
-    typst.text(
-      40pt,
-      primary,
-      if doc.title == none {
-        doc.package.name
-      } else {
-        doc.title
-      },
+    smallcaps(
+      typst.text(
+        40pt,
+        primary,
+        if doc.title == none {
+          doc.package.name
+        } else {
+          doc.title
+        },
+      ),
     ),
   )
   if doc.subtitle != none {

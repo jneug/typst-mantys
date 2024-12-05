@@ -41,13 +41,154 @@
 )
 
 #let _builtin-map = (
+  // foundations
   "context": "context",
+  arguments: "foundations/arguments",
+  array: "foundations/array",
+  assert: "foundations/assert",
+  "auto": "foundations/auto",
+  bool: "foundations/bool",
+  bytes: "foundations/bytes",
+  calc: "foundations/calc",
+  clamp: "foundations/calc#functions-clamp",
+  abs: "foundations/calc#functions-abs",
+  pow: "foundations/calc#functions-pow",
+  // TODO: link rest of calc functions
+  content: "foundations/content",
+  datetime: "foundations/datetime",
+  dictionary: "foundations/dictionary",
+  duration: "foundations/duration",
+  eval: "foundations/eval",
+  float: "foundations/float",
+  function: "foundations/function",
+  int: "foundations/int",
+  label: "foundations/label",
+  module: "foundations/module",
+  "none": "foundations/none",
+  panic: "foundations/panic",
+  plugin: "foundations/plugin",
+  regex: "foundations/regex",
+  repr: "foundations/repr",
+  selector: "foundations/selector",
+  str: "foundations/str",
+  // TODO: link rest of str functions
+  style: "foundations/style",
+  sys: "foundations/sys",
+  type: "foundations/type",
+  version: "foundations/version",
+
+  // model
+  bibliography: "model/bibliography",
+  cite: "model/cite",
+  document: "model/document",
+  emph: "model/emph",
+  enum: "model/enum",
+  list: "model/list",
+  numbering: "model/numbering",
+  outline: "model/outline",
+  par: "model/par",
+  parbreak: "model/parbreak",
+  quote: "model/quote",
+  strong: "model/strong",
+  ref: "model/ref",
+  table: "model/table",
+  terms: "model/terms",
 
   // text
   raw: "text/raw",
+  text: "text/text",
+  highlight: "text/highlight",
+  linebreak: "text/linebreak",
+  lorem: "text/lorem",
+  lower: "text/lower",
+  upper: "text/upper",
+  overline: "text/overline",
+  underline: "text/underline",
+  smallcaps: "text/smallcaps",
+  smartquote: "text/smartquote",
+  strike: "text/strike",
+  sub: "text/sub",
+  super: "text/super",
+
+  // layout
+  align: "layout/align",
+  alignment: "layout/alignment",
+  angle: "layout/angle",
+  block: "layout/block",
+  box: "layout/box",
+  colbreak: "layout/colbreak",
+  columns: "layout/columns",
+  direction: "layout/direction",
+  fraction: "layout/fraction",
+  grid: "layout/grid",
+  h: "layout/h",
+  hide: "layout/hide",
+  layout: "layout/layout",
+  length: "layout/length",
+  measure: "layout/measure",
+  move: "layout/move",
+  pad: "layout/pad",
+  page: "layout/page",
+  pagebreak: "layout/pagebreak",
+  place: "layout/place",
+  ratio: "layout/ratio",
+  relative: "layout/relative",
+  repeat: "layout/repeat",
+  rotate: "layout/rotate",
+  scale: "layout/scale",
+  stack: "layout/stack",
+  v: "layout/v",
 
   // math
-  clamp: "foundations/calc#functions-clamp",
+  accent: "math/accent",
+  attach: "math/attach",
+  cancel: "math/cancel",
+  cases: "math/cases",
+  class: "math/class",
+  equation: "math/equation",
+  frac: "math/frac",
+  lr: "math/lr",
+  mat: "math/mat",
+  op: "math/op",
+  primes: "math/primes",
+  roots: "math/roots",
+  sizes: "math/sizes",
+  styles: "math/styles",
+  underover: "math/underover",
+  variants: "math/variants",
+  vec: "math/vec",
+
+  // visualize
+  circle: "visualize/circle",
+  color: "visualize/color",
+  ellipse: "visualize/ellipse",
+  gradient: "visualize/gradient",
+  image: "visualize/image",
+  line: "visualize/line",
+  path: "visualize/path",
+  pattern: "visualize/pattern",
+  polygon: "visualize/polygon",
+  rect: "visualize/rect",
+  square: "visualize/square",
+  stroke: "visualize/stroke",
+
+  // instrospection
+  counter: "introspection/counter",
+  here: "introspection/here",
+  locate: "introspection/locate",
+  location: "introspection/location",
+  metadata: "introspection/metadata",
+  query: "introspection/query",
+  state: "introspection/state",
+
+  // data-loading
+  cbor: "data-loading/cbor",
+  csv: "data-loading/csv",
+  json: "data-loading/json",
+  read: "data-loading/read",
+  toml: "data-loading/toml",
+  xml: "data-loading/xml",
+  yaml: "data-loading/yaml",
 )
 
 
@@ -76,6 +217,11 @@
     repo = repo.slice(19)
   }
   link("https://github.com/" + repo, repo)
+}
+
+
+#let github-user(name) = {
+  typst.link("https://github.com/" + name, sym.at + name)
 }
 
 #let universe(pkg) = link("https://typst.app/universe/package/" + pkg, package(pkg))

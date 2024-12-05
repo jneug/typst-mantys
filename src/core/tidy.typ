@@ -23,7 +23,7 @@
   let prefix = module-doc.label-prefix
   let items = ()
   for fn in module-doc.functions.sorted(key: fn => fn.name) {
-    items.push(api.cmdref(fn.name))
+    items.push(api.cmdref(fn.name, module: fn.at("module", default: none)))
   }
 
   if items != () {
@@ -139,6 +139,14 @@
     }
   }
 
+  let args = if "args" in fn {
+    fn.args
+  } else if "parent" in fn {
+    fn.parent.named
+  } else {
+    (:)
+  }
+
   [
     #api.command(
       fn.name,
@@ -156,6 +164,7 @@
         }
       }),
       ret: fn.return-types,
+      module: fn.at("module", default: none),
       {
         descr
 
@@ -175,53 +184,21 @@
         }
       },
     )
-    // #label(style-args.label-prefix + fn.name + "()")
   ]
 }
 
 
-// TODO: implement
 #let show-variable(
   var,
   style-args,
-) = {
-  set par(justify: false, hanging-indent: 1em, first-line-indent: 0em)
-
-  let type = if "type" not in var {
-    none
-  } else {
-    show-type(var.type, style-args: style-args)
-  }
-
-  block(
-    breakable: style-args.break-param-descriptions,
-    fill: rgb("#d8dbed"),
-    width: 100%,
-    inset: (x: 0.5em, y: 0.7em),
-    stack(
-      dir: ltr,
-      spacing: 1.2em,
-      if style-args.enable-cross-references [
-        #set text(font: "Cascadia Mono", size: 0.85em, weight: 340)
-        #text(var.name, fill: blue)
-        #label(style-args.label-prefix + var.name)
-      ] else [
-        #set text(font: "Cascadia Mono", size: 0.85em, weight: 340)
-        #text(var.name, fill: blue)
-      ],
-      type,
-    ),
-  )
-  pad(x: 0em, _eval-docstring(var.description, style-args))
-
-  v(4em, weak: true)
-}
+) = api.variable(
+  var.name,
+  types: var.at("type", default: none),
+  value: none, //var.value,
+  _eval-docstring(var.description, style-args),
+)
 
 
-// TODO: implement
 #let show-reference(label, name, style-args: none) = {
-  // link(label, raw(name, lang: none))
-  // text(red, strong(str(label)))
-  // api.cmdref(name)
   api.cmdref(name)
 }
