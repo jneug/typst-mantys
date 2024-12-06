@@ -143,27 +143,7 @@
     )
   } else {
     let doc = document.get()
-    // cont.push(
-    //   eval(
-    //     mode: mode,
-    //     scope: doc.examples-scope.scope + scope,
-    //     utils.add-preamble(
-    //       code.text,
-    //       doc.examples-scope.imports + imports,
-    //     ),
-    //   ),
-    // )
-
-    cont.push(if "import" in code.text {
-      block(
-        fill: red.lighten(80%),
-        stroke: 4pt + red,
-        radius: 4pt,
-        inset: 8pt,
-        width: 100%,
-        code.text,
-      )
-    } else {
+    cont.push(
       eval(
         mode: mode,
         scope: doc.examples-scope.scope + scope,
@@ -171,8 +151,8 @@
           code.text,
           doc.examples-scope.imports + imports,
         ),
-      )
-    })
+      ),
+    )
   }
 
   frame(
@@ -258,12 +238,11 @@
 
 /// Shows an import statement for this package. The name and version from the document are used.
 /// #example[```
-/// #show-import()
-/// #show-import(repository: "@local", imports: "mantys", mode:"code")
+/// #show-git-clone()
+/// #show-git-clone(repository: "typst/packages", out:"preview/mantys/1.0.0")
 /// ```]
-/// - repository (str): Custom package repository to show.
-/// - imports (str, none): What to import from the package. Use #value(none) to just import the package into the global scope.
-/// - mode (str): One of #choices("markup", "code"). Will show the import in markup or code mode.
+/// - repository (str, auto): Custom package repository to show.
+/// - out (str, none, auto):
 #let show-git-clone(repository: auto, out: auto) = {
   document.use(doc => {
     let repo = if repository == auto {
@@ -272,14 +251,14 @@
       repository
     }
     let url = if not repo.starts-with(regex("https?://")) {
-      "https://github.com/" + repository
+      "https://github.com/" + repo
     } else {
-      repository
+      repo
     }
 
     codesnippet(
       raw(
-        lang: "shell",
+        lang: "bash",
         "git clone " + url + " " + doc.package.name + "/" + str(doc.package.version),
       ),
     )
