@@ -76,12 +76,10 @@
     // fallback
     default: rgb(239, 240, 243),
     custom: rgb("#fcfdb7"),
-
     // special
     any: gray,
     "auto": red,
     "none": red,
-
     // foundations
     arguments: gray,
     array: gray,
@@ -101,7 +99,6 @@
     type: gray,
     label: rgb(167, 234, 255),
     version: gray,
-
     // layout
     alignment: gray,
     angle: purple,
@@ -111,19 +108,18 @@
     "relative length": purple,
     ratio: purple,
     relative: purple,
-
     // visualize
     color: gradient.linear(
       (rgb("#7cd5ff"), 0%),
       (rgb("#a6fbca"), 33%),
       (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%)
+      (rgb("#ffa49d"), 100%),
     ),
     gradient: gradient.linear(
       (rgb("#7cd5ff"), 0%),
       (rgb("#a6fbca"), 33%),
       (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%)
+      (rgb("#ffa49d"), 100%),
     ),
     stroke: gray,
   )
@@ -131,50 +127,52 @@
 
 
 
-#let page-init(doc) = body => {
-  show typst.heading: it => {
-    let level = it.at("level", default: it.at("depth", default: 2))
-    let scale = (1.6, 1.4, 1.2).at(level - 1, default: 1.0)
+#let page-init(doc) = (
+  body => {
+    show typst.heading: it => {
+      let level = it.at("level", default: it.at("depth", default: 2))
+      let scale = (1.6, 1.4, 1.2).at(level - 1, default: 1.0)
 
-    let size = 1em * scale
-    let above = if level == 1 {
-      1.8em
-    } else {
-      1.44em
-    } / scale
-    let below = 0.75em / scale
+      let size = 1em * scale
+      let above = if level == 1 {
+        1.8em
+      } else {
+        1.44em
+      } / scale
+      let below = 0.75em / scale
 
-    set typst.text(size: size, ..heading)
-    set block(above: above, below: below)
+      set typst.text(size: size, ..heading)
+      set block(above: above, below: below)
 
-    if level == 1 {
-      pagebreak(weak: true)
-      block({
-        if it.numbering != none {
-          typst.text(
-            fill: primary,
-            {
-              [Part ]
-              counter(typst.heading).display()
-            },
-          )
-          linebreak()
-        }
-        it.body
-      })
-    } else {
-      block({
-        if it.numbering != none {
-          typst.text(fill: primary, counter(typst.heading).display())
-          [ ]
-        }
-        set typst.text(size: size, ..heading)
-        it.body
-      })
+      if level == 1 {
+        pagebreak(weak: true)
+        block({
+          if it.numbering != none {
+            typst.text(
+              fill: primary,
+              {
+                [Part ]
+                counter(typst.heading).display()
+              },
+            )
+            linebreak()
+          }
+          it.body
+        })
+      } else {
+        block({
+          if it.numbering != none {
+            typst.text(fill: primary, counter(typst.heading).display())
+            [ ]
+          }
+          set typst.text(size: size, ..heading)
+          it.body
+        })
+      }
     }
+    body
   }
-  body
-}
+)
 
 #let _display-author(author) = block({
   smallcaps(author.name)

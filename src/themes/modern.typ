@@ -54,11 +54,11 @@
 )
 
 #let commands = (
-  argument:  rgb("#3c5c99"),
-  option:    rgb(214, 182, 93),
-	command:   blue,      // rgb(75, 105, 197),
-	builtin:   eastern,
-	comment:   gray,      // rgb(128, 128, 128),
+  argument: rgb("#3c5c99"),
+  option: rgb(214, 182, 93),
+  command: blue, // rgb(75, 105, 197),
+  builtin: eastern,
+  comment: gray, // rgb(128, 128, 128),
   symbol: text.fill,
 )
 
@@ -75,12 +75,10 @@
     // fallback
     default: rgb(239, 240, 243),
     custom: rgb("#fcfdb7"),
-
     // special
     any: gray,
     "auto": red,
     "none": red,
-
     // foundations
     arguments: gray,
     array: gray,
@@ -100,7 +98,6 @@
     type: gray,
     label: rgb(167, 234, 255),
     version: gray,
-
     // layout
     alignment: gray,
     angle: purple,
@@ -110,45 +107,46 @@
     "relative length": purple,
     ratio: purple,
     relative: purple,
-
     // visualize
     color: gradient.linear(
       (rgb("#7cd5ff"), 0%),
       (rgb("#a6fbca"), 33%),
       (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%)
+      (rgb("#ffa49d"), 100%),
     ),
     gradient: gradient.linear(
       (rgb("#7cd5ff"), 0%),
       (rgb("#a6fbca"), 33%),
       (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%)
+      (rgb("#ffa49d"), 100%),
     ),
     stroke: gray,
   )
 }
 
 
-#let page-init(doc) = body => {
-  show typst.heading.where(level: 1): it => {
-    pagebreak(weak: true)
-    set typst.text(fill: primary)
-    block(
-      width: 100%,
-      breakable: false,
-      inset: (bottom: .33em),
-      stroke: (bottom: .6pt + secondary),
-      [#if it.numbering != none {
-          typst.text(
-            weight: "semibold",
-            secondary,
-            [Part ] + counter(typst.heading.where(level: it.level)).display(it.numbering),
-          ) + h(1.28em)
-        } #it.body],
-    )
+#let page-init(doc) = (
+  body => {
+    show typst.heading.where(level: 1): it => {
+      pagebreak(weak: true)
+      set typst.text(fill: primary)
+      block(
+        width: 100%,
+        breakable: false,
+        inset: (bottom: .33em),
+        stroke: (bottom: .6pt + secondary),
+        [#if it.numbering != none {
+            typst.text(
+              weight: "semibold",
+              secondary,
+              [Part ] + counter(typst.heading.where(level: it.level)).display(it.numbering),
+            ) + h(1.28em)
+          } #it.body],
+      )
+    }
+    body
   }
-  body
-}
+)
 
 #let title-page(doc) = {
   set align(center)
