@@ -96,9 +96,12 @@
 /// -> str
 #let build-preamble(imports) = {
   if imports != (:) {
-    return imports.pairs().map(((mod, imp)) => {
-      "#import " + mod + ": " + imp
-    }).join(";") + ";"
+    return imports
+      .pairs()
+      .map(((mod, imp)) => {
+          "#import " + mod + ": " + imp
+        })
+      .join(";") + ";"
   } else {
     return ""
   }
