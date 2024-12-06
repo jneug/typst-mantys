@@ -83,9 +83,9 @@
       } else if type(dest) != str {
         show-urls = false
       }
-      typst.link(dest, body)
+      std.link(dest, body)
       if show-urls {
-        footnote(typst.link(dest, dest))
+        footnote(std.link(dest, dest))
       }
     }
 
@@ -105,7 +105,7 @@
     // TODO: Should theme call be in mantys.typ?
     show: theme.page-init(doc)
 
-    // Setup show-rule for theming support
+    // Setup show-rule for themeing support
     show <mantys:themable>: it => {
       let element = it.value
       (element.func)(theme, ..element.args)
