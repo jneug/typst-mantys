@@ -1,4 +1,5 @@
 #import "../util/typing.typ" as t
+#import "../util/utils.typ" as util
 #import "schema.typ"
 
 /// Creates a document by parsing the supplied arguments agains the document schema.
@@ -24,7 +25,7 @@
 
 /// Gets a value from the internally saved document.
 /// #poperty(context: true)
-#let get-value(key, default: none) = get().at(value, default: default)
+#let get-value(key, default: none) = util.dict-get(get(), key, default: default)
 
 /// Retrieves the document from the internally saved state.
 /// #poperty(context: true)
@@ -32,4 +33,4 @@
 
 /// Gets a value from the internally saved document.
 /// #poperty(context: true)
-#let use-value(key, func, default: none) = context func(get().at(key, default: default))
+#let use-value(key, func, default: none) = context func(util.dict-get(get(), key, default: default))
