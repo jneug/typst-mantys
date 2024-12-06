@@ -11,6 +11,27 @@
   }
 }
 
+#let dict-get(d, key, default: none) = {
+  if "." not in key {
+    return d.at(key, default: default)
+  } else {
+    let keys = key.split(".")
+    while (keys.len() > 0) {
+      let k = keys.remove(0)
+      if type(d) != dictionary or k not in d {
+        return default
+      } else {
+        d = d.at(k)
+      }
+    }
+    if keys.len() > 0 {
+      return default
+    } else {
+      return d
+    }
+  }
+}
+
 /// Displays #arg[code] as inline #builtin[raw] code (with #arg(inline: true)).
 /// - #shortex(`#utils.rawi("my-code")`)
 ///
