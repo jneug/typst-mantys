@@ -4,7 +4,6 @@
 #let _type-map = (
   "auto": "foundations/auto",
   "none": "foundations/none",
-
   // foundation
   arguments: "foundations/arguments",
   array: "foundations/array",
@@ -24,7 +23,6 @@
   type: "foundations/type",
   label: "foundations/label",
   version: "foundations/version",
-
   // layout
   alignment: "layout/alignment",
   angle: "layout/angle",
@@ -33,7 +31,6 @@
   length: "layout/length",
   ratio: "layout/ratio",
   relative: "layout/relative",
-
   // visualize
   color: "visualize/color",
   gradient: "visualize/gradient",
@@ -76,7 +73,6 @@
   sys: "foundations/sys",
   type: "foundations/type",
   version: "foundations/version",
-
   // model
   bibliography: "model/bibliography",
   cite: "model/cite",
@@ -93,7 +89,6 @@
   ref: "model/ref",
   table: "model/table",
   terms: "model/terms",
-
   // text
   raw: "text/raw",
   text: "text/text",
@@ -109,7 +104,6 @@
   strike: "text/strike",
   sub: "text/sub",
   super: "text/super",
-
   // layout
   align: "layout/align",
   alignment: "layout/alignment",
@@ -138,7 +132,6 @@
   scale: "layout/scale",
   stack: "layout/stack",
   v: "layout/v",
-
   // math
   accent: "math/accent",
   attach: "math/attach",
@@ -157,7 +150,6 @@
   underover: "math/underover",
   variants: "math/variants",
   vec: "math/vec",
-
   // visualize
   circle: "visualize/circle",
   color: "visualize/color",
@@ -171,7 +163,6 @@
   rect: "visualize/rect",
   square: "visualize/square",
   stroke: "visualize/stroke",
-
   // instrospection
   counter: "introspection/counter",
   here: "introspection/here",
@@ -180,7 +171,6 @@
   metadata: "introspection/metadata",
   query: "introspection/query",
   state: "introspection/state",
-
   // data-loading
   cbor: "data-loading/cbor",
   csv: "data-loading/csv",
@@ -205,13 +195,14 @@
   } else {
     dest
   }
-  if "footnote" in args.named() and not args.named().at("footnote") {
+  if not args.named().at("footnote", default: true) {
     [#typst.link(dest, body)]
   } else {
     [#typst.link(dest, body)<mantys:link>]
   }
 }
 
+// TODO: Make repo: auto named and load repo url from document
 #let github(repo) = {
   if repo.starts-with("https://github.com/") {
     repo = repo.slice(19)
@@ -219,13 +210,14 @@
   link("https://github.com/" + repo, repo)
 }
 
-
 #let github-user(name) = {
-  typst.link("https://github.com/" + name, sym.at + name)
+  link("https://github.com/" + name, sym.at + name)
 }
 
+// TODO: Make repo: auto named and load repo name from document
 #let universe(pkg) = link("https://typst.app/universe/package/" + pkg, package(pkg))
 
+// TODO: Make repo: auto named and load repo name from document
 #let preview(pkg, ver: auto) = {
   if ver == auto {
     let m = pkg.match(regex("\d+\.\d+\.\d+$"))
