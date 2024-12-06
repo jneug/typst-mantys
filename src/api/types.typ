@@ -12,7 +12,6 @@
 #let _type-map = (
   "auto": auto,
   "none": none,
-
   // foundations
   arguments: arguments,
   array: array,
@@ -32,7 +31,6 @@
   type: type,
   label: label,
   version: version,
-
   // layout
   alignment: alignment,
   angle: angle,
@@ -41,7 +39,6 @@
   length: length,
   ratio: ratio,
   relative: relative,
-
   // visualize
   color: color,
   gradient: gradient,
@@ -86,7 +83,7 @@
 
 #let dtype(name, link: true) = context {
   let _type
-  if is.type(name) {
+  if is.type(name) or is._auto(name) or is._none(name) {
     _type = name
   } else if not is.str(name) {
     _type = type(name)
@@ -100,6 +97,7 @@
       return themable(theme => links.link-dtype(name, type-box(name, theme.types.default)))
     }
   }
+
 
   _type = repr(_type)
   return themable((theme => links.link-dtype(_type, type-box(_type, theme.types.at(_type)))))
