@@ -1,4 +1,4 @@
-# Mantys (v0.1.4)
+# Mantys (v1.0.0)
 
 > **MAN**uals for **TY**p**S**t
 
@@ -16,7 +16,7 @@ typst init @preview/mantys
 A basic template for a manual could look like this:
 
 ```typst
-#import "@local/mantys:0.1.4": *
+#import "@local/mantys:1.0.0": *
 
 #import "your-package.typ"
 
@@ -86,7 +86,7 @@ For a full reference of available commands read [the manual](docs/mantys-manual.
 
 ## Changelog
 
-### Version 0.1.4
+### Version 1.0.0
 
 - Fix missing links in outline (@tingerrr).
 - Fixed problem when evaluating default values with Tidy.
