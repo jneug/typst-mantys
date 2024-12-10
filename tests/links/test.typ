@@ -31,5 +31,5 @@
 
 = Typst `@preview`
 - #preview("mantys")
-- #preview("mantys:0.1.4")
+- #preview("mantys:1.0.0")
 - #preview("mantys", ver: version(0, 1, 4))

@@ -19,7 +19,7 @@
 - #value(ttb)
 - #value((a: 1, b: 2))
 - #value(x)
-- #value("x", repr: false)
+- #value("x", parse-str: false)
 
 = Default values
 
