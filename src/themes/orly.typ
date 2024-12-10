@@ -1,41 +1,40 @@
-#let primary = rgb(166, 9, 18)
-#let secondary = primary
+// #import "@preview/fauxreilly:0.1.0": orly
+// #import "@preview/fauxreilly:0.1.1": orly
+#let orly(..args) = []
+
+#let primary = rgb("#b22784")
+#let secondary = rgb("#0a0a0a")
 
 
 #let fonts = (
-  serif: ("New Computer Modern", "Computer Modern", "Libertinus Serif", "Liberation Serif"),
-  sans: ("New Computer Modern Sans", "Computer Modern Sans", "Libertinus Sans", "Helvetica Neue", "Helvetica"),
+  serif: "Liberation Serif",
+  sans: ("Open Sans Condensed", "Open Sans", "Liberation Sans", "Helvetica Neue", "Helvetica"),
   mono: ("Liberation Mono",),
 )
 
 #let muted = (
-  fill: rgb(128, 128, 128),
+  fill: luma(210),
 )
 
 #let text = (
   size: 12pt,
   font: fonts.serif,
-  fill: rgb(0, 0, 0),
+  fill: rgb(35, 31, 32),
+)
+
+#let heading = (
+  font: fonts.sans,
+  fill: text.fill,
 )
 
 #let header = (
   size: 10pt,
   fill: text.fill,
 )
+
 #let footer = (
   size: 9pt,
   fill: muted.fill,
-)
-
-#let heading = (
-  font: fonts.serif,
-  fill: text.fill,
-)
-
-#let emph = (
-  link: primary,
-  package: primary,
-  module: rgb(5, 10, 122),
 )
 
 #let code = (
@@ -51,13 +50,18 @@
   success: rgb(40, 167, 69),
 )
 
+#let emph = (
+  link: secondary,
+  package: primary,
+  module: rgb("#8c3fb2"),
+)
 
 #let commands = (
   argument: navy,
-  command: rgb(153, 64, 39),
-  variable: rgb(214, 181, 93),
+  command: blue,
+  variable: rgb("#9346ff"),
   builtin: eastern,
-  comment: rgb(128, 128, 128),
+  comment: gray,
   symbol: text.fill,
 )
 
@@ -65,6 +69,8 @@
   default: rgb(181, 2, 86),
 )
 
+
+// TODO: Move type colors to types.typ?
 #let types = {
   let red = rgb(255, 203, 195)
   let gray = rgb(239, 240, 243)
@@ -124,12 +130,11 @@
 }
 
 
-
 #let page-init(doc) = (
   body => {
     show std.heading: it => {
       let level = it.at("level", default: it.at("depth", default: 2))
-      let scale = (1.6, 1.4, 1.2).at(level - 1, default: 1.0)
+      let scale = (1.4, 1.2, 1.1).at(level - 1, default: 1.0)
 
       let size = 1em * scale
       let above = if level == 1 {
@@ -144,26 +149,23 @@
 
       if level == 1 {
         pagebreak(weak: true)
-        block({
-          if it.numbering != none {
-            std.text(
-              fill: primary,
-              {
-                [Part ]
-                counter(std.heading).display()
-              },
-            )
-            linebreak()
-          }
-          it.body
-        })
+        if it.numbering != none {
+          set std.text(fill: secondary)
+          [Part ]
+          counter(std.heading).display()
+          h(1.8em)
+          v(-.64em)
+          line(length: 100%, stroke: 2pt + secondary)
+        }
+        set std.text(fill: primary)
+        it.body
       } else {
         block({
+          set std.text(fill: secondary)
           if it.numbering != none {
-            std.text(fill: primary, counter(std.heading).display())
-            [ ]
+            counter(std.heading).display()
+            h(1.8em)
           }
-          set std.text(size: size, ..heading)
           it.body
         })
       }
@@ -194,37 +196,34 @@
 })
 
 #let title-page(doc) = {
-  set align(center)
-  set block(spacing: 2em)
+  let title = if doc.title == none {
+    doc.package.name
+  } else {
+    doc.title
+  }
 
-  block(
-    smallcaps(
-      std.text(
-        40pt,
-        primary,
-        if doc.title == none {
-          doc.package.name
-        } else {
-          doc.title
-        },
-      ),
-    ),
+  orly(
+    color: primary,
+    font: heading.font,
+    title: title,
+    subtitle: doc.package.description,
+    signature: [
+      #set std.text(14pt)
+      v#doc.package.version
+      #if doc.date != none [
+        #h(4em)
+        #doc.date.display()
+      ]
+      #h(4em)
+      #doc.package.license
+    ],
+    publisher: doc.package.authors.map(_display-author).join(", "),
+    pic: doc.theme-options.at("title-image", default: none),
+    top-text: doc.subtitle,
   )
-  if doc.subtitle != none {
-    block(above: 1em, std.text(18pt, doc.subtitle))
-  }
 
-  std.text(14pt)[v#doc.package.version]
-  if doc.date != none {
-    h(4em)
-    std.text(14pt, doc.date.display())
-  }
-  h(4em)
-  std.text(14pt, doc.package.license)
-
-  if doc.package.description != none {
-    block(doc.package.description)
-  }
+  set page(header: none, footer: none)
+  std.heading(depth: 1, title, numbering: none)
 
   grid(
     columns: calc.min(4, doc.package.authors.len()),
@@ -241,8 +240,6 @@
       x: 10%,
       {
         set align(left)
-        // set par(justify: true)
-        // show par: set block(spacing: 1.3em)
         doc.abstract
       },
     )
@@ -256,7 +253,8 @@
       strong(link(it.element.location(), it.body))
     }
 
-    std.heading(level: 2, outlined: false, bookmarked: false, numbering: none, "Table of Contents")
+    v(1fr)
+    std.heading(depth: 2, outlined: false, bookmarked: false, numbering: none, "Table of Contents")
     columns(
       2,
       outline(
