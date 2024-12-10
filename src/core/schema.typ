@@ -123,6 +123,7 @@
 ))
 
 #let document = t.dictionary(
+  // typstyle off
   (
     // Document info
     title: t.content(),
@@ -144,6 +145,12 @@
     // Data loaded from typst.toml
     package: package,
     template: t.optional(template),
+
+    // Options available to the theme
+    theme-options: t.dictionary(
+      (:),
+      default: (:),
+    ),
 
     // Configuration options
     show-index: t.boolean(default: true),
