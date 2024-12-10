@@ -1,5 +1,3 @@
-#import "../util/typst.typ"
-
 #let primary = eastern
 #let secondary = teal
 
@@ -130,7 +128,7 @@
 
 #let page-init(doc) = (
   body => {
-    show typst.heading: it => {
+    show std.heading: it => {
       let level = it.at("level", default: it.at("depth", default: 2))
       let scale = (1.6, 1.4, 1.2).at(level - 1, default: 1.0)
 
@@ -142,18 +140,18 @@
       } / scale
       let below = 0.75em / scale
 
-      set typst.text(size: size, ..heading)
+      set std.text(size: size, ..heading)
       set block(above: above, below: below)
 
       if level == 1 {
         pagebreak(weak: true)
         block({
           if it.numbering != none {
-            typst.text(
+            std.text(
               fill: primary,
               {
                 [Part ]
-                counter(typst.heading).display()
+                counter(std.heading).display()
               },
             )
             linebreak()
@@ -163,38 +161,38 @@
       } else {
         block({
           if it.numbering != none {
-            typst.text(fill: primary, counter(typst.heading).display())
+            std.text(fill: primary, counter(std.heading).display())
             [ ]
           }
           it.body
         })
       }
     }
-    // show typst.heading: it => {
+    // show std.heading: it => {
     //   let level = it.at("level", default: it.at("depth", default: 2))
     //   let scale = (1.6, 1.4, 1.2).at(level - 1, default: 1.0)
 
     //   if level == 1 {
     //     pagebreak(weak: true)
-    //     set typst.text(1em * scale, ..heading)
+    //     set std.text(1em * scale, ..heading)
     //     block(
     //       width: 100%,
     //       breakable: false,
     //       [#if it.numbering != none {
-    //           typst.text(
+    //           std.text(
     //             weight: "semibold",
     //             fill: primary,
-    //             [Part ] + counter(typst.heading.where(level: it.level)).display(it.numbering),
+    //             [Part ] + counter(std.heading.where(level: it.level)).display(it.numbering),
     //           )
     //         }\
     //         #it.body],
     //     ) + v(.64em)
     //   } else {
-    //     set typst.text(1em * scale, ..heading)
+    //     set std.text(1em * scale, ..heading)
     //     block()[
-    //       // #typst.text(
+    //       // #std.text(
     //       //   primary,
-    //       //   counter(typst.heading.where(level: level)).display(it.numbering),
+    //       //   counter(std.heading.where(level: level)).display(it.numbering),
     //       // )
     //       #it.body
     //     ]
@@ -206,7 +204,7 @@
 
 #let _display-author(author) = block({
   smallcaps(author.name)
-  set typst.text(.88em)
+  set std.text(.88em)
   if author.email != none {
     linebreak()
     " " + sym.lt + link("mailto://" + author.email, author.email) + sym.gt
@@ -230,7 +228,7 @@
   set block(spacing: 2em)
 
   block(
-    typst.text(
+    std.text(
       40pt,
       primary,
       if doc.title == none {
@@ -241,16 +239,16 @@
     ),
   )
   if doc.subtitle != none {
-    block(above: 1em, typst.text(18pt, doc.subtitle))
+    block(above: 1em, std.text(18pt, doc.subtitle))
   }
 
-  typst.text(14pt)[v#doc.package.version]
+  std.text(14pt)[v#doc.package.version]
   if doc.date != none {
     h(4em)
-    typst.text(14pt, doc.date.display())
+    std.text(14pt, doc.date.display())
   }
   h(4em)
-  typst.text(14pt, doc.package.license)
+  std.text(14pt, doc.package.license)
 
   if doc.package.description != none {
     block(doc.package.description)
@@ -286,7 +284,7 @@
       strong(link(it.element.location(), it.body))
     }
 
-    typst.heading(level: 2, outlined: false, bookmarked: false, numbering: none, "Table of Contents")
+    std.heading(level: 2, outlined: false, bookmarked: false, numbering: none, "Table of Contents")
     columns(
       2,
       outline(

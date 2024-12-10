@@ -1,6 +1,7 @@
 #import "../_deps.typ" as deps
 #import "../core/document.typ"
 #import "../util/utils.typ"
+#import "../util/is.typ"
 #import "../core/themes.typ": themable
 #import "../api/elements.typ": frame
 
@@ -54,7 +55,7 @@
 /// Shows some #builtin[raw] code in a @@frame, but
 /// without line numbers or other enhancements.
 /// #info-alert[
-///   By default MANTYS wrapps any #builtin[raw] code in the manual in this command.
+///   By default MANTYS wraps any #builtin[raw] code in the manual in this command.
 /// ]
 ///
 /// #example[````
@@ -212,7 +213,7 @@
 /// - repository (str): Custom package repository to show.
 /// - imports (str, none): What to import from the package. Use #value(none) to just import the package into the global scope.
 /// - mode (str): One of #choices("markup", "code"). Will show the import in markup or code mode.
-#let show-import(repository: "@preview", imports: "*", mode: "markup") = {
+#let show-import(repository: "@preview", imports: "*", mode: "markup", code: none) = {
   document.use(doc => {
     codesnippet(
       raw(
@@ -229,7 +230,7 @@
           .package
           .version) + "\"" + if imports != none {
           ": " + imports
-        },
+        } + if code != none { "\n" + if is.raw(code) { code.text } else { code } },
       ),
     )
   })

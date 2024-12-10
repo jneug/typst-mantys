@@ -1,10 +1,12 @@
 #import "typst.typ"
 
-#let str(value) = typst.type(value) == typst.type("")
-#let dict(value) = typst.type(value) == typst.type((:))
-#let arr(value) = typst.type(value) == typst.type(())
-#let type(value) = typst.type(value) == typst.type
-#let content(value) = typst.type(value) == typst.content
+#let str(value) = std.type(value) == std.type("")
+#let dict(value) = std.type(value) == std.type((:))
+#let arr(value) = std.type(value) == std.type(())
+#let type(value) = std.type(value) == std.type
+#let content(value) = std.type(value) == std.content
+
+#let raw(value) = std.type(value) == std.content and value.func() == std.raw
 
 #let _none(value) = value == none
 #let _auto(value) = value == auto

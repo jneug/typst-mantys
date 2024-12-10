@@ -1,5 +1,3 @@
-#import "../util/typst.typ"
-
 #let primary = rgb("#ed592f")
 #let secondary = rgb("#05b5da")
 
@@ -127,19 +125,19 @@
 
 #let page-init(doc) = (
   body => {
-    show typst.heading.where(level: 1): it => {
+    show std.heading.where(level: 1): it => {
       pagebreak(weak: true)
-      set typst.text(fill: primary)
+      set std.text(fill: primary)
       block(
         width: 100%,
         breakable: false,
         inset: (bottom: .33em),
         stroke: (bottom: .6pt + secondary),
         [#if it.numbering != none {
-            typst.text(
+            std.text(
               weight: "semibold",
               secondary,
-              [Part ] + counter(typst.heading.where(level: it.level)).display(it.numbering),
+              [Part ] + counter(std.heading.where(level: it.level)).display(it.numbering),
             ) + h(1.28em)
           } #it.body],
       )
@@ -157,23 +155,23 @@
     inset: (y: 1.28em),
     stroke: (bottom: 2pt + secondary),
     [
-      #set typst.text(40pt)
+      #set std.text(40pt)
       #doc.title
     ],
   )
 
   if doc.subtitle != none {
-    typst.text(18pt, doc.subtitle)
+    std.text(18pt, doc.subtitle)
     v(1em)
   }
 
-  typst.text(14pt)[Version #doc.package.version]
+  std.text(14pt)[Version #doc.package.version]
   if doc.date != none {
     h(3em)
-    typst.text(14pt, doc.date.display())
+    std.text(14pt, doc.date.display())
   }
   h(3em)
-  typst.text(14pt, doc.package.license)
+  std.text(14pt, doc.package.license)
 
   v(1fr)
   pad(
@@ -185,7 +183,7 @@
   )
   v(1fr)
   if doc.show-outline {
-    typst.heading(level: 2, outlined: false, numbering: none, "Table of Contents")
+    std.heading(level: 2, outlined: false, numbering: none, "Table of Contents")
     columns(
       2,
       outline(title: none),
