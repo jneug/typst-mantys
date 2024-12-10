@@ -6,6 +6,7 @@
 #import "../core/themes.typ": themable
 #import "../core/styles.typ"
 
+#import "icons.typ"
 #import "values.typ"
 #import "types.typ": dtype, dtypes
 #import "links.typ": link-builtin
@@ -135,9 +136,12 @@
       ","
     } + sym.paren.r
   } else if type(ret) == dictionary and ret.len() > 0 {
-    ret = sym.paren.l + ret.pairs().map(pair => {
-      pair.first() + sym.colon + dtype(pair.last())
-    }).join(",") + sym.paren.r
+    ret = sym.paren.l + ret
+      .pairs()
+      .map(pair => {
+          pair.first() + sym.colon + dtype(pair.last())
+        })
+      .join(",") + sym.paren.r
   } else {
     ret = dtype(ret)
   }
@@ -305,10 +309,10 @@
   #set par(first-line-indent: 0.65pt, hanging-indent: 0pt)
   #let types = (types,).flatten()
   / #var(name, index: "main")#if value != none {
-    sym.colon + " " + values.value(value)
-  }#if types != (none,) {
-    h(1fr) + dtypes(..types)
-  }: #block(inset: (left: 2em), body)
+      sym.colon + " " + values.value(value)
+    }#if types != (none,) {
+      h(1fr) + dtypes(..types)
+    }: #block(inset: (left: 2em), body)
 ]
 
 
@@ -405,7 +409,7 @@
 /// Creates a reference to the custom type #arg[name].
 /// This is equivalent to using `@type:name`.
 ///
-/// // - #shortex(`#typeref("author")`)
+/// //- #shortex(`#typeref("author")`)
 /// //- #shortex(`@cmd:builtin`)
 #let typeref(name) = ref(label("type:" + name))
 
@@ -414,18 +418,36 @@
 #let _property-spacing = 2pt
 #let _properties = (
   default: (k, v) => elements.alert(color: luma(80%), spacing: _property-spacing)[*#utils.rawi(k)*: #utils.rawi(v)],
+  //
   deprecated: (
     _,
     v,
-  ) => elements.warning-alert(spacing: _property-spacing)[#emoji.warning this function is *`deprecated`*#if v != true [ and will be removed in version *#v*]],
-  since: (_, v) => elements.info-alert(spacing: _property-spacing)[#emoji.info since version *#v*],
-  until: (_, v) => elements.warning-alert(spacing: _property-spacing)[#emoji.info until version *#v*],
-  requires-context: (_, v) => elements.warning-alert(spacing: _property-spacing)[#emoji.warning *`requires-context`*],
+  ) => elements.warning-alert(spacing: _property-spacing)[#text(fill: rgb("#ffc008"), icons.warning) this function is *`deprecated`*#if v != true [ and will be removed in version *#v*]],
+  //
+  since: (
+    _,
+    v,
+  ) => elements.info-alert(spacing: _property-spacing)[#text(fill: rgb("#14a2b8"), icons.info) since version *#v*],
+  //
+  until: (
+    _,
+    v,
+  ) => elements.warning-alert(spacing: _property-spacing)[#text(fill: rgb("#ffc008"), icons.info) until version *#v*],
+  //
+  requires-context: (
+    _,
+    v,
+  ) => elements.warning-alert(spacing: _property-spacing)[#text(fill: rgb("#ffc008"), icons.warning) *`requires-context`*],
+  //
   see: (
     _,
     v,
-  ) => elements.info-alert(spacing: _property-spacing)[#emoji.arrow.tr see #{v.map(t => if is.str(t) { link(t, t) } else { ref(t) } ).join(", ")}],
-  todo: (_, v) => elements.alert(spacing: _property-spacing)[#emoji.checkmark.box TODO: #v],
+  ) => elements.info-alert(spacing: _property-spacing)[#icons.icon("link-external") see #{(v,).flatten().map(t => if is.str(t) { link(t, t) } else { ref(t) } ).join(", ")}],
+  //
+  todo: (_, v) => elements.alert(
+    spacing: _property-spacing,
+    color: green,
+  )[#text(fill: green)[#icons.icon("check") *TODO*] #v],
 )
 // #let _properties = (
 //   default: (k, v) => [- #themable(t => [#utils.rawc(t.alerts.info, k): #v])],
@@ -440,7 +462,7 @@
 // )
 
 
-/// Shows a command propertie (annotation).
+/// Shows a command property (annotation).
 /// This should be used in the #barg[body] of #cmd-[command] to
 /// annotate a function with some special meaning.
 ///
