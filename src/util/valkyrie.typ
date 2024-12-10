@@ -2,11 +2,9 @@
 
 #let parse-schema(
   schema,
-
   expand-schemas: false,
   expand-choices: 2,
   child-schemas: none,
-
   // Passing in dtype and value to avoid circular imports
   _dtype: none,
   _value: none,
@@ -17,6 +15,7 @@
     return _dtype(child-schemas)
   }
 
+  // TODO: implement expand-schemas and child-schemas options
   let options = (
     expand-schemas: expand-schemas,
     expand-choices: expand-choices,
@@ -39,7 +38,11 @@
               } else if el.default != none {
                 ": " + raw(lang: "typc", repr(el.default))
               },
-              parse-schema(el, child-schemas: if type(child-schemas) == dictionary { child-schemas.at(key, default: none) }, ..options),
+              parse-schema(
+                el,
+                child-schemas: if type(child-schemas) == dictionary { child-schemas.at(key, default: none) },
+                ..options,
+              ),
             ),
           )
         },
@@ -59,12 +62,12 @@
     `(`
     if expand-choices not in (false, 0) {
       if type(expand-choices) == int and el.choices.len() > expand-choices {
-        el.choices.slice(0, expand-choices).map(_value).join(", ") + [ ... ]
+        el.choices.slice(0, expand-choices).map(_value).join(", ") + [ #sym.dots ]
       } else {
         el.choices.map(_value).join(", ")
       }
     } else [
-      ...
+      #sym.dots
     ]
     `)`
   } else {

@@ -2,7 +2,6 @@
 
 #import "@preview/tidy:0.3.0"
 
-
 #import "@preview/typearea:0.2.0"
 #import "@preview/hydra:0.5.1"
 
