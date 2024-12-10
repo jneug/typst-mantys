@@ -13,18 +13,21 @@
   show-outline: true,
 )
 
-#let _post-process-module(module-doc, module-args: (:), func-opts: (:)) = {
-  for (i, func) in module-doc.functions.enumerate() {
+#let _post-process-module(module-doc, module-args: (:), func-opts: (:), filter: func => true) = {
+  let functions = module-doc.functions.filter(filter)
+
+  for (i, func) in functions.enumerate() {
     for (key, value) in func-opts {
-      module-doc.functions.at(i).insert(key, value)
+      functions.at(i).insert(key, value)
     }
   }
 
+  module-doc.functions = functions
   return module-doc
 }
 
 
-#let tidy-module(name, data, scope: (:), module: none, ..tidy-args) = {
+#let tidy-module(name, data, scope: (:), module: none, filter: func => true, ..tidy-args) = {
   context {
     let doc = document.get()
     let scope = if doc.examples-scope != none {
@@ -44,6 +47,7 @@
       func-opts: (
         module: module,
       ),
+      filter: filter,
     )
 
     _show-module(module-doc, style: tidy-style, ..tidy-args.named())
