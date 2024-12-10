@@ -10,9 +10,10 @@
   description: "Helpers to build manuals for Typst packages.",
   repository:"https://github.com/jneug/typst-mantys",
 
-  /// Uncomment to load the above package information
-  /// directly from the typst.toml file
+  /// Uncomment one of the following lines to load the above
+  /// package information directly from the typst.toml file
   // ..toml("typst.toml"),
+  // ..toml-info(read)  // reads from "../typst.toml"
 
   title: "Manual title",
   // subtitle: "Tagline",
@@ -37,5 +38,4 @@
 //   show-outline: outlined,
 //   include-examples-scope: true,
 //   extract-headings: 3,
-//   tidy: tidy
 // )
