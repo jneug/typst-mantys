@@ -59,6 +59,10 @@
 
 #let toml-file = "../typst.toml"
 
+#let toml-info(read, toml-file: toml-file) = {
+  return read(toml-file)
+}
+
 /// Reads some information about the current commit from the
 /// local `.git` directory. The result can be passed to #cmd-[mantys] with the #arg[git] key.
 ///
