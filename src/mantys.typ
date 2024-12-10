@@ -52,19 +52,39 @@
   return (doc, mantys-func)
 }
 
+/// Main MANTYS template function.
+/// Use it to initialize the template:
+/// ```typ
+/// #show: mantys(
+///   // initialization
+/// )
+/// ```
 #let mantys(..args) = {
   let (_, mantys) = mantys-init(..args)
   return mantys
 }
 
-#let toml-file = "../typst.toml"
-
-#let toml-info(read, toml-file: toml-file) = {
-  return read(toml-file)
+/// Reads the package information from the `typst.toml` file in the base package directory.
+/// The result can be unpacked in the #cmd[mantys] to initialize the template.
+///
+/// ```typ
+/// #show: mantys(
+///   ..toml-info(read)
+/// )
+/// ```
+///
+/// Since MANTYS can't read files from outside its package directory,
+/// #cmd-[toml-info] needs the #builtin[read] function to be
+/// passed in.
+/// - read (function): The builtin #builtin[read] function.
+/// - toml-file (string): relative path to the `typst.toml` file.
+/// -> dictionary
+#let toml-info(read, toml-file: "../typst.toml") = {
+  return toml.decode(read(toml-file))
 }
 
 /// Reads some information about the current commit from the
-/// local `.git` directory. The result can be passed to #cmd-[mantys] with the #arg[git] key.
+/// local `.git` directory. The result can be passed to #cmd[mantys] with the #arg[git] key.
 ///
 /// Since MANTYS can't read files from outside its package directory,
 /// #cmd-[git-info] needs the #builtin[read] function to be
