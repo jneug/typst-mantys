@@ -228,9 +228,9 @@
     // Set empty title
     if "title" not in it and "name" in it.package {
       if "template" in it {
-        it.insert("title", [The #raw(block:false, it.package.name)<mantys-theme-pkg> template])
+        it.insert("title", [The #sym.quote#it.package.name#sym.quote template])
       } else {
-        it.insert("title", [The #raw(block:false, it.package.name)<mantys-theme-pkg> package])
+        it.insert("title", [The #sym.quote#it.package.name#sym.quote package])
       }
     }
     it
