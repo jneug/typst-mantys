@@ -27,6 +27,19 @@
   // examples-scope: ()
 
   show-index: false,
+
+  theme: themes.create-theme(
+    title-page: (doc, theme) => {
+      let default-title = (themes.default.title-page)(doc, theme).child.children
+      // Remove pagebreak
+      let _ = default-title.remove(-1)
+      {
+        set align(center)
+        set block(spacing: 2em)
+        default-title.join([])
+      }
+    }
+  )
 )
 
 /// Helper for Tidy-Support
