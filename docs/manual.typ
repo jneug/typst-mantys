@@ -8,8 +8,8 @@
   show-module-name: false,
   ..tidy-args.named(),
 )
-#let show-modules(scope: (:), ..names-tidy) = tidy-modules(
-  names-tidy.pos().fold(
+#let show-modules(scope: (:), ..tidy-args) = tidy-modules(
+  tidy-args.pos().fold(
     (:),
     (d, m) => {
       d.insert(
@@ -20,25 +20,26 @@
     },
   ),
   show-module-name: false,
-  ..names-tidy.named(),
+  ..tidy-args.named(),
 )
 
 #import "@preview/swank-tex:0.1.0": TeX, LaTeX
 
-#let cnltx = package("CNLTX")
+#let CNLTX = package("CNLTX")
 #let TIDY = package("Tidy")
 
 #show: mantys(
-  ..toml(toml-file),
+  ..toml-info(read),
+  name: "Mantys",
 
-  subtitle: [#strong[MAN]uals for #strong[TY]p#strong[S]t],
+  subtitle: [#text(eastern, weight:600)[MAN]uals for #text(eastern, weight:600)[TY]p#text(eastern, weight:600)[S]t],
   date: datetime.today(),
   abstract: [
-    MANTYS is a Typst template to help package and template authors to write manuals. It provides functionality for consistent formatting of commands, variables and source code examples. The template automatically creates a table of contents and a command index for easy reference and navigation.
+    MANTYS is a Typst template to help package and template authors write beautiful and useful manuals. It provides functionality for consistent formatting of commands, variables and source code examples. The template automatically creates a table of contents and a command index for easy reference and navigation.
 
     For even easier manual creation, MANTYS works well with #TIDY, the Typst docstring parser.
 
-    The main idea and design was inspired by the #LaTeX package #cnltx by #smallcaps[Clemens Niederberger].
+    The main idea and design were inspired by the #LaTeX package #CNLTX by #name[Clemens Niederberger].
   ],
 
   git: git-info(read),
@@ -63,15 +64,15 @@
       dest: "assets/examples/theme-typst-pages/{n}.png",
     ),
     "assets/examples/theme-typst.png": "assets/examples/theme-typst.typ",
+    "theme-orly-pages": (
+      src: "assets/examples/theme-orly-pages.typ",
+      dest: "assets/examples/theme-orly-pages/{n}.png",
+    ),
+    "assets/examples/theme-orly.png": "assets/examples/theme-orly.typ",
     "assets/examples/headline.png": "assets/examples/headline.typ",
     "assets/thumbnail.png": "assets/thumbnail.typ",
   ),
 )
-
-#show raw.where(block: true, lang: "typ"): it => {
-  show "{{VERSION}}": "0.1.4"
-  it
-}
 
 #pagebreak(weak: true)
 = About <sec:about>
@@ -80,9 +81,9 @@ Mantys is a Typst package to help package and template authors write manuals. Th
 
 This manual is a complete reference of all of MANTYS features. The source file of this document is a great example of the things MANTYS can do. Other than that, refer to the README file in the GitHub repository and the source code for MANTYS.
 
-=== Acknowledgements
+== Acknowledgements
 
-Mantys was inspired by the fantastic #LaTeX package #link("https://ctan.org/pkg/cnltx")[#cnltx] by #name[Clemens Niederberger]#footnote[#link("*mailto:clemens@cnltx.de", "clemens@cnltx.de")].
+Mantys was inspired by the fantastic #LaTeX package #link("https://ctan.org/pkg/cnltx")[#CNLTX] by #name[Clemens Niederberger]#footnote[#link("*mailto:clemens@cnltx.de", "clemens@cnltx.de")].
 
 Thanks to #github-user("tingerrr") and ... for contributing to this package and giving feedback.
 
@@ -101,7 +102,7 @@ If you prefer to manually setup your manual, create a `.typ` file and import MAN
 
 #show-import()
 
-=== Initializing the template <sec:init>
+== Initializing the template <sec:init>
 
 After importing MANTYS the template is initialized by applying a show rule with the #cmd[mantys] command.
 
@@ -116,7 +117,7 @@ After importing MANTYS the template is initialized by applying a show rule with 
 #command(
   "mantys",
 
-  arg(theme: "themes.default"),
+  arg(theme: "default", _value: var-.with(module: "themes")),
 )[
   #argument("title-page", default: auto, types: (auto, function))[
     A function that renders a titlepage for the manual. Refer to #cmd-[titlepage] for details.
@@ -133,7 +134,7 @@ After importing MANTYS the template is initialized by applying a show rule with 
       ),
     )
 
-    For example, if your package is named `my-pkg` and you want to import everything from your package into every examples scope, you can add the following `examples-scope`:
+    For example, if your package is named `my-pkg` and you want to import everything from your package into every examples scope, you can add the following #arg[examples-scope]:
 
     ```typc
     examples-scope: (
@@ -148,6 +149,8 @@ After importing MANTYS the template is initialized by applying a show rule with 
 
     For further details refer to @cmd:example.
   ]
+
+  #argument("theme", types: ("theme",))[]
 
   All other arguments will be passed to #cmd-[titlepage].
 
@@ -177,6 +180,7 @@ After importing MANTYS the template is initialized by applying a show rule with 
     child-schemas: (
       authors: "author",
     ),
+    expand-schemas: true,
   ),
 )
 
@@ -225,22 +229,113 @@ This is the manual for #doc.package.name version #str(doc.package.version).
 
 == Themes <sec:themes>
 
+MANTYS provides support for color themes and can be styled within certain boundries. The template comes with a few bundled themes but you can easily create a custom theme.
+
+#warning-alert[
+  #icons.warning Theme support is considered *experimental* and might be removed in future versions if it proves to be not stable enough.
+]
+
 === Using themes <sec:using-themes>
+
+To set the theme for your manual, simply provide a #arg[theme] argument to @cmd:mantys and set it to one of the bundled themes (see @sec:bundled-themes), a #dtype("dictionary") or a #dtype("module") with the required color, font and style information.
+
+Some themes can be further customized by options that get passed to @cmd:mantys in the #arg[theme-options] key.
+
+#codesnippet(```typ
+#mantys(
+  ..toml-info(read),
+
+  theme: themes.orly,
+  theme-options: (
+    pic: image("assets/logo.png", width: 100%, )
+  )
+)
+```)
+
+#{ }
 
 === Bundled themes <sec:bundled-themes>
 
-==== Typst theme
-#align(center, image("assets/examples/theme-typst.png", width: 10cm))
+==== Typst theme <subsec:theme-default>
+#grid(
+  columns: 2,
+  column-gutter: 5%,
+  [The default theme for MANTYS. Based on the Typst documentation and website.],
+  frame(arg(theme: "default", _value: var-.with(module: "themes"))),
+)
+#align(center, image("assets/examples/theme-typst.png", height: 30%))
 
 ==== Modern theme
-
-#align(center, image("assets/examples/theme-modern.png"))
+#grid(
+  columns: 2,
+  column-gutter: 5%,
+  [A slightly more modern theme for the digital age. Based on the #link("https://creativecommons.org/2019/10/30/cc-style-guide/", [Creative Commons Style Guide]).],
+  frame(arg(theme: "modern", _value: var-.with(module: "themes"))),
+)
+#align(center, image("assets/examples/theme-modern.png", height: 30%))
 
 ==== CNLTX theme
+#grid(
+  columns: 2,
+  column-gutter: 5%,
+  [This theme is based on the original #CNLTX template.],
+  frame(arg(theme: "cnltx", _value: var-.with(module: "themes"))),
+)
+#align(center, image("assets/examples/theme-cnltx.png", height: 30%))
 
-#align(center, image("assets/examples/theme-cnltx.png"))
+==== O'Rly#super[?] theme
+#grid(
+  columns: 2,
+  column-gutter: 5%,
+  [This theme uses the #universe("fauxreilly") package to create a style similar to an O'Reilly book.],
+  frame(arg(theme: "orly", _value: var-.with(module: "themes"))),
+)
+#align(center, image("assets/examples/theme-orly.png", height: 30%))
+
+===== Theme Options
+#argument("pic", types: content)[
+  #dtype(content) to be passed to the #arg[pic] argument of #cmd-("orly", module:"fauxreilly").
+]
 
 === Creating a custom theme <sec:creating-themes>
+
+A theme is a #dtype("dictionary") ot #dtype("module") with a set of predefined keys for color and font information. See the #link(<subsec:theme-default>, "default theme") for a full list of keys and their meaning.
+
+// #block(
+//   height: 8em,
+//   columns(3)[
+//     // #list(..themes.default.keys().map(utils.rawi))
+//     #list(..themes.default.pairs().map(((k, v)) => [#arg(k): #dtype(v)]))
+//   ],
+// )
+#let summator(sum, dict) = {
+  dict.pairs().fold(
+    sum,
+    (s, (k, v)) => {
+      s + if type(v) == dictionary {
+        1 + summator(sum, v)
+      } else {
+        1
+      }
+    },
+  )
+}
+#let max-lines = summator(0, themes.default)
+#block(
+  height: calc.ceil(max-lines / 3) * 1.64em,
+  columns(3)[
+    #schema("theme", themes.default, color: _type-colors.color)
+  ],
+)
+
+#arg[primary] and #arg[secondary] define are the main color scheme of the theme. #arg[fonts] is a dict of the main fontsets used in the theme.
+
+#arg[page-init] is a #dtype("function") called during template initialization to add custom #builtin("set") rules and other global settings to the document. #arg[title-page] and #arg[last-page] are called once at the beginning and end of the document to add a title and final page to the manual respectively. All three are functions of #lambda(ret:"content", "document", "theme").
+
+#info-alert[When writing a custom theme, remember to add #builtin("pagebreak") at the end, if your title page is supposed to be on its own page. Same goes for the last page.]
+
+=== Theme helpers
+
 
 == The index <sec:index>
 
