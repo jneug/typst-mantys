@@ -23,6 +23,8 @@
   ..tidy-args.named(),
 )
 
+#let theme-var = var-.with(module: "themes")
+
 #import "@preview/swank-tex:0.1.0": TeX, LaTeX
 
 #let CNLTX = package("CNLTX")
@@ -117,7 +119,7 @@ After importing MANTYS the template is initialized by applying a show rule with 
 #command(
   "mantys",
 
-  arg(theme: "default", _value: var-.with(module: "themes")),
+  arg(theme: "default", _value: theme-var),
 )[
   #argument("title-page", default: auto, types: (auto, function))[
     A function that renders a titlepage for the manual. Refer to #cmd-[titlepage] for details.
@@ -242,7 +244,7 @@ To set the theme for your manual, simply provide a #arg[theme] argument to @cmd:
 Some themes can be further customized by options that get passed to @cmd:mantys in the #arg[theme-options] key.
 
 #codesnippet(```typ
-#mantys(
+#show: mantys(
   ..toml-info(read),
 
   theme: themes.orly,
@@ -261,7 +263,7 @@ Some themes can be further customized by options that get passed to @cmd:mantys 
   columns: 2,
   column-gutter: 5%,
   [The default theme for MANTYS. Based on the Typst documentation and website.],
-  frame(arg(theme: "default", _value: var-.with(module: "themes"))),
+  frame(arg(theme: "default", _value: theme-var)),
 )
 #align(center, image("assets/examples/theme-typst.png", height: 30%))
 
@@ -270,7 +272,7 @@ Some themes can be further customized by options that get passed to @cmd:mantys 
   columns: 2,
   column-gutter: 5%,
   [A slightly more modern theme for the digital age. Based on the #link("https://creativecommons.org/2019/10/30/cc-style-guide/", [Creative Commons Style Guide]).],
-  frame(arg(theme: "modern", _value: var-.with(module: "themes"))),
+  frame(arg(theme: "modern", _value: theme-var)),
 )
 #align(center, image("assets/examples/theme-modern.png", height: 30%))
 
@@ -278,8 +280,7 @@ Some themes can be further customized by options that get passed to @cmd:mantys 
 #grid(
   columns: 2,
   column-gutter: 5%,
-  [This theme is based on the original #CNLTX template.],
-  frame(arg(theme: "cnltx", _value: var-.with(module: "themes"))),
+  [This theme is based on the original #CNLTX template.], frame(arg(theme: "cnltx", _value: theme-var)),
 )
 #align(center, image("assets/examples/theme-cnltx.png", height: 30%))
 
@@ -288,7 +289,7 @@ Some themes can be further customized by options that get passed to @cmd:mantys 
   columns: 2,
   column-gutter: 5%,
   [This theme uses the #universe("fauxreilly") package to create a style similar to an O'Reilly book.],
-  frame(arg(theme: "orly", _value: var-.with(module: "themes"))),
+  frame(arg(theme: "orly", _value: theme-var)),
 )
 #align(center, image("assets/examples/theme-orly.png", height: 30%))
 
@@ -336,6 +337,23 @@ A theme is a #dtype("dictionary") ot #dtype("module") with a set of predefined k
 
 === Theme helpers
 
+If you don't want to create a complete #dtype("theme"), but want to modify the color scheme of an existing theme, you can quickly create a theme with one of these helper functions.
+
+#command("create-theme", sarg[theme-spec], arg(base-theme: "default", _value: theme-var))[
+  Creates a theme from the passed in arguments. #sarg[theme-spec] should be key-value pairs from the #dtype("theme") specification. Any missing keys are copied from the theme passed in as #arg[base-theme].
+]
+
+#command("color-theme", arg[primary], arg[secondary], sarg[theme-spec], arg(base-theme: "default", _value: theme-var))[
+  Creates a new theme from a #arg[primary] and a #arg[secondary] color. Further arguments are passed to @cmd:create-theme along with #arg[base-theme].
+
+  #codesnippet[```typ
+    #show: mantys(
+      ..toml-info(read),
+
+      theme: color-theme(blue, red, muted: (fill: yellow), base: themes.cnltx),
+    )
+    ```]
+]
 
 == The index <sec:index>
 
