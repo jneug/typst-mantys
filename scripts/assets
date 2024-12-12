@@ -42,7 +42,7 @@ if [ $EXIT -ne 0 ]; then
 fi
 
 # query and compile assets
-ASSETS=`typst query "$FILE" "<mantys:asset>"`
+ASSETS=`typst query --root "$ROOT" "$FILE" "<mantys:asset>"`
 echo $ASSETS | jq -c '.[].value' | while read ASSET;
 do
 	ID=$(echo $ASSET | jq -r '.["id"]')
@@ -51,7 +51,7 @@ do
 
 	if test -f "$SRC"; then
 		mkdir -p `dirname "$DEST"`
-		typst compile "$SRC" "$DEST" --ppi 250
+		typst compile --root "$ROOT" "$SRC" "$DEST" --ppi 250
 		echo "Created asset $ID"
 	else
 		echo "Asset $SRC not found!"
