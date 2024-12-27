@@ -227,6 +227,7 @@
   ratio: 1,
   scale-output: 80%,
   inherited-scope: (:),
+  preamble: "", // for tidy v0.3.0+
   ..options
 ) = example(
   scope: inherited-scope + scope,
