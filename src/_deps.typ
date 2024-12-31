@@ -7,7 +7,6 @@
 #import "@preview/marginalia:0.1.1"
 
 #import "@preview/showybox:2.0.3"
-// #import "@preview/codelst:2.0.1"
 #import "@preview/codly:1.1.1"
 
 #import "@preview/octique:0.1.0"
