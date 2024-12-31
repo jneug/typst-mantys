@@ -1,17 +1,23 @@
 #import "../_deps.typ" as deps
 #import "../core/themes.typ": themable
+#import "../core/styles.typ"
+#import "icons.typ": icon
 #import "../util/utils.typ"
 
+
+/// #is-themable()
 /// Create a frame around some content.
 /// #info-alert[Uses #package("showybox") and can take any arguments the
 /// #cmd-[showybox] command can take.]
 /// #example[```
 /// #frame(title:"Some lorem text")[#lorem(10)]
 /// ```]
-///
-/// ..args (any): Arguments for #package[Showybox].
 /// -> content
-#let frame(..args) = themable(theme => deps.showybox.showybox(
+#let frame(
+  /// Arguments for #package[Showybox].
+  /// -> content
+  ..args,
+) = themable(theme => deps.showybox.showybox(
   frame: (
     border-color: theme.primary,
     title-color: theme.primary,
@@ -22,57 +28,92 @@
   ..args,
 ))
 
+
+/// #is-themable()
 /// An alert box to highlight some content.
 /// #example[```
-/// #alert(color:purple, width:4cm)[#lorem(10)]
+/// #alert("success")[#lorem(10)]
 /// ```]
-/// - color (color): Color of the alert.
-/// - width (length, ratio): Width of the alert box.
-/// - size (length): Size of the text.
-/// - body (content): Content of the alert.
-/// - ..style (any): Style arguments to be passed to #builtin[block].
 /// -> content
 #let alert(
-  color: blue,
-  width: 100%,
-  size: .88em,
-  ..style,
+  /// The type of the alert. One of #value("info"), #value("warning"), #value("error") or #value("success").
+  /// -> str
+  alert-type,
+  /// Content of the alert.
+  /// -> content
   body,
-) = block(
-  stroke: (left: 2pt + color, rest: 0pt),
-  fill: color.lighten(88%),
-  inset: 8pt,
-  width: width,
-  ..style,
-  text(size: size, fill: color.darken(60%), body),
+) = themable(
+  (theme, alert-type, body) => (theme.alert)(alert-type, body),
+  alert-type,
+  body,
 )
 
 
-#let info-alert = alert.with(color: rgb(23, 162, 184))
-#let warning-alert = alert.with(color: rgb(255, 193, 7))
-#let error-alert = alert.with(color: rgb(220, 53, 69))
-#let success-alert = alert.with(color: rgb(40, 167, 69))
+/// #is-themable()
+/// An info alert.
+/// ```example
+/// #info-alert[This is an #cmd-[info-alert].]
+/// ```
+/// -> content
+#let info-alert = alert.with("info")
 
+/// #is-themable()
+/// A warning alert.
+/// ```example
+/// #warning-alert[This is an #cmd-[warning-alert].]
+/// ```
+/// -> content
+#let warning-alert = alert.with("warning")
+
+/// #is-themable()
+/// An error alert.
+/// ```example
+/// #error-alert[This is an #cmd-[error-alert].]
+/// ```
+/// -> content
+#let error-alert = alert.with("error")
+
+/// #is-themable()
+/// A success alert.
+/// ```example
+/// #success-alert[This is an #cmd-[success-alert].]
+/// ```
+/// -> content
+#let success-alert = alert.with("success")
+
+/// #is-themable()
 /// Show a package name.
-/// - #shortex(`#package("codelst")`)
-///
-/// - name (string): Name of the package.
-#let package(name) = themable(theme => text(theme.emph.package, smallcaps(name)))
+/// - #ex(`#package("codelst")`)
+/// -> content
+#let package(
+  /// Name of the package.
+  /// -> str
+  name,
+) = themable(theme => text(theme.emph.package, smallcaps(name)))
 
+/// #is-themable()
 /// Show a module name.
-/// - #shortex(`#module("util")`)
-///
-/// - name (string): Name of the module.
-#let module(name) = themable(theme => text(theme.emph.module, utils.rawi(name)))
+/// - #ex(`#module("util")`)
+/// -> content
+#let module(
+  /// Name of the module.
+  /// -> str
+  name,
+) = themable(theme => text(theme.emph.module, utils.rawi(name)))
+
 
 /// Highlight human names (with first- and lastnames).
-/// - #shortex(`#name("Jonas Neugebauer")`)
-/// - #shortex(`#name("J.", last:"Neugebauer")`)
-///
-/// - name (string): First or full name.
-/// - last (string): Optional last name.
+/// - #ex(`#name("Jonas Neugebauer")`)
+/// - #ex(`#name("J.", last:"Neugebauer")`)
 /// -> content
-#let name(name, last: none) = {
+#let name(
+  /// First or full name.
+  /// -> str
+  name,
+  /// Optional last name.
+  /// -> str | none
+  last: none,
+) = {
   if last == none {
     let parts = utils.get-text(name).split(" ")
     last = parts.pop()
@@ -80,6 +121,47 @@
   }
   [#name #smallcaps(last)]
 }
+
+
+/// #is-themable()
+/// Sets the text color of #arg[body] to a color from the @type:theme.
+/// #arg[color] should be a key from the @type:theme.
+/// - #ex(`#colorize([Manual], color: "muted.fill")`)
+/// -> content
+#let colorize(
+  /// Content to color.
+  /// -> content
+  body,
+  /// Key of the color in the theme.
+  /// -> str
+  color: "primary",
+) = themable(theme => text(
+  fill: utils.dict-get(theme, color, default: black),
+  body,
+))
+
+/// #is-themable()
+/// Colors #barg[body] in the themes primary color.
+/// - #ex(`#primary[Manual]`)
+/// -> content
+#let primary(
+  /// Content to color.
+  /// -> content
+  body,
+) = themable(theme => text(fill: theme.primary, body))
+
+
+/// #is-themable()
+/// Colors #barg[body] in the themes secondary color.
+/// - #ex(`#secondary[Manual]`)
+/// -> content
+#let secondary(
+  /// Content to color.
+  /// -> content
+  body,
+) = themable(theme => text(fill: theme.secondary, body))
+
+
 /// Creates a #typ.version from #sarg[args]. If the first argument is a version, it is returned as given.
 /// - #ex(`#ver(1, 4, 2)`)
 /// - #ex(`#ver(version(1, 4, 3))`)

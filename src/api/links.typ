@@ -1,4 +1,3 @@
-#import "../util/typst.typ"
 #import "elements.typ": package
 
 #let _type-map = (
@@ -16,6 +15,7 @@
   function: "foundations/function",
   integer: "foundations/int",
   location: "foundations/location",
+  module: "foundations/module",
   plugin: "foundations/plugin",
   regex: "foundations/regex",
   selector: "foundations/selector",
@@ -38,6 +38,11 @@
 )
 
 #let _builtin-map = (
+  // tutorial
+  "set": "../tutorial/formatting/#set-rules",
+  "show": "../tutorial/formatting/#show-rules",
+  // scripting
+  "import": "scripting/#modules",
   // foundations
   "context": "context",
   arguments: "foundations/arguments",
@@ -46,6 +51,7 @@
   "auto": "foundations/auto",
   bool: "foundations/bool",
   bytes: "foundations/bytes",
+  with: "foundations/function/#definitions-with",
   calc: "foundations/calc",
   clamp: "foundations/calc#functions-clamp",
   abs: "foundations/calc#functions-abs",
@@ -77,6 +83,7 @@
   bibliography: "model/bibliography",
   cite: "model/cite",
   document: "model/document",
+  figure: "model/figure",
   emph: "model/emph",
   enum: "model/enum",
   list: "model/list",
@@ -89,6 +96,7 @@
   ref: "model/ref",
   table: "model/table",
   terms: "model/terms",
+  link: "model/link",
   // text
   raw: "text/raw",
   text: "text/text",
@@ -182,7 +190,7 @@
 )
 
 
-#let link-docs(..path) = typst.link("https://typst.app/docs/reference/" + path.pos().first(), ..path.pos().slice(1))
+#let link-docs(..path) = std.link("https://typst.app/docs/reference/" + path.pos().first(), ..path.pos().slice(1))
 
 #let link-dtype(..name) = link-docs(_type-map.at(name.pos().first(), default: ""), ..name.pos().slice(1))
 
@@ -196,9 +204,9 @@
     dest
   }
   if not args.named().at("footnote", default: true) {
-    [#typst.link(dest, body)]
+    [#std.link(dest, body)]
   } else {
-    [#typst.link(dest, body)<mantys:link>]
+    [#std.link(dest, body)<mantys:link>]
   }
 }
 
@@ -215,7 +223,25 @@
 }
 
 // TODO: Make repo: auto named and load repo name from document
-#let universe(pkg) = link("https://typst.app/universe/package/" + pkg, package(pkg))
+#let github-file(repo, filepath, branch: "main") = {
+  if repo.starts-with("https://github.com/") {
+    repo = repo.slice(19)
+  }
+  if filepath.starts-with("/") {
+    filepath = filepath.slice(1)
+  }
+  let url = "https://github.com/" + repo + "/tree/" + branch + "/" + filepath
+  link(url, filepath)
+}
+
+// TODO: Make repo: auto named and load repo name from document
+#let universe(pkg, version: none) = {
+  let url = "https://typst.app/universe/package/" + pkg
+  if version != none {
+    url += "/" + str(version)
+  }
+  link(url, package(pkg))
+}
 
 // TODO: Make repo: auto named and load repo name from document
 #let preview(pkg, ver: auto) = {
@@ -232,15 +258,20 @@
     ver = version(..ver.split(".").map(int))
   }
   link(
-    "https://github.com/typst/packages/tree/main/packages/preview/" + pkg + if ver != none {
-      "/" + str(ver)
-    } else {
-      ""
-    },
-    package(pkg + if ver != none {
-      ":" + str(ver)
-    } else {
-      ""
-    }),
+    "https://github.com/typst/packages/tree/main/packages/preview/"
+      + pkg
+      + if ver != none {
+        "/" + str(ver)
+      } else {
+        ""
+      },
+    package(
+      pkg
+        + if ver != none {
+          ":" + str(ver)
+        } else {
+          ""
+        },
+    ),
   )
 }

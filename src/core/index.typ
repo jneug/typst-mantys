@@ -3,10 +3,12 @@
 
 /// Removes special characters from #arg[term] to make it
 /// a valid format for the index.
-///
-/// - term (string, content): The term to sanitize.
 /// -> string
-#let idx-term(term) = {
+#let idx-term(
+  /// The term to sanitize.
+  /// -> str | content
+  term,
+) = {
   utils.get-text(term).replace(regex("[#_()]"), "")
 }
 
@@ -14,16 +16,20 @@
 /// Adds #arg[term] to the index.
 ///
 /// Each entry can be categorized by setting #arg[kind].
-/// @@make-index can be used to generate the index for one kind only.
-///
-/// - term (string, content): An optional term to use, if it differs from #arg[body].
-/// - kind (string): A category for ths term.
-/// - body (content): The term or label for the entry.
-/// -> (none, content)
+/// @cmd:make-index can be used to generate the index for one kind only.
+/// -> none | content
 #let idx(
+  /// An optional term to use, if it differs from #arg[body].
+  /// -> str | content
   term,
+  /// A category for this term.
+  /// -> str
   kind: "term",
+  /// If this is the "main" entry for this #arg[term].
+  /// -> bool
   main: false,
+  /// An optional content element to show in the index instead of #arg[term],
+  /// -> content
   display: auto,
 ) = [#metadata((
     term: utils.get-text(term),
@@ -33,21 +39,28 @@
   ))<mantys:index>]
 
 /// Creates an index from previously set entries.
-///
-/// - kind (string): An optional kind of entries to show.
-/// - cols (integer): Number of columns to show the entries in.
-/// - headings (function): Function to generate headings in the index.
-///   Gets the letter for the new section as an argument:
-///   #lambda("string", ret:"content")
-/// - entries (function): A function to format index entries.
-///   Gets the index term, the label and the location for the entry:
-///   #lambda("string", "content", "location", ret:"content")
 /// -> content
 #let make-index(
+  /// An optional kind of entries to show.
+  /// -> str
   kind: auto,
+  /// Function to format headings in the index: #lambda("str", ret: "content")
+  /// -> function
   heading-format: text => heading(depth: 2, numbering: none, outlined: false, bookmarked: false, text),
+  /// Function to format index entries. Receives the @type:index-entry and an array of page numbers.
+  ///
+  /// #lambda("content", "array", ret: "content")
+  /// -> content
   entry-format: (term, pages) => [#term #box(width: 1fr, repeat[.]) #pages.join(", ")\ ],
+  /// Sorting function to sort index entries.
+  ///
+  /// #lambda("str", ret:"str")
+  /// -> function
   sort-key: it => it.term,
+  /// Grouping function to group index entries by. Usually entries are grouped by the first letter of #arg[term], but this can be changed to group by other keys. See below for an example.
+  ///
+  /// #lambda("str", ret:"str")
+  /// -> function
   grouping: it => upper(it.term.at(0)),
 ) = context {
   let entries = query(<mantys:index>)
@@ -129,5 +142,4 @@
       )
     }
   }
-
 }

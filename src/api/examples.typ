@@ -3,44 +3,46 @@
 #import "../util/utils.typ"
 #import "../util/is.typ"
 #import "../core/themes.typ": themable
-#import "../api/elements.typ": frame
+
+#import "elements.typ": frame
+#import "icons.typ": icon
 
 
-/// Shows sourcecode in a @@frame.
-/// #info-alert[Uses #universe("codelst") to render the code.]
+/// Shows sourcecode in a @cmd:frame.
 /// See @sec:examples for more information on sourcecode and examples.
-///
-/// #example[````
-/// #sourcecode(title:"Example", file:"sourcecode-example.typ")[```
+/// ````example
+/// #sourcecode(
+///   title:"Example",
+///   file:"sourcecode-example.typ"
+/// )[```typ
 /// #let module-name = "sourcecode-example"
 /// ```]
-/// ````]
-///
-/// - title (str): A title to show on top of the frame.
-/// - file (str): A filename to show in the title of the frame.
-/// - code (content): A #builtin[raw] block of Typst code.
-/// - ..args (any): Argumente für #cmd-(module:"codelst")[sourcecode]
+/// ````
 /// -> content
-#let sourcecode(title: none, file: none, ..args, code) = {
+#let sourcecode(
+  /// A title to show on top of the frame.
+  /// -> str
+  title: none,
+  /// A filename to show in the title of the frame.
+  /// -> str
+  file: none,
+  /// Arguments for #cmd-(module:"codly")[local].
+  /// -> any
+  ..args,
+  /// A #typ.raw block of Typst code.
+  /// -> content
+  code,
+) = {
   let header = ()
   if title != none {
     header.push(text(fill: white, title))
   }
   if file != none {
     header.push(h(1fr))
-    header.push(text(fill: white, emoji.folder) + " ")
+    header.push(text(fill: white, icon("file")) + sym.space.nobreak)
     header.push(text(fill: white, emph(file)))
   }
 
-  // deps.codelst.sourcecode(
-  //   frame: frame.with(title: if header == () {
-  //     ""
-  //   } else {
-  //     header.join()
-  //   }),
-  //   ..args,
-  //   code,
-  // )
   frame(
     title: if header == () {
       ""
@@ -52,43 +54,58 @@
 }
 
 
-/// Shows some #builtin[raw] code in a @@frame, but
+/// Shows some #typ.raw code in a @cmd:frame, but
 /// without line numbers or other enhancements.
-/// #info-alert[
-///   By default MANTYS wraps any #builtin[raw] code in the manual in this command.
-/// ]
 ///
-/// #example[````
-/// ```typc
+/// ````example
+/// #codesnippet[```typc
 /// let a = "some content"
 /// [Content: #a]
-/// ```
-/// ````]
-///
+/// ```]
+/// ````
 /// -> content
-#let codesnippet = frame
-// TODO: codesnippet double wraps code because of the show rule
+#let codesnippet(
+  /// If #typ.v.true, line numbers are shown.
+  /// -> bool
+  number-format: none,
+  /// Arguments for #cmd-(module:"codly")[local].
+  /// -> any
+  ..args,
+  /// A #typ.raw block of Typst code.
+  /// -> content
+  code,
+) = frame(deps.codly.local(number-format: number-format, ..args, code))
 
 
-/// Show an example by evaluating the given #builtin[raw] code with Typst and showing the source and result in a @@frame.
+/// Show an example by evaluating the given #typ.raw code with Typst and showing the source and result in a @cmd:frame.
 ///
 /// See @sec:examples for more information on sourcecode and examples.
 ///
-/// - side-by-side (boolean): Shows the source and example in two columns instead of the result beneath the source.
-/// - scope (dictionary): A scope to pass to #builtin[eval].
-/// - use-examples-scope (boolean): Set to #value(false) to not use the gloabl examples scope.
-/// - mode (string): The evaulation mode: #choices("markup", "code", "math")
-/// - breakable (boolean): If the frame may brake over multiple pages.
-/// - example-code (content): A #builtin[raw] block of Typst code.
-/// - ..args (content): An optional second positional argument that overwrites the evaluation result. This can be used to show the result of a sourcecode, that can not evaulated directly.
+/// -> content
 #let example(
+  /// Shows the source and example in two columns instead of the result beneath the source.
+  /// -> content
   side-by-side: false,
+  /// A scope to pass to #typ.eval.
+  /// -> dict
   scope: (:),
+  /// Additional imports for evaluating this example. Imports will be added as a preamble to #arg[example-code].
+  /// -> dict
   imports: (:),
+  /// Set to #typ.v.false to *not* use the global #arg[examples-scope] passed to @cmd:mantys.
+  /// -> bool
   use-examples-scope: true,
+  /// The evaulation mode: #choices("markup", "code", "math")
+  /// -> str
   mode: "markup",
+  /// If  #typ.v.true, the frame may brake over multiple pages.
+  /// -> bool
   breakable: false,
+  /// A #typ.raw block of Typst code.
+  /// -> content
   example-code,
+  /// An optional second positional argument that overwrites the evaluation result. This can be used to show the result of a sourcecode, that can not evaulated directly.
+  /// -> content
   ..args,
 ) = context {
   if args.named() != (:) {
@@ -103,17 +120,6 @@
     code = example-code.children.find(it => it.func() == raw)
   }
   let cont = (
-    // deps.codelst.sourcecode(
-    //   frame: none,
-    //   raw(
-    //     lang: if mode == "code" {
-    //       "typc"
-    //     } else {
-    //       "typ"
-    //     },
-    //     code.text,
-    //   ),
-    // ),
     raw(
       lang: if mode == "code" {
         "typc"
@@ -171,26 +177,33 @@
 }
 
 
-/// Same as @@example, but with #arg(side-by-side: true) set.
+/// Same as @cmd:example, but with #arg(side-by-side: true).
 /// -> content
 #let side-by-side = example.with(side-by-side: true)
 
 
 /// Show a "short example" by showing #arg[code] and the evaluation of #arg[code] separated
-/// by #arg[sep]. This can be used for quick one-line examples as seen in @@name and other command docs in this manual.
+/// by #arg[sep]. This can be used for quick one-line examples as seen in @cmd:name and other command docs in this manual.
 ///
-/// #example[```
-///
-/// - #shortex(`#name("Jonas Neugebauer")`)
-/// - #shortex(`#meta("arg-name")`, sep: ": ")
-/// ```]
-///
-/// - code (content): The #builtin[raw] code example to show.
-/// - sep (content): The separator between #arg[code] and its evaluated result.
-/// - mode (str): One of #choices("markup", "code", "math")
-/// - scope (dictionary): A scope argument similar to @type:examples-scope.
+/// ```example
+/// - #ex(`#name("Jonas Neugebauer")`)
+/// - #ex(`#meta("arg-name")`, sep: ": ")
+/// ```
 /// -> content
-#let shortex(code, sep: [ #sym.arrow.r ], mode: "markup", scope: (:)) = context {
+#let ex(
+  /// The #typ.raw code example to show.
+  /// -> content
+  code,
+  /// The separator between #arg[code] and its evaluated result.
+  /// -> content
+  sep: [ #sym.arrow.r ],
+  /// One of #choices("markup", "code", "math").
+  /// -> str
+  mode: "markup",
+  /// A scope argument similar to @type:examples-scope.
+  /// -> dict
+  scope: (:),
+) = context {
   let doc = document.get()
   raw(
     code.text,
@@ -205,16 +218,51 @@
 }
 
 
-/// Shows an import statement for this package. The name and version from the document are used.
+/// Alias for @cmd:ex.
+/// #property(deprecated: true)
+#let shortex = ex
+
+
+/// Shows an import statement for this package. The name and version from the document are used by default.
 /// #example[```
 /// #show-import()
 /// #show-import(repository: "@local", imports: "mantys", mode:"code")
 /// ```]
-/// - repository (str): Custom package repository to show.
-/// - imports (str, none): What to import from the package. Use #value(none) to just import the package into the global scope.
-/// - mode (str): One of #choices("markup", "code"). Will show the import in markup or code mode.
-#let show-import(repository: "@preview", imports: "*", mode: "markup", code: none) = {
+/// -> content
+#let show-import(
+  /// Custom package repository to show.
+  /// -> str
+  repository: "@preview",
+  /// What to import from the package. Use #value(none) to just import the package into the global scope.
+  /// -> str | none
+  imports: "*",
+  /// Package name for the import.
+  /// -> str | auto
+  name: auto,
+  /// Package version for the import.
+  /// -> version | auto
+  version: auto,
+  /// One of #choices("markup", "code"). Will show the import in markup or code mode.
+  /// -> str
+  mode: "markup",
+  /// Additional code to add after the import. Useful if your package requires some more steps for initialization.
+  /// ```example
+  /// #show-import(name: "codly", version: version(1,1,1), code: "#show: codly-init")
+  /// ```
+  /// -> str | auto
+  code: none,
+) = {
   document.use(doc => {
+    let name = if name == auto {
+      doc.package.name
+    } else {
+      name
+    }
+    let version = if version == auto {
+      doc.package.version
+    } else {
+      version
+    }
     codesnippet(
       raw(
         lang: if mode == "markup" {
@@ -226,25 +274,40 @@
           "#"
         } else {
           ""
-        } + "import \"" + repository + "/" + doc.package.name + ":" + str(doc
-          .package
-          .version) + "\"" + if imports != none {
-          ": " + imports
-        } + if code != none { "\n" + if is.raw(code) { code.text } else { code } },
+        }
+          + "import \""
+          + repository
+          + "/"
+          + name
+          + ":"
+          + str(version)
+          + "\""
+          + if imports != none {
+            ": " + imports
+          }
+          + if code != none { "\n" + if is.raw(code) { code.text } else { code } },
       ),
     )
   })
 }
 
 
-/// Shows an import statement for this package. The name and version from the document are used.
-/// #example[```
+/// Shows a git clone command for this package. The name and version from the document are used by default.
+/// ```example
 /// #show-git-clone()
 /// #show-git-clone(repository: "typst/packages", out:"preview/mantys/1.0.0")
-/// ```]
-/// - repository (str, auto): Custom package repository to show.
-/// - out (str, none, auto):
-#let show-git-clone(repository: auto, out: auto) = {
+/// ```
+#let show-git-clone(
+  /// Custom package repository to show.
+  /// -> str | auto
+  repository: auto,
+  /// Output path to clone into.
+  /// -> str | none | auto
+  out: auto,
+  /// Syntax language to passs to #typ.raw.
+  /// -> str
+  lang: "bash",
+) = {
   document.use(doc => {
     let repo = if repository == auto {
       doc.package.repository
@@ -256,11 +319,16 @@
     } else {
       repo
     }
+    let out = if out == auto {
+      doc.package.name + "/" + str(doc.package.version)
+    } else {
+      out
+    }
 
     codesnippet(
       raw(
-        lang: "bash",
-        "git clone " + url + " " + doc.package.name + "/" + str(doc.package.version),
+        lang: lang,
+        "git clone " + url + " " + out,
       ),
     )
   })
