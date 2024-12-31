@@ -12,25 +12,26 @@
   ),
   pre-transform: (self, it) => {
     if is.str(it) {
-      let m = it.match(regex("^([^<]+?)<([^>]+?)>$"))
-      it = (
-        name: it,
+      let name-match = it.match(regex("^[^<]+"))
+      let info = (
+        name: if name-match != none { name-match.text.trim() } else { it },
       )
 
-      if m != none {
-        it.name = m.captures.first().trim()
-
+      let info-matches = it.matches(regex("<([^>]+?)>"))
+      for m in info-matches {
         let _info = m.captures.last()
         if _info.starts-with("@") {
-          it.insert("github", _info)
+          info.insert("github", _info.trim("@"))
         } else if _info.starts-with("http") {
-          it.insert("urls", (_info,))
-        } else {
-          it.insert("email", _info)
+          info.insert("urls", (_info,))
+        } else if "@" in _info {
+          info.insert("email", _info)
         }
       }
+      return info
+    } else {
+      return it
     }
-    it
   },
   aliases: (
     url: "urls",
@@ -122,6 +123,12 @@
   thumbnail: t.string(optional: true),
 ))
 
+#let asset = t.dictionary((
+  id: t.string(),
+  src: t.string(),
+  dest: t.string(),
+))
+
 #let document = t.dictionary(
   // typstyle off
   (
@@ -131,7 +138,6 @@
     urls: t.array(t.url(), optional: true, pre-transform: t.coerce.array),
     date: t.date(pre-transform: t.optional-coerce(t.coerce.date), optional: true),
     abstract: t.content(optional: true),
-
     // General package-info
     // Will be pre-transform to the package dict
     // TODO: Should this be allowed to override package?
@@ -141,25 +147,23 @@
     // repository: t.url(optional: true),
     // version: t.version(),
     // license: t.string(),
-
     // Data loaded from typst.toml
     package: package,
     template: t.optional(template),
-
     // Options available to the theme
     theme-options: t.dictionary(
       (:),
       default: (:),
     ),
-
     // Configuration options
     show-index: t.boolean(default: true),
     show-outline: t.boolean(default: true),
     show-urls-in-footnotes: t.boolean(default: true),
+    index-references: t.boolean(default: true),
     examples-scope: t.dictionary(
       (
         scope: t.dictionary((:)),
-        imports: t.dictionary((:), optional: true)
+        imports: t.dictionary((:), optional: true),
       ),
       optional: true,
       pre-transform: t.coerce.dictionary(it => (scope: it)),
@@ -167,15 +171,11 @@
         if it == none {
           it = (:)
         }
-        return (scope:(:), imports:(:)) + it
-      }
+        return (scope: (:), imports: (:)) + it
+      },
     ),
     assets: t.array(
-      t.dictionary((
-        id: t.string(),
-        src: t.string(),
-        dest: t.string()
-      )),
+      asset,
       default: (),
       pre-transform: (_, it) => {
         if type(it) == dictionary {
@@ -184,16 +184,15 @@
             assets.push((
               id: id,
               src: if type(spec) == str { spec } else { spec.src },
-              dest: if type(spec) == str { id } else { spec.at("dest", default: id) }
+              dest: if type(spec) == str { id } else { spec.at("dest", default: id) },
             ))
           }
           return assets
         } else {
           return it
         }
-      }
+      },
     ),
-
     // Git info
     git: t.dictionary(
       (
@@ -201,19 +200,21 @@
         hash: t.string(),
       ),
       optional: true,
-      pre-transform: t.coerce.dictionary(it => if it != none { (hash: it) } else { none })
+      pre-transform: t.coerce.dictionary(it => if it != none { (hash: it) } else { none }),
     ),
   ),
+
   pre-transform: (self, it) => {
     // If package info is not loaded from typst.toml,
-    // the keys are moved to the "package" dictionary.
+    // a faux package entry is created.
     if "package" not in it {
       it.insert("package", (entrypoint: ""))
-
-      for key in ("name", "description", "repository", "version", "license") {
-        if key in it {
-          it.package.insert(key, it.remove(key))
-        }
+    }
+    // User supplied keys are moved to the "package"
+    // dictionary and may overwrite data from typst.toml.
+    for key in ("name", "description", "repository", "version", "license") {
+      if key in it {
+        it.package.insert(key, it.remove(key))
       }
     }
 
