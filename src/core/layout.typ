@@ -1,7 +1,7 @@
-#import "../_deps.typ": typearea, hydra, codly
 #import "../_deps.typ": typearea, hydra, codly, marginalia
 
 #import "styles.typ"
+#import "index.typ": idx
 
 #import "../util/utils.typ"
 #import "../api/elements.typ": package
@@ -26,9 +26,9 @@
       {
         [compiled: #datetime.today().display()]
         if doc.git != none {
-          if doc
-            .package
-            .repository != none [, git #link(doc.package.repository + "/tree/" + doc.git.hash, doc.git.hash.slice(0,8))] else [, git #doc.git.hash.slice(0,8)]
+          if (
+            doc.package.repository != none
+          ) [, git #link(doc.package.repository + "/tree/" + doc.git.hash, doc.git.hash.slice(0,8))] else [, git #doc.git.hash.slice(0,8)]
         }
       },
       [#n],
