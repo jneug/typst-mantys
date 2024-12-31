@@ -252,6 +252,129 @@
 }
 
 
+// Internal map of known command properties.
+#let _properties = (
+  default: (k, v) => elements.alert("none")[*#utils.rawi(k)*: #utils.rawi(v)],
+  //
+  deprecated: (..) => elements.note(
+    dy: -2em,
+    styles.pill(
+      "emph.deprecated",
+      (
+        icons.icon("circle-slash") + sym.space.nobreak + "deprecated"
+      ),
+    ),
+  ),
+  //
+  since: (_, v) => elements.note(
+    dy: -2em,
+    styles.pill(
+      "emph.since",
+      (
+        icons.icon("arrow-up") + sym.space.nobreak + "Introduced in " + str(v)
+      ),
+    ),
+  ),
+  //
+  until: (_, v) => elements.note(
+    dy: -2em,
+    styles.pill(
+      "emph.until",
+      (
+        icons.icon("arrow-down") + sym.space.nobreak + "Available until " + str(v)
+      ),
+    ),
+  ),
+  //
+  requires-context: (..) => elements.note(
+    dy: -2em,
+    styles.pill(
+      "emph.context",
+      (
+        icons.icon("pulse") + sym.space.nobreak + "context"
+      ),
+    ),
+  ),
+  //
+  compiler: (_, v) => elements.note(
+    dy: -2em,
+    styles.pill(
+      "emph.compiler",
+      (
+        icons.typst + sym.space.nobreak + str(v)
+      ),
+    ),
+  ),
+  //
+  changed: (_, v) => elements.note(
+    dy: -2em,
+    styles.pill(
+      "emph.changed",
+      (
+        icons.icon("arrow-switch") + sym.space.nobreak + "Changed in " + str(v)
+      ),
+    ),
+  ),
+  //
+  see: (
+    _,
+    v,
+  ) => elements.info-alert[#icons.icon("link-external") see #{(v,).flatten().map(t => if is.str(t) { link(t, t) } else { ref(t) } ).join(", ")}],
+  //
+  todo: (_, v) => elements.success-alert[#text(fill: green)[#icons.icon("check") *TODO*] #v],
+)
+
+
+/// Shows a command property (annotation).
+/// This should be used in the #barg[body] of @cmd:command to
+/// annotate a function with some special meaning.
+///
+/// Properties are provided as named arguments to the @cmd:property
+/// function.
+///
+/// The following properties are currently known to MANTYS:
+/// #property(since: version(1,0,1))
+/// / since #dtypes(version, str): Marks this function as available since a given package version.
+///
+/// #property(until: version(0,1,4))
+/// / until #dtypes(version, str): Marks this function as available until a given package version.
+///
+/// #property(deprecated: version(1,0,1))
+/// / deprecated #dtypes(bool, version, str): Marks this function as deprecated. If set to a version, the function is supposed to stay availalbel until the given version.
+///
+/// #property(changed: version(0,12,0))
+/// / changed #dtypes(version, str): Marks function that changed in a specific package version.
+///
+/// #property(compiler: version(0,12,0))
+/// / compiler #dtypes(version, str): Marks this function as only available on a specific compiler version.
+///
+/// #property(requires-context: true)
+/// / requires-context #dtype(bool): Requires a function to be used inside #builtin[context].
+///
+/// #property(see: (<cmd:mantys>, "https://github.vom/jneug/typst-mantys"))
+/// / see #dtype(array) of #dtypes(str, label): Adds references to other commands or websites.
+///
+/// #property(todo: [
+///   - Add documentation.
+///   - Add #arg[foo] paramter.
+/// ])
+/// / todo #dtypes(str, content): Adds a todo note to the function.
+///
+/// Other named properties will be shown as given:
+/// #property(module: "utilities")
+#let property(
+  /// Property name / value pairs.
+  /// -> any
+  ..args,
+) = {
+  for (k, v) in args.named() {
+    if k in _properties {
+      (_properties.at(k))(k, v)
+    } else {
+      (_properties.default)(k, v)
+    }
+  }
+}
 /// Displays information of a command by formatting the name, description and arguments.
 /// See this command description for an example.
 ///

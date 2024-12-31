@@ -46,7 +46,18 @@
       two-sided: false,
       header: page-header(doc, theme),
       footer: page-footer(doc, theme),
+      binding-correction: 1cm,
     )
+    // drafting.set-page-properties(
+    //   margin-left: 3.2cm,
+    //   side: left,
+    //   stroke: none,
+    // )
+    marginalia.configure(
+      inner: (far: 10mm, width: 20mm, sep: 5mm),
+      book: false,
+    )
+
 
     // Setup look & feel
     set par(justify: true)

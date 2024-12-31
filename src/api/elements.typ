@@ -80,3 +80,153 @@
   }
   [#name #smallcaps(last)]
 }
+/// Creates a #typ.version from #sarg[args]. If the first argument is a version, it is returned as given.
+/// - #ex(`#ver(1, 4, 2)`)
+/// - #ex(`#ver(version(1, 4, 3))`)
+/// -> version
+#let ver(
+  /// Components of the version.
+  /// -> version | int
+  ..args,
+) = {
+  if type(args.pos().first()) != version {
+    version(..args.pos())
+  } else {
+    args.pos().first()
+  }
+}
+
+
+/// Show a margin note in the left margin.
+/// See @cmd:since and @cmd:until for examples.
+/// -> content
+#let note(
+  /// Arguments to pass to #cmd(module: "drafting", "margin-note").
+  /// -> any
+  ..args,
+  /// Body of the note.
+  /// -> content
+  body,
+) = {
+  // deps.drafting.margin-note(..args)[
+  //   // #set align(right)
+  //   #set text(.7em)
+  //   #body
+  // ]
+  deps.marginalia.note(
+    reverse: true,
+    numbered: false,
+    ..args,
+  )[
+    // #set align(right)
+    #set text(.7em, style: "normal")
+    #body
+  ]
+}
+
+
+/// #is-themable()
+/// Show a margin-note with a minimal package version.
+/// - #ex(`#since(1,2,3)`)
+/// #property(see: (<cmd:note>, <cmd:ver>))
+/// -> content
+#let since(
+  /// Components of the version number.
+  /// -> int | version
+  ..args,
+) = {
+  note(
+    styles.pill(
+      "emph.since",
+      (
+        icon("arrow-up") + sym.space.nobreak + "Introduced in " + str(ver(..args))
+      ),
+    ),
+  )
+}
+
+/// #is-themable()
+/// Show a margin-note with a maximum package version.
+/// - #ex(`#until(1,2,3)`)
+/// #property(see: (<cmd:note>, <cmd:ver>))
+/// -> content
+#let until(
+  /// Components of the version number.
+  /// -> int | version
+  ..args,
+) = note(
+  styles.pill(
+    "emph.until",
+    (
+      icon("arrow-down") + sym.space.nobreak + "Available until " + str(ver(..args))
+    ),
+  ),
+)
+
+
+/// #is-themable()
+/// Show a margin-note with a version number.
+/// - #ex(`#changed(1,2,3)`)
+/// #property(see: (<cmd:note>, <cmd:ver>))
+/// -> content
+#let changed(
+  /// Components of the version number.
+  /// -> int | version
+  ..args,
+) = note(
+  styles.pill(
+    "emph.changed",
+    (
+      icon("arrow-switch") + sym.space.nobreak + "Changed in " + str(ver(..args))
+    ),
+  ),
+)
+
+
+/// #is-themable()
+/// Show a margin-note with a deprecated warning.
+/// - #ex(`#deprecated()`)
+/// #property(see: (<cmd:note>, <cmd:ver>))
+/// -> content
+#let deprecated() = note(
+  styles.pill(
+    "emph.deprecated",
+    (
+      icon("circle-slash") + sym.space.nobreak + "deprecated"
+    ),
+  ),
+)
+
+
+/// #is-themable()
+/// Show a margin-note with a minimal Typst compiler version.
+/// - #ex(`#compiler(1,2,3)`)
+/// #property(see: (<cmd:note>, <cmd:ver>))
+/// -> content
+#let compiler(
+  /// Components of the version number.
+  /// -> int | version
+  ..args,
+) = note(
+  styles.pill(
+    "emph.compiler",
+    (
+      deps.codly.typst-icon.typ.icon + sym.space.nobreak + str(ver(..args))
+    ),
+  ),
+)
+
+
+/// #is-themable()
+/// Show a margin-note with a context warning.
+/// - #ex(`#requires-context()`)
+/// #property(see: (<cmd:note>, <cmd:ver>))
+/// -> content
+#let requires-context() = note(
+  styles.pill(
+    "emph.context",
+    (
+      icon("pulse") + sym.space.nobreak + "context"
+    ),
+  ),
+)
