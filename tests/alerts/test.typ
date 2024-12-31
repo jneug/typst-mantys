@@ -1,5 +1,11 @@
+#import "../../src/mantys.typ": mantys-init
 #import "../../src/api/elements.typ": *
 
+#import "../test-theme.typ": test-theme
+
+#let (doc, page-init) = mantys-init(..toml("../test.toml"), theme: test-theme)
+
+#show: page-init
 
 #info-alert(lorem(50))
 
@@ -8,6 +14,3 @@
 #error-alert(lorem(50))
 
 #success-alert(lorem(50))
-
-
-#alert(color: eastern, width: 80%, size: 2em, lorem(20))

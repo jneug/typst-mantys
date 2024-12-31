@@ -1,18 +1,19 @@
+
 // Test: properties
 #import "../../src/core/document.typ"
 #import "../../src/core/layout.typ"
-#import "../../src/core/themes.typ"
 
-#import "../../src/api/commands.typ": property, _properties
+#import "../test-theme.typ": test-theme
 
 #show: layout.page-init(
   document.create(
     title: "typst-test",
     ..toml("../../typst.toml"),
   ),
-  themes.default,
+  test-theme,
 )
-#set page(width: 10cm, height: auto, margin: 1em)
+
+#import "../../src/api/commands.typ": property, _properties
 
 #figure("") <cmd:xx>
 
