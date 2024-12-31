@@ -507,6 +507,10 @@ For easier usage it is recommended to define a custom function in the header of 
 
 See @sec:commands for an example of the result of @cmd:tidy-module.
 
+#info-alert[
+  When using #TIDY, most MANTYS concepts also apply to docstrings. For example, cross-referencing commands is done with the `cmd:` prefix. All MANTYS commands like @cmd:arg or @cmd:property are available in docstring.
+]
+
 == Documenting custom types and validation schemas
 
 MANTYS provides support for documentation of custom data types and validation schemas as provided by #universe("valkyrie").
