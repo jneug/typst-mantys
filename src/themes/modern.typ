@@ -9,6 +9,7 @@
 
 #let muted = (
   fill: luma(80%),
+  bg: luma(95%),
 )
 
 #let text = (
@@ -32,11 +33,30 @@
   fill: primary,
 )
 
-#let alerts = (
-  info: rgb(23, 162, 184),
-  warning: rgb(255, 193, 7),
-  error: rgb(220, 53, 69),
-  success: rgb(40, 167, 69),
+#import "@preview/gentle-clues:1.0.0"
+
+#let _alert-funcs = (
+  "info": gentle-clues.info,
+  "warning": gentle-clues.warning,
+  "error": gentle-clues.error,
+  "success": gentle-clues.success,
+  "default": gentle-clues.memo,
+)
+
+#let alert(alert-type, body) = {
+  let alert-func = _alert-funcs.at(alert-type, default: _alert-funcs.default)
+  alert-func(title: none, body)
+}
+
+
+#let tag(color, body) = box(
+  stroke: none,
+  fill: color,
+  // radius: 50%,
+  radius: 3pt,
+  inset: (x: .5em, y: .25em),
+  baseline: 1%,
+  std.text(body),
 )
 
 #let code = (
@@ -49,6 +69,12 @@
   link: secondary,
   package: primary,
   module: rgb("#8c3fb2"),
+  since: rgb("#a6fbca"),
+  until: rgb("#ffa49d"),
+  changed: rgb("#fff37c"),
+  deprecated: rgb("#ffa49d"),
+  compiler: teal,
+  "context": rgb("#fff37c"),
 )
 
 #let commands = (
@@ -64,81 +90,25 @@
   default: rgb(181, 2, 86),
 )
 
-#let types = {
-  let red = rgb(255, 203, 195)
-  let gray = rgb(239, 240, 243)
-  let purple = rgb(230, 218, 255)
-
-  (
-    // fallback
-    default: rgb(239, 240, 243),
-    custom: rgb("#fcfdb7"),
-    // special
-    any: gray,
-    "auto": red,
-    "none": red,
-    // foundations
-    arguments: gray,
-    array: gray,
-    boolean: rgb(255, 236, 193),
-    bytes: gray,
-    content: rgb(166, 235, 229),
-    datetime: gray,
-    dictionary: gray,
-    float: purple,
-    function: gray,
-    integer: purple,
-    location: gray,
-    plugin: gray,
-    regex: gray,
-    selector: gray,
-    string: rgb(209, 255, 226),
-    type: gray,
-    label: rgb(167, 234, 255),
-    version: gray,
-    // layout
-    alignment: gray,
-    angle: purple,
-    direction: gray,
-    fraction: purple,
-    length: purple,
-    "relative length": purple,
-    ratio: purple,
-    relative: purple,
-    // visualize
-    color: gradient.linear(
-      (rgb("#7cd5ff"), 0%),
-      (rgb("#a6fbca"), 33%),
-      (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%),
-    ),
-    gradient: gradient.linear(
-      (rgb("#7cd5ff"), 0%),
-      (rgb("#a6fbca"), 33%),
-      (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%),
-    ),
-    stroke: gray,
-  )
-}
-
-
-#let page-init(doc) = (
+#let page-init(doc, theme) = (
   body => {
     show std.heading.where(level: 1): it => {
       pagebreak(weak: true)
-      set std.text(fill: primary)
+      set std.text(fill: theme.primary)
       block(
         width: 100%,
         breakable: false,
         inset: (bottom: .33em),
-        stroke: (bottom: .6pt + secondary),
+        stroke: (bottom: .6pt + theme.secondary),
         [#if it.numbering != none {
-            std.text(
-              weight: "semibold",
-              secondary,
-              [Part ] + counter(std.heading.where(level: it.level)).display(it.numbering),
-            ) + h(1.28em)
+            (
+              std.text(
+                weight: "semibold",
+                theme.secondary,
+                [Part ] + counter(std.heading.where(level: it.level)).display(it.numbering),
+              )
+                + h(1.28em)
+            )
           } #it.body],
       )
     }
@@ -146,14 +116,14 @@
   }
 )
 
-#let title-page(doc) = {
+#let title-page(doc, theme) = {
   set align(center)
   v(2fr)
 
   block(
     width: 100%,
     inset: (y: 1.28em),
-    stroke: (bottom: 2pt + secondary),
+    stroke: (bottom: 2pt + theme.secondary),
     [
       #set std.text(40pt)
       #doc.title
@@ -190,4 +160,7 @@
     )
   }
   v(2fr)
+  pagebreak()
 }
+
+#let last-page(doc, theme) = { }

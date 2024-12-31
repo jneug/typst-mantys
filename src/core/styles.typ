@@ -1,5 +1,5 @@
 #import "themes.typ": themable
-#import "../util/utils.typ": rawi, rawc
+#import "../util/utils.typ": rawi, rawc, dict-get
 
 
 #let meta(name, l: none, r: none, kind: "arg") = themable(
@@ -29,7 +29,7 @@
 #let carg = meta.with(l: sym.brace.l, r: sym.brace.r, kind: "carg")
 
 
-#let cmd(name, module: none, color: "command") = themable(
+#let cmd(name, module: none, arg: none, color: "command") = themable(
   theme => {
     rawc(theme.commands.symbol, sym.hash)
     if module != none {
@@ -37,6 +37,10 @@
       rawc(theme.commands.symbol, ".")
     }
     rawc(theme.commands.at(color, default: theme.commands.command), name)
+    if arg != none {
+      rawc(theme.commands.symbol, sym.dot.basic)
+      rawc(theme.commands.argument, arg)
+    }
   },
   kind: "cmd",
 )
@@ -53,3 +57,5 @@
   },
   kind: "lambda",
 )
+
+#let pill(color, body) = themable(theme => (theme.tag)(dict-get(theme, color, default: theme.muted.bg), body))

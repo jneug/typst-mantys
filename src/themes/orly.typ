@@ -1,19 +1,22 @@
-// #import "@preview/fauxreilly:0.1.0": orly
-// #import "@preview/fauxreilly:0.1.1": orly
-#let orly(..args) = []
+
+#import "@preview/fauxreilly:0.1.1": orly
+
+
+#import "../api/icons.typ": icon
 
 #let primary = rgb("#b22784")
 #let secondary = rgb("#0a0a0a")
 
 
 #let fonts = (
-  serif: "Liberation Serif",
-  sans: ("Open Sans Condensed", "Open Sans", "Liberation Sans", "Helvetica Neue", "Helvetica"),
-  mono: ("Liberation Mono",),
+  serif: ("TeX Gyre Schola", "Liberation Serif"),
+  sans: ("TeX Gyre Heros", "Open Sans Condensed", "Open Sans", "Liberation Sans", "Helvetica Neue", "Helvetica"),
+  mono: ("TeX Gyre Cursor", "Liberation Mono"),
 )
 
 #let muted = (
   fill: luma(210),
+  bg: luma(240),
 )
 
 #let text = (
@@ -23,7 +26,7 @@
 )
 
 #let heading = (
-  font: fonts.sans,
+  font: fonts.serif,
   fill: text.fill,
 )
 
@@ -43,17 +46,50 @@
   fill: rgb("#999999"),
 )
 
-#let alerts = (
+#let alert-colors = (
   info: rgb(23, 162, 184),
   warning: rgb(255, 193, 7),
   error: rgb(220, 53, 69),
   success: rgb(40, 167, 69),
 )
 
+#let alert(alert-type, body) = {
+  let color = if type(alert-type) == color {
+    alert-type
+  } else {
+    alert-colors.at(alert-type, default: luma(100))
+  }
+  block(
+    stroke: (left: 2pt + color, rest: 0pt),
+    fill: color.lighten(88%),
+    inset: 8pt,
+    width: 100%,
+    spacing: 2%,
+    std.text(size: .88em, fill: color.darken(60%), body),
+  )
+}
+
+
+#let tag(color, body) = box(
+  stroke: none,
+  fill: color,
+  // radius: 50%,
+  radius: 3pt,
+  inset: (x: .5em, y: .25em),
+  baseline: 1%,
+  std.text(body),
+)
+
 #let emph = (
   link: secondary,
   package: primary,
   module: rgb("#8c3fb2"),
+  since: rgb("#a6fbca"),
+  until: rgb("#ffa49d"),
+  changed: rgb("#fff37c"),
+  deprecated: rgb("#ffa49d"),
+  compiler: teal,
+  "context": rgb("#fff37c"),
 )
 
 #let commands = (
@@ -70,78 +106,21 @@
 )
 
 
-// TODO: Move type colors to types.typ?
-#let types = {
-  let red = rgb(255, 203, 195)
-  let gray = rgb(239, 240, 243)
-  let purple = rgb(230, 218, 255)
-
-  (
-    // fallback
-    default: rgb(239, 240, 243),
-    custom: rgb("#fcfdb7"),
-    // special
-    any: gray,
-    "auto": red,
-    "none": red,
-    // foundations
-    arguments: gray,
-    array: gray,
-    boolean: rgb(255, 236, 193),
-    bytes: gray,
-    content: rgb(166, 235, 229),
-    datetime: gray,
-    dictionary: gray,
-    float: purple,
-    function: gray,
-    integer: purple,
-    location: gray,
-    plugin: gray,
-    regex: gray,
-    selector: gray,
-    string: rgb(209, 255, 226),
-    type: gray,
-    label: rgb(167, 234, 255),
-    version: gray,
-    // layout
-    alignment: gray,
-    angle: purple,
-    direction: gray,
-    fraction: purple,
-    length: purple,
-    "relative length": purple,
-    ratio: purple,
-    relative: purple,
-    // visualize
-    color: gradient.linear(
-      (rgb("#7cd5ff"), 0%),
-      (rgb("#a6fbca"), 33%),
-      (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%),
-    ),
-    gradient: gradient.linear(
-      (rgb("#7cd5ff"), 0%),
-      (rgb("#a6fbca"), 33%),
-      (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%),
-    ),
-    stroke: gray,
-  )
-}
-
-
-#let page-init(doc) = (
+#let page-init(doc, theme) = (
   body => {
     show std.heading: it => {
       let level = it.at("level", default: it.at("depth", default: 2))
       let scale = (1.4, 1.2, 1.1).at(level - 1, default: 1.0)
 
       let size = 1em * scale
-      let above = if level == 1 {
-        1.8em
-      } else {
-        1.44em
-      } / scale
+      let above = (
+        if level == 1 {
+          1.8em
+        } else {
+          1.44em
+        }
+          / scale
+      )
       let below = 0.75em / scale
 
       set std.text(size: size, ..heading)
@@ -149,16 +128,28 @@
 
       if level == 1 {
         pagebreak(weak: true)
-        if it.numbering != none {
-          set std.text(fill: secondary)
-          [Part ]
-          counter(std.heading).display()
-          h(1.8em)
-          v(-.64em)
-          line(length: 100%, stroke: 2pt + secondary)
-        }
-        set std.text(fill: primary)
-        it.body
+
+        block(
+          below: .82em,
+          stroke: (bottom: 2pt + theme.secondary),
+          width: 100%,
+          inset: (bottom: .64em),
+          {
+            if it.numbering != none {
+              set std.text(fill: secondary)
+              [Part ]
+              counter(std.heading).display()
+              linebreak()
+            }
+
+            set std.text(fill: primary, size: 2em)
+
+            it.body
+
+            // v(-.64em)
+            // line(length: 100%, stroke: 2pt + theme.secondary)
+          },
+        )
       } else {
         block({
           set std.text(fill: secondary)
@@ -176,26 +167,23 @@
 
 #let _display-author(author) = block({
   smallcaps(author.name)
+  if author.affiliation not in (none, ()) {
+    footnote(smallcaps(author.affiliation))
+  }
   set std.text(.88em)
   if author.email != none {
-    linebreak()
-    " " + sym.lt + link("mailto://" + author.email, author.email) + sym.gt
-  }
-  if author.affiliation != () {
-    linebreak()
-    smallcaps(author.affiliation)
-  }
-  if author.urls != () {
-    linebreak()
-    author.urls.map(link).join(linebreak())
+    " <" + link("mailto://" + author.email, icon("mail") + " " + author.email) + ">"
   }
   if author.github != none {
-    linebreak()
-    [GitHub: ] + link("https://github.com/" + author.github, author.github)
+    let username = author.github.trim("@")
+    [ (#link("https://github.com/" + username, icon("mark-github") + " " + username))]
   }
+  // if author.urls != () {
+  //   author.urls.map(link).join(linebreak())
+  // }
 })
 
-#let title-page(doc) = {
+#let title-page(doc, theme) = {
   let title = if doc.title == none {
     doc.package.name
   } else {
@@ -203,8 +191,7 @@
   }
 
   orly(
-    color: primary,
-    font: heading.font,
+    color: theme.primary,
     title: title,
     subtitle: doc.package.description,
     signature: [
@@ -220,6 +207,9 @@
     publisher: doc.package.authors.map(_display-author).join(", "),
     pic: doc.theme-options.at("title-image", default: none),
     top-text: doc.subtitle,
+
+    font: theme.heading.font,
+    publisher-font: theme.fonts.sans,
   )
 
   set page(header: none, footer: none)
@@ -243,6 +233,7 @@
         doc.abstract
       },
     )
+    v(1em)
   }
 
   if doc.show-outline {
@@ -265,4 +256,8 @@
       ),
     )
   }
+
+  pagebreak()
 }
+
+#let last-page(doc, theme) = { }

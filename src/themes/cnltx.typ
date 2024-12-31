@@ -10,6 +10,7 @@
 
 #let muted = (
   fill: rgb(128, 128, 128),
+  bg: luma(233),
 )
 
 #let text = (
@@ -36,6 +37,12 @@
   link: primary,
   package: primary,
   module: rgb(5, 10, 122),
+  since: rgb("#a6fbca"),
+  until: rgb("#ffa49d"),
+  changed: rgb("#fff37c"),
+  deprecated: rgb("#ffa49d"),
+  compiler: teal,
+  "context": rgb("#fff37c"),
 )
 
 #let code = (
@@ -44,13 +51,39 @@
   fill: rgb("#999999"),
 )
 
-#let alerts = (
+#let alert-colors = (
   info: rgb(23, 162, 184),
   warning: rgb(255, 193, 7),
   error: rgb(220, 53, 69),
   success: rgb(40, 167, 69),
 )
 
+#let alert(alert-type, body) = {
+  let color = if type(alert-type) == color {
+    alert-type
+  } else {
+    alert-colors.at(alert-type, default: luma(100))
+  }
+  block(
+    stroke: (left: 2pt + color, rest: 0pt),
+    fill: color.lighten(88%),
+    inset: 8pt,
+    width: 100%,
+    spacing: 2%,
+    std.text(size: .88em, fill: color.darken(60%), body),
+  )
+}
+
+
+#let tag(color, body) = box(
+  stroke: none,
+  fill: color,
+  // radius: 50%,
+  radius: 3pt,
+  inset: (x: .5em, y: .25em),
+  baseline: 1%,
+  std.text(body),
+)
 
 #let commands = (
   argument: navy,
@@ -65,78 +98,21 @@
   default: rgb(181, 2, 86),
 )
 
-#let types = {
-  let red = rgb(255, 203, 195)
-  let gray = rgb(239, 240, 243)
-  let purple = rgb(230, 218, 255)
-
-  (
-    // fallback
-    default: rgb(239, 240, 243),
-    custom: rgb("#fcfdb7"),
-    // special
-    any: gray,
-    "auto": red,
-    "none": red,
-    // foundations
-    arguments: gray,
-    array: gray,
-    boolean: rgb(255, 236, 193),
-    bytes: gray,
-    content: rgb(166, 235, 229),
-    datetime: gray,
-    dictionary: gray,
-    float: purple,
-    function: gray,
-    integer: purple,
-    location: gray,
-    plugin: gray,
-    regex: gray,
-    selector: gray,
-    string: rgb(209, 255, 226),
-    type: gray,
-    label: rgb(167, 234, 255),
-    version: gray,
-    // layout
-    alignment: gray,
-    angle: purple,
-    direction: gray,
-    fraction: purple,
-    length: purple,
-    "relative length": purple,
-    ratio: purple,
-    relative: purple,
-    // visualize
-    color: gradient.linear(
-      (rgb("#7cd5ff"), 0%),
-      (rgb("#a6fbca"), 33%),
-      (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%),
-    ),
-    gradient: gradient.linear(
-      (rgb("#7cd5ff"), 0%),
-      (rgb("#a6fbca"), 33%),
-      (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%),
-    ),
-    stroke: gray,
-  )
-}
-
-
-
-#let page-init(doc) = (
+#let page-init(doc, theme) = (
   body => {
     show std.heading: it => {
       let level = it.at("level", default: it.at("depth", default: 2))
       let scale = (1.6, 1.4, 1.2).at(level - 1, default: 1.0)
 
       let size = 1em * scale
-      let above = if level == 1 {
-        1.8em
-      } else {
-        1.44em
-      } / scale
+      let above = (
+        if level == 1 {
+          1.8em
+        } else {
+          1.44em
+        }
+          / scale
+      )
       let below = 0.75em / scale
 
       set std.text(size: size, ..heading)
@@ -147,7 +123,7 @@
         block({
           if it.numbering != none {
             std.text(
-              fill: primary,
+              fill: theme.primary,
               {
                 [Part ]
                 counter(std.heading).display()
@@ -160,7 +136,7 @@
       } else {
         block({
           if it.numbering != none {
-            std.text(fill: primary, counter(std.heading).display())
+            std.text(fill: theme.primary, counter(std.heading).display())
             [ ]
           }
           set std.text(size: size, ..heading)
@@ -193,7 +169,7 @@
   }
 })
 
-#let title-page(doc) = {
+#let title-page(doc, theme) = {
   set align(center)
   set block(spacing: 2em)
 
@@ -201,7 +177,7 @@
     smallcaps(
       std.text(
         40pt,
-        primary,
+        theme.primary,
         if doc.title == none {
           doc.package.name
         } else {
@@ -267,4 +243,8 @@
       ),
     )
   }
+
+  pagebreak()
 }
+
+#let last-page(doc, theme) = { }
