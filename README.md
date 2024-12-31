@@ -1,24 +1,22 @@
-# Mantys (v0.1.4)
+# Mantys (v1.0.0)
 
 > **MAN**uals for **TY**p**S**t
 
-Template for documenting [typst](https://github.com/typst/typst) packages and templates.
+Template for documenting [Typst](https://github.com/typst/typst) packages and templates.
 
 ## Usage
 
-Just import the package at the beginning of your manual:
-```typst
-#import "@preview/mantys:0.1.4": *
+Quickstart your manual using `typst init`:
+```shell
+typst init @preview/mantys
 ```
-
-Mantys supports **Typst 0.11.0** and newer.
 
 ## Writing basics
 
-A basic template for a manual could look like this:
+A basic template for a manual could looks like this:
 
 ```typst
-#import "@local/mantys:0.1.4": *
+#import "@local/mantys:1.0.0": *
 
 #import "your-package.typ"
 
@@ -35,18 +33,21 @@ A basic template for a manual could look like this:
 		A few paragraphs of text to describe the package.
 	],
 
-	example-imports: (your-package: your-package)
+	examples-scope: (
+		scope: (your-package: your-package),
+		imports: (your-package: "*")
+	)
 )
 
 // end of preamble
 
-# About
+= About
 #lorem(50)
 
-# Usage
+= Usage
 #lorem(50)
 
-# Available commands
+= Available commands
 #lorem(50)
 
 ```
@@ -84,14 +85,13 @@ The result might look something like this:
 
 ![Example for a headline command with Mantys](docs/assets/headline-example.png)
 
-For a full reference of available commands read [the manual](docs/mantys-manual.pdf).
+For a full reference of available commands read [the manual](docs/manual.pdf).
 
 ## Changelog
 
-### Version 0.1.5
+### Version 1.0.0
 
-- Fixed `#cmdref` not showing command name (by @freundTech).
-- Made colors of datatype blocks look closer to the Typst website (by @tingerrr).
+Version 1.0.0 is a complete rewrite of Mantys with many breaking changes. Read the [the manual](docs/manual.pdf) for a full usage reference.
 
 ### Version 0.1.4
 

@@ -1,0 +1,9 @@
+show-outline = false
+show-index = false
+
+[package]
+name = "test"
+version = "1.0.0"
+license = "MIT"
+description = "Dummy test toml"
+entrypoint = "test.typ"

@@ -1,15 +1,14 @@
 [package]
 name = "mantys"
-version = "0.1.4"
+version = "1.0.0"
 entrypoint = "src/mantys.typ"
-authors = ["Jonas Neugebauer"]
+authors = ["Jonas Neugebauer <@jneug>"]
 license = "MIT"
-description = "Helpers to build manuals for Typst packages."
+description = "Helpers to build manuals for Typst packages and templates."
 repository = "https://github.com/jneug/typst-mantys"
-compiler = "0.11.0"
-exclude = ["/docs/*", "tbump.toml"]
+compiler = "0.12.0"
+exclude = ["tests", "scripts", "docs", "Justfile", "tbump.toml"]
 categories = ["layout", "model", "utility"]
-disciplines = []
 keywords = ["manual", "documentation"]
 
 [template]

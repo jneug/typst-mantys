@@ -1,17 +1,18 @@
-#import "@preview/mantys:0.1.4": *
+#import "@preview/mantys:1.0.0": *
 
-#show: mantys.with(
+#show: mantys(
   name: "mantys",
-  version: "0.1.0",
+  version: "1.0.0",
   authors: (
     "Jonas Neugebauer",
   ),
   license: "MIT",
   description: "Helpers to build manuals for Typst packages.",
-  repository:"https://github.com/jneug/typst-mantys",
+  repository: "https://github.com/jneug/typst-mantys",
 
-  /// Uncomment to load the above package information
-  /// directly from the typst.toml file
+  /// Uncomment one of the following lines to load the above
+  /// package information directly from the typst.toml file
+  // ..toml("../typst.toml"),
   // ..toml("typst.toml"),
 
   title: "Manual title",
@@ -24,9 +25,12 @@
     #lorem(50)
   ],
 
-  // examples-scope: ()
+  // examples-scope: (
+  //   scope: (:),
+  //   imports: (:)
+  // )
 
-  // toc: false
+  // theme: themes.modern
 )
 
 /// Helper for Tidy-Support
@@ -37,5 +41,4 @@
 //   show-outline: outlined,
 //   include-examples-scope: true,
 //   extract-headings: 3,
-//   tidy: tidy
 // )
