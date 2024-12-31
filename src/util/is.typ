@@ -1,4 +1,4 @@
-#import "typst.typ"
+// TODO: (jneug) rename module to something else
 
 #let str(value) = std.type(value) == std.type("")
 #let dict(value) = std.type(value) == std.type((:))
