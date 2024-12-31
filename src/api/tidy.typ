@@ -27,23 +27,68 @@
 }
 
 
-#let tidy-module(name, data, scope: (:), module: none, filter: func => true, ..tidy-args) = {
+///  Parses and displays a library file with #package("Tidy").
+/// #sourcecode[```typ
+///  #tidy-module("utils", read("../src/lib/utils.typ"))
+/// ```]
+/// -> content
+#let tidy-module(
+  /// Name of the module.
+  /// -> str
+  name,
+  /// Data of the module, usually read with #typ.read.
+  /// -> str
+  data,
+  /// Additional scope for evaluating the modules docstrings.
+  /// -> dictionary
+  scope: (:),
+  /// Optional module name for functions in this module.
+  /// By default, all functions will be displayed without a module prefix. This will add a module to the functions by passing
+  /// #arg[module] to @cmd:command.
+  ///
+  /// #frame[
+  /// Without module: #cmd[some-command]
+  ///
+  /// With module: #cmd(module: "util")[another-command]
+  /// ]
+  ///
+  /// Note that setting this will also change function labels to include the module.
+  /// -> str
+  module: none,
+  /// A filter function to apply after parsing the module data. For each function in the module the parsed information is passed to #arg[filter]. It should return #typ.v.true if the function should be displayed and #typ.v.false otherwise.
+  /// -> function
+  filter: func => true,
+  /// Set to #typ.v.true to enable #package[Tidy]s legacy parser (pre version 0.4.0).
+  /// -> bool
+  legacy-parser: false,
+  /// Additional arguments to be passed to
+  /// #cmd(module:"tidy", "show-module").
+  /// -> any
+  ..tidy-args,
+) = {
   context {
     let doc = document.get()
-    let scope = if doc.examples-scope != none {
-      doc.examples-scope.scope
-    } else {
-      (:)
-    } + scope
+    let scope = (
+      if doc.examples-scope != none {
+        doc.examples-scope.scope
+      } else {
+        (:)
+      }
+        + scope
+    )
 
     let module-doc = deps.tidy.parse-module(
       data,
       name: name,
       scope: scope,
+      label-prefix: if module == none { "cmd:" } else { module + ":" },
+      enable-curried-functions: true,
+      old-syntax: legacy-parser,
     )
 
     module-doc = _post-process-module(
       module-doc,
+      // TODO: (jneug) still necessary if label-prefix is module? => Filtering
       func-opts: (
         module: module,
       ),
@@ -51,51 +96,5 @@
     )
 
     _show-module(module-doc, style: tidy-style, ..tidy-args.named())
-  }
-}
-
-#let tidy-modules(modules, add-modules: false, name: auto, scope: (:), ..tidy-args) = {
-  context {
-    let doc = document.get()
-    let scope = if doc.examples-scope != none {
-      doc.examples-scope.scope
-    } else {
-      (:)
-    } + scope
-
-    let merged-data = none
-
-    for (module, data) in modules {
-      // TODO: extrude parsing in helper func
-      let module-doc = deps.tidy.parse-module(
-        name: module,
-        scope: scope,
-        data,
-      )
-
-      if add-modules {
-        module-doc = _post-process-module(
-          module-doc,
-          func-opts: (
-            module: module,
-          ),
-        )
-      }
-
-      if merged-data == none {
-        merged-data = module-doc
-      } else {
-        merged-data.name += ";" + module-doc.name
-        merged-data.functions += module-doc.functions
-        merged-data.variables += module-doc.variables
-        merged-data.label-prefix += "-" + module-doc.name
-      }
-    }
-
-    if name != auto {
-      merged-data.name = name
-    }
-
-    _show-module(merged-data, style: tidy-style, ..tidy-args.named())
   }
 }

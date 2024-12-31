@@ -1,5 +1,6 @@
 #import "../_deps.typ" as deps
 #import "../_api.typ" as api
+#import "styles.typ"
 
 #import "../util/utils.typ"
 
@@ -32,10 +33,12 @@
     let cols = ()
     for i in range(items.len(), step: per_col) {
       cols.push(
-        items.slice(
-          i,
-          calc.min(i + per_col, items.len()),
-        ).join(linebreak()),
+        items
+          .slice(
+            i,
+            calc.min(i + per_col, items.len()),
+          )
+          .join(linebreak()),
       )
     }
     api.frame({
@@ -100,6 +103,7 @@
   content,
   style-args,
   show-default: false,
+  command: none,
   default: none,
 ) = api.argument(
   if name.starts-with("..") {
@@ -114,6 +118,7 @@
   } else {
     "__none__"
   },
+  command: command,
   _value: api.value.with(parse-str: true),
   content,
 )
@@ -180,6 +185,7 @@
             style-args,
             show-default: "default" in info,
             default: info.at("default", default: none),
+            command: (name: fn.name, module: fn.module),
           )
         }
       },
@@ -199,6 +205,53 @@
 )
 
 
+// TODO: (jneug) catch "()" suffix as commands (?)
+// TODO: (jneug) use label-prefix as module
 #let show-reference(label, name, style-args: none) = {
-  api.cmdref(name)
+  let _l = label
+  label = if style-args.label-prefix != none {
+    str(label).trim(style-args.label-prefix)
+  } else {
+    str(label)
+  }
+
+  let parsed-label = utils.parse-label(label)
+  if parsed-label.prefix in ("cmd", "arg") {
+    std.link(
+      utils.create-label(parsed-label.name, arg: parsed-label.arg, module: parsed-label.module),
+      {
+        styles.cmd(parsed-label.name, module: parsed-label.module, arg: parsed-label.arg)
+      },
+    )
+  } else if parsed-label.prefix == "type" {
+    return api.link-custom-type(parsed-label.name)
+  } else {
+    // Workaround to allow external references from Tidy doc comments
+    // context {
+    //   let q = query(std.label(label))
+    //   if q != () {
+    //     q = q.first()
+    //     std.link(
+    //       q.location(),
+    //       [#q.supplement #std.numbering(q.numbering, ..counter(q.func()).at(q.location()))],
+    //     )
+    //   } else {
+    //     panic("label `" + repr(_l) + "` does not exists in the document")
+    //   }
+
+    ref(std.label(label))
+  }
+}
+
+#let show-example(
+  code,
+  inherited-scope: (:),
+  preamble: "",
+  mode: "markup",
+) = {
+  api.example(
+    code,
+    scope: inherited-scope,
+    mode: mode,
+  )
 }
