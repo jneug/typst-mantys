@@ -1,6 +1,6 @@
 #import "@preview/mantys:1.0.0": *
 
-#show: mantys.with(
+#show: mantys(
   name: "mantys",
   version: "1.0.0",
   authors: (
@@ -8,12 +8,12 @@
   ),
   license: "MIT",
   description: "Helpers to build manuals for Typst packages.",
-  repository:"https://github.com/jneug/typst-mantys",
+  repository: "https://github.com/jneug/typst-mantys",
 
   /// Uncomment one of the following lines to load the above
   /// package information directly from the typst.toml file
+  // ..toml("../typst.toml"),
   // ..toml("typst.toml"),
-  // ..toml-info(read)  // reads from "../typst.toml"
 
   title: "Manual title",
   // subtitle: "Tagline",
@@ -25,9 +25,12 @@
     #lorem(50)
   ],
 
-  // examples-scope: ()
+  // examples-scope: (
+  //   scope: (:),
+  //   imports: (:)
+  // )
 
-  // toc: false
+  // theme: themes.modern
 )
 
 /// Helper for Tidy-Support
