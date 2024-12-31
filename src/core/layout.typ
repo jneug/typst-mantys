@@ -1,11 +1,11 @@
 #import "../_deps.typ": typearea, hydra, codly
+#import "../_deps.typ": typearea, hydra, codly, marginalia
 
 #import "styles.typ"
 
 #import "../util/utils.typ"
-#import "../util/typst.typ"
 #import "../api/elements.typ": package
-#import "../api/examples.typ": codesnippet
+#import "../api/examples.typ": codesnippet, example, side-by-side
 #import "../api/types.typ": link-custom-type, type-box, _type-map
 
 #let page-header(doc, theme) = {
@@ -111,34 +111,44 @@
       stroke: none,
     )
     // show raw.where(block: true): codesnippet
+    show raw.where(block: true): set par(justify: false)
+    show raw.where(lang: "example"): example
+    show raw.where(lang: "side-by-side"): side-by-side
 
     // Allow theme overrides
     // TODO: Should theme call be in mantys.typ?
-    show: theme.page-init(doc)
+    let page-init-func = theme.page-init
+    show: page-init-func(doc, theme)
 
-    // Setup show-rule for themeing support
+    // Setup show-rule for theming support
     show <mantys:themable>: it => {
       let element = it.value
       (element.func)(theme, ..element.args)
     }
 
     show ref: it => {
+      set text(theme.secondary)
       if it.element != none and it.element.func() == figure {
-        if it.element.kind == "cmd" {
-          let name = str(it.target).slice(4)
-          let module = none
-          if name.contains(".") {
-            (name, module) = (name.split(".").slice(1).join("."), name.split(".").first())
+        if it.element.kind in ("cmd", "arg") {
+          let command = utils.parse-label(it.element.label)
+          if (doc.index-references and it.supplement != [-]) or (not doc.index-references and it.supplement == [+]) {
+            idx(
+              command.name,
+              kind: it.element.kind,
+              main: true,
+              display: styles.cmd(command.name, module: command.module),
+            )
           }
-          return link(
+          link(
             it.target,
-            styles.cmd(name, module: module),
+            styles.cmd(command.name, module: command.module, arg: command.arg),
           )
         } else if it.element.kind == "type" {
-          return link-custom-type(str(it.target).slice(5))
+          link-custom-type(str(it.target).slice(5))
         }
+      } else {
+        it
       }
-      it
     }
 
     show upper(doc.package.name): it => package(doc.package.name)
