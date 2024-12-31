@@ -7,5 +7,6 @@
 #import "api/values.typ": *
 #import "api/examples.typ": *
 #import "api/links.typ": *
+#import "api/icons.typ": *
 
 #import "core/index.typ": idx, make-index
