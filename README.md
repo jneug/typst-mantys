@@ -2,7 +2,7 @@
 
 > **MAN**uals for **TY**p**S**t
 
-Template for documenting [typst](https://github.com/typst/typst) packages and templates.
+Template for documenting [Typst](https://github.com/typst/typst) packages and templates.
 
 ## Usage
 
@@ -13,7 +13,7 @@ typst init @preview/mantys
 
 ## Writing basics
 
-A basic template for a manual could look like this:
+A basic template for a manual could looks like this:
 
 ```typst
 #import "@local/mantys:1.0.0": *
@@ -33,7 +33,10 @@ A basic template for a manual could look like this:
 		A few paragraphs of text to describe the package.
 	],
 
-	example-imports: (your-package: your-package)
+	examples-scope: (
+		scope: (your-package: your-package),
+		imports: (your-package: "*")
+	)
 )
 
 // end of preamble
@@ -82,11 +85,15 @@ The result might look something like this:
 
 ![Example for a headline command with Mantys](docs/assets/headline-example.png)
 
-For a full reference of available commands read [the manual](docs/mantys-manual.pdf).
+For a full reference of available commands read [the manual](docs/manual.pdf).
 
 ## Changelog
 
 ### Version 1.0.0
+
+Version 1.0.0 is a complete rewrite of Mantys with many breaking changes. Read the [the manual](docs/manual.pdf) for a full usage reference.
+
+### Version 0.1.4
 
 - Fix missing links in outline (@tingerrr).
 - Fixed problem when evaluating default values with Tidy.
