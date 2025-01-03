@@ -723,41 +723,52 @@ Some themes can be further customized by options that get passed to @cmd:mantys 
 
 ==== Typst theme <subsec:theme-default>
 #grid(
-  columns: 2,
+  columns: (1fr, 50%),
   column-gutter: 5%,
-  [The default theme for MANTYS. Based on the Typst documentation and website.],
-  frame(arg(theme: "default", _value: theme-var)),
+  [
+    The default theme for MANTYS. Based on the Typst documentation and website.
+    #frame(arg(theme: "default", _value: theme-var))
+    #text(.88em)[Example: This manual.]
+  ],
+  image("assets/examples/theme-typst.png", width: 100%),
 )
-#align(center, image("assets/examples/theme-typst.png", height: 30%))
 
 ==== Modern theme
 #grid(
-  columns: 2,
+  columns: (1fr, 50%),
   column-gutter: 5%,
-  [A slightly more modern theme for the digital age. Based on the #link("https://creativecommons.org/2019/10/30/cc-style-guide/", [Creative Commons Style Guide]).],
-  frame(arg(theme: "modern", _value: theme-var)),
+  [
+    A slightly more modern theme for the digital age. Based on the #link("https://creativecommons.org/2019/10/30/cc-style-guide/", [Creative Commons Style Guide]).
+    #frame(arg(theme: "modern", _value: theme-var))
+    #text(.88em)[Example: The manual for #universe("finite").]
+  ],
+  image("assets/examples/theme-modern.png", width: 100%),
 )
-#align(center, image("assets/examples/theme-modern.png", height: 30%))
 
 ==== CNLTX theme <subsubsec:theme-cnltx>
 #grid(
-  columns: 2,
+  columns: (1fr, 50%),
   column-gutter: 5%,
-  [This theme is based on the original CNLTX template.], frame(arg(theme: "cnltx", _value: theme-var)),
+  [
+    This theme is based on the original CNLTX template.
+    #frame(arg(theme: "cnltx", _value: theme-var))
+  ],
+  image("assets/examples/theme-cnltx.png", width: 100%),
 )
-#align(center, image("assets/examples/theme-cnltx.png", height: 30%))
 
 ==== O'Rly#super[?] theme
 #grid(
-  columns: 2,
+  columns: (1fr, 50%),
   column-gutter: 5%,
-  [This theme uses the #universe("fauxreilly") package to create a style similar to an O'Reilly book.],
-  frame(arg(theme: "orly", _value: theme-var)),
+  [
+    This theme uses the #universe("fauxreilly") package to create a style similar to an O'Reilly book.
+    #frame(arg(theme: "orly", _value: theme-var))
+  ],
+  image("assets/examples/theme-orly.png", width: 100%),
 )
-#align(center, image("assets/examples/theme-orly.png", height: 30%))
 
 ===== Theme Options
-#argument("pic", types: content)[
+#argument("title-image", types: content)[
   #typ.content to be passed to the #arg[pic] argument of #cmd-("orly", module:"fauxreilly").
 ]
 
@@ -859,6 +870,7 @@ Index entries are defined by a #arg[term] and a #arg[kind] that groups terms.
   Commands: "api/commands",
   Types: "api/types",
   Values: "api/values",
+  Links: "api/links",
   Elements: "api/elements",
   Examples: "api/examples",
   Icons: "api/icons",

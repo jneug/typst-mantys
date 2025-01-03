@@ -26,7 +26,10 @@
 
   show-index: false,
 
-  theme: themes.orly
+  theme: themes.orly,
+  theme-options: (
+    title-image: image("queen-elizabeth-ll-clipart.jpg"),
+  ),
 )
 
 
