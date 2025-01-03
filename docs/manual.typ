@@ -23,8 +23,8 @@
 
 #import "@preview/swank-tex:0.1.0": TeX, LaTeX
 
-#let CNLTX = package("CNLTX")
-#let TIDY = package("Tidy")
+#show "CNLTX": package
+#show "TIDY": _ => package("Tidy")
 
 #show: mantys(
   ..toml("../typst.toml"),
@@ -35,12 +35,13 @@
   abstract: [
     MANTYS is a Typst template to help package and template authors write beautiful and useful manuals. It provides functionality for consistent formatting of commands, variables and source code examples. The template automatically creates a table of contents and a command index for easy reference and navigation.
 
-    For even easier manual creation, MANTYS works well with #TIDY, the Typst docstring parser.
+    For even easier manual creation, MANTYS works well with TIDY, the Typst docstring parser.
 
-    The main idea and design were inspired by the #LaTeX package #CNLTX by #name[Clemens Niederberger].
+    The main idea and design were inspired by the #LaTeX package CNLTX by #name[Clemens Niederberger].
   ],
 
   show-index: false,
+  wrap-snippets: true,
 
   git: git-info(file => read(file)),
 
@@ -62,6 +63,7 @@
     ),
     imports: (mantys: "*"),
   ),
+
   assets: assets,
 )
 
@@ -74,7 +76,7 @@ This manual is a complete reference of all of MANTYS features. The source file o
 
 == Acknowledgements
 
-Mantys was inspired by the fantastic #LaTeX package #link("https://ctan.org/pkg/cnltx")[#CNLTX] by #name[Clemens Niederberger]#footnote[#link("*mailto:clemens@cnltx.de", "clemens@cnltx.de")].
+Mantys was inspired by the fantastic #LaTeX package #link("https://ctan.org/pkg/cnltx")[CNLTX] by #name[Clemens Niederberger]#footnote[#link("*mailto:clemens@cnltx.de", "clemens@cnltx.de")].
 
 Thanks to #github-user("tingerrr") and others for contributing to this package and giving feedback.
 
@@ -83,7 +85,7 @@ Thanks to #github-user("Mc-Zen") for developing #github("Mc-Zen/tidy").
 == Dependencies
 
 MANTYS is build using some of the great packages provided by the Typst community:
-#columns(3)[
+#balanced-cols(3, clearance: .05pt)[
   #let import-data = read("../src/_deps.typ")
   #for imp in import-data.split("\n") {
     if imp != "" {
@@ -97,7 +99,7 @@ MANTYS is build using some of the great packages provided by the Typst community
 
 == Some Terminology
 
-Since MANTYS was first developed as a port of #CNLTX, some terms used are derived from the original #LaTeX package.
+Since MANTYS was first developed as a port of CNLTX, some terms used are derived from the original #LaTeX package.
 
 Functions are called "commands" and paramteres "arguments". This has the benefit of avoiding collisions with the native #typ.t.function type.
 
@@ -125,6 +127,13 @@ Your project folder should look something like this:
   └── typst.toml
   ```]
 
+```
+.
+├── docs
+│   └── manual.typ
+└── typst.toml
+```
+
 Open `docs/manual.typ` in your editor, delete the arguments in the #cmd-[mantys] call at the top from #arg[name] to #arg[respository]. Then uncomment the line ```..toml("../typst.toml"),```.
 
 The top of your manual should look like this:
@@ -140,12 +149,12 @@ All uppercase occurrences of #arg[name] will be highlighted as a package name. F
 
 Start writing your manual.
 
-If you alread use #TIDY to document your functions, use @cmd:tidy-module to parse and display a module directly in MANTYS:
+If you alread use TIDY to document your functions, use @cmd:tidy-module to parse and display a module directly in MANTYS:
 #sourcecode[```typ
-  #tidy-module("utils", read("../src/lib/utils.typ"))
+  TIDY-module("utils", read("../src/lib/utils.typ"))
   ```]
 
-Read @subsec:using-tidy for more details about using #TIDY with MANTYS.
+Read @subsec:using-tidy for more details about using TIDY with MANTYS.
 
 = Usage <sec:usage>
 
@@ -296,7 +305,7 @@ The following keys can be passed to @cmd:mantys:
     )
     ```]
 
-  The #arg[scope] and #arg[imports] are passed to #TIDY for evaluating docstring examples.
+  The #arg[scope] and #arg[imports] are passed to TIDY for evaluating docstring examples.
 
   For further details refer to @sec:showing-examples and @cmd:example.
 ]
@@ -482,9 +491,9 @@ Calling @cmd:mantys-init directly will give you direct access to the @type:docum
 
 == Using Tidy <subsec:using-tidy>
 
-MANTYS was build with #TIDY in mind and replaces the default template used by #TIDY. If you already use docstrings to document your code, you can easily show your function documentation in your MANTYS manual.
+MANTYS was build with TIDY in mind and replaces the default template used by TIDY. If you already use docstrings to document your code, you can easily show your function documentation in your MANTYS manual.
 
-@cmd:tidy-module is the main entrypoint for using #TIDY in MANTYS. The command will call #cmd(module:"tidy")[parse-module] and #cmd(module:"tidy")[show-module] for you and setup MANTYS as the template.
+@cmd:tidy-module is the main entrypoint for using TIDY in MANTYS. The command will call #cmd(module:"tidy")[parse-module] and #cmd(module:"tidy")[show-module] for you and setup MANTYS as the template.
 
 Since MANTYS can't read your packages files, you need to call #typ.read and pass the result to the function (same as you would do for #cmd-(module:"tidy")[parse-module]).
 
@@ -508,7 +517,7 @@ For easier usage it is recommended to define a custom function in the header of 
 See @sec:commands for an example of the result of @cmd:tidy-module.
 
 #info-alert[
-  When using #TIDY, most MANTYS concepts also apply to docstrings. For example, cross-referencing commands is done with the `cmd:` prefix. All MANTYS commands like @cmd:arg or @cmd:property are available in docstring.
+  When using TIDY, most MANTYS concepts also apply to docstrings. For example, cross-referencing commands is done with the `cmd:` prefix. All MANTYS commands like @cmd:arg or @cmd:property are available in docstring.
 ]
 
 == Documenting custom types and validation schemas
@@ -580,7 +589,7 @@ Referencing the builtin commands and types can be done via the @cmd:builtin and 
 
 See @sec:shortcuts for a full list of available shortcuts.
 
-== Showing examples <sec:showing-examples>
+== Displaying examples <sec:showing-examples>
 
 Showing examples is easy by using the #link(<sec:examples>, "example commands"). Wrapping any typst code in @cmd:example or @cmd:side-by-side will show the raw code and the evaluated result in a @cmd:frame.
 
@@ -588,7 +597,7 @@ Showing examples is easy by using the #link(<sec:examples>, "example commands").
   @cmd:side-by-side is an alias for @cmd:example with #arg(side-by-side: true) set.
 ]
 
-By default, any #typ.raw blocks with the language set to `example` or `side-by-side` will automatically wrapped inside the corresponding command.
+By default, any #typ.raw blocks with the language set to `example` or `side-by-side` will automatically be wrapped inside the corresponding command.
 
 #example[````typ
   ```example
@@ -600,6 +609,30 @@ By default, any #typ.raw blocks with the language set to `example` or `side-by-s
   ```
   ````]
 
+#info-alert[
+  To show an example with fenced #typ.raw code, use more than three backticks for the example environment:
+  `````typ
+  ````example
+  ```typ
+  #let number = 4
+  ```
+  ````
+  `````
+]
+
+=== Preventing example evaluation
+
+Sometimes you don't want the example to be evaluated by Typst and provide the result yourself. In that case, simply add another content block after the example code:
+
+````example
+#example[
+  ```typ
+  Some #strong[bold] text?
+  ```
+][
+  Some #emph[bold] text?
+]
+````
 
 === Setting the evaluation scope <subsec:evaluation-scope>
 
@@ -622,7 +655,40 @@ The #arg[imports] are parsed into a preamble by @cmd:utils:build-preamble. The v
     )
   ```]
 
-The @cmd:mantys.examples-scope is passed to #TIDY for evaluating examples in docstrings.
+The @cmd:mantys.examples-scope is passed to TIDY for evaluating examples in docstrings.
+
+=== Displaying other sourcecode
+
+Any #typ.raw code will be passed to #universe("codly") for display. You can pass new defaults to #package[CODLY] via the #cmd(module:"codly")[codly] command.
+
+#example[```typ
+  Some `raw` code
+  over *multiple*
+  lines.
+  ```][
+  #codly.local(```typ
+  Some `raw` code
+  over *multiple*
+  lines.
+  ```)
+]
+
+To modify the display you can wrap the #typ.raw block inside the @cmd:codesnippet[-] or @cmd:sourcecode[-] commands. By default both commands add a @cmd:frame around the content.
+
+@cmd:codesnippet can be used for small snippets of code like the `typst init` line seen in @sec:usage. The command disables line numbers. Any arguments will be passed to #cmd(module:"codly", "local").
+
+#info-alert[
+  Previous versions of MANTYS would wrap any #typ.raw block inside @cmd:codesnippet[-]. This was changed to allow more flexibility when showing code. To enable the old behaviour, pass #arg(wrap-snippets: true) to @cmd:mantys[-].
+]
+
+@cmd:sourcecode will wrap the #typ.raw block in a frame for nicer display.
+
+#example[````typ
+  #sourcecode[```typ
+  #let a = "Hello"
+  #strong(a), World!
+  ```]
+  ````]
 
 = Customizing the template <sec:customize>
 
@@ -677,7 +743,7 @@ Some themes can be further customized by options that get passed to @cmd:mantys 
 #grid(
   columns: 2,
   column-gutter: 5%,
-  [This theme is based on the original #CNLTX template.], frame(arg(theme: "cnltx", _value: theme-var)),
+  [This theme is based on the original CNLTX template.], frame(arg(theme: "cnltx", _value: theme-var)),
 )
 #align(center, image("assets/examples/theme-cnltx.png", height: 30%))
 
