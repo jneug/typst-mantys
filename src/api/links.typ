@@ -1,3 +1,4 @@
+#import "../core/document.typ"
 #import "elements.typ": package
 
 #let _type-map = (
@@ -241,68 +242,222 @@
   }
 }
 
-// TODO: Make repo: auto named and load repo url from document
-#let github(repo) = {
-  if repo.starts-with("https://github.com/") {
-    repo = repo.slice(19)
+/// Displays a link to a #link("https://github.com", "github.com", footnote:false) user page.
+/// If #arg[name] is empty or #typ.v.auto, the package
+/// author is linked (if a github username was provided).
+/// ```example
+/// - #github-user()
+/// - #github-user("typst")
+/// ```
+/// -> content
+#let github-user(
+  /// Name of the user on GitHub, like `jneug` or #typ.v.auto.
+  /// -> str | auto
+  ..name,
+) = {
+  let name = name.pos().at(0, default: auto)
+  if name != auto {
+    link("https://github.com/" + name, sym.at + name)
+  } else {
+    context {
+      let author = document.get-value("package.authors").first()
+      if "github" in author {
+        link("https://github.com/" + author.github, sym.at + author.github)
+      } else {
+        let repo = document.get-value("package.repository")
+        if repo != none {
+          let name = repo.split("/").first()
+          link("https://github.com/" + name, sym.at + name)
+        } else {
+          panic("#github-user either needs a gihub name for the author or a repository URL set during initialization.")
+        }
+      }
+    }
   }
-  link("https://github.com/" + repo, repo)
 }
 
-#let github-user(name) = {
-  link("https://github.com/" + name, sym.at + name)
+/// Displays a link to a #link("https://github.com", "github.com", footnote:false) repository.
+/// If #arg[repo] is empty or #typ.v.auto, the package
+/// repository is linked (if a repository URL was provided).
+/// ```example
+/// - #github()
+/// - #github("typst/packages")
+/// - #github(path: "/issues")
+/// - #github("typst/packages", path: "/issues")
+/// ```
+/// -> content
+#let github(
+  /// Name of the repository on GitHub, like `jneug/typst-mantys` or #typ.v.auto.
+  /// -> str | auto
+  ..repo,
+  /// Optional path to append to the URL. This
+  /// is appended to the repository URL as is and
+  /// can include anchors.
+  /// -> str
+  path: none,
+  /// Custom label for the link.
+  /// -> content | auto
+  label: auto,
+) = {
+  let make-link(r) = {
+    if r.starts-with("https://github.com/") {
+      r = r.slice(19)
+    }
+    let path = if path == none {
+      ""
+    } else {
+      "/" + path.trim("/", at: start)
+    }
+    let label = if label == auto {
+      r
+    } else {
+      label
+    }
+    link("https://github.com/" + r + path, label)
+  }
+
+  let repo = repo.pos().at(0, default: auto)
+
+  if repo != auto {
+    make-link(repo)
+  } else {
+    document.use-value(
+      "package.repository",
+      repo => {
+        if repo != none {
+          make-link(repo)
+        } else {
+          panic("#github requires a <repo> to be provided or the <repository> option set during initialization.")
+        }
+      },
+    )
+  }
 }
 
-// TODO: Make repo: auto named and load repo name from document
-#let github-file(repo, filepath, branch: "main") = {
-  if repo.starts-with("https://github.com/") {
-    repo = repo.slice(19)
+/// Displays a link to a #link("https://github.com", "github.com", footnote:false) repository.
+/// If #arg[repo] is empty or #typ.v.auto, the package
+/// repository is linked (if a repository URL was provided).
+/// ```example
+/// - #github-file("README.md")
+/// - #github-file("typst/packages", "README.md")
+/// ```
+/// -> content
+#let github-file(
+  /// Either a file path or a repository name and a filepath.
+  /// -> str
+  ..repo-filepath,
+  /// The branch to link to.
+  /// -> str
+  branch: "main",
+) = {
+  if repo-filepath.pos() == () {
+    panic("#github-file requires a filepath to link to.")
   }
-  if filepath.starts-with("/") {
-    filepath = filepath.slice(1)
+
+  let filepath = repo-filepath.pos().last()
+
+  if repo-filepath.pos().len() > 1 {
+    github(repo-filepath.pos().first(), path: "/tree/" + branch + "/" + filepath, label: filepath)
+  } else {
+    github(path: "/tree/" + branch + "/" + filepath, label: filepath)
   }
-  let url = "https://github.com/" + repo + "/tree/" + branch + "/" + filepath
-  link(url, filepath)
 }
 
-// TODO: Make repo: auto named and load repo name from document
-#let universe(pkg, version: none) = {
-  let url = "https://typst.app/universe/package/" + pkg
-  if version != none {
-    url += "/" + str(version)
+/// ```example
+/// - #universe()
+/// - #universe("tidy")
+/// ```
+/// -> content
+#let universe(
+  ..pkg,
+  version: none,
+) = {
+  let make-link(pkg) = {
+    let url = "https://typst.app/universe/package/" + pkg
+    if version != none {
+      url += "/" + str(version)
+    }
+    link(url, package(pkg))
   }
-  link(url, package(pkg))
+
+  let pkg = pkg.pos().at(0, default: auto)
+  if pkg != auto {
+    make-link(pkg)
+  } else {
+    document.use-value(
+      "package.name",
+      pkg => {
+        make-link(pkg)
+      },
+    )
+  }
 }
 
-// TODO: Make repo: auto named and load repo name from document
-#let preview(pkg, ver: auto) = {
-  if ver == auto {
-    let m = pkg.match(regex("\d+\.\d+\.\d+$"))
+/// Creates a link to the #github("typst/package") repository
+/// in the `@preview` namespace.
+/// ```example
+/// - #preview()
+/// - #preview(ver: version(0,4,1))
+/// - #preview("tidy")
+/// - #preview("tidy:0.3.1", namespace:"local")
+/// ```
+/// -> content
+#let preview(
+  ..pkg,
+  ver: auto,
+  namespace: "preview",
+) = {
+  let pkg = pkg.pos().at(0, default: auto)
+
+  if ver == auto and pkg != auto {
+    let m = pkg.match(regex(":(\d+\.\d+\.\d+)$"))
     if m != none {
-      ver = m.text
-      pkg = pkg.slice(0, ver.len() + 1)
+      ver = m.captures.at(0)
+      pkg = pkg.slice(0, -ver.len() - 1)
     } else {
       ver = none
     }
+  } else if ver == auto {
+    ver = none
   }
+
   if type(ver) == str {
     ver = version(..ver.split(".").map(int))
   }
-  link(
-    "https://github.com/typst/packages/tree/main/packages/preview/"
-      + pkg
-      + if ver != none {
-        "/" + str(ver)
-      } else {
-        ""
-      },
-    package(
-      pkg
+
+  let make-link(pkg) = {
+    link(
+      "https://github.com/typst/packages/tree/main/packages/"
+        + namespace
+        + "/"
+        + pkg
         + if ver != none {
-          ":" + str(ver)
+          "/" + str(ver)
         } else {
           ""
         },
-    ),
-  )
+      package(
+        "@"
+          + namespace
+          + "/"
+          + pkg
+          + if ver != none {
+            ":" + str(ver)
+          } else {
+            ""
+          },
+      ),
+    )
+  }
+
+  if pkg != auto {
+    make-link(pkg)
+  } else {
+    document.use-value(
+      "package.name",
+      pkg => {
+        make-link(pkg)
+      },
+    )
+  }
 }
