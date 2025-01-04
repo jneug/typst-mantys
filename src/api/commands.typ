@@ -459,11 +459,17 @@
   /// -> content
   body,
 ) = block()[
-  #utils.place-reference(
-    utils.create-label(name, module: args.named().at("module", default: none)),
-    "cmd",
-    "command",
-  )
+  #if label != none {
+    if label == auto {
+      utils.place-reference(
+        utils.create-label(name, module: args.named().at("module", default: none)),
+        "cmd",
+        "command",
+      )
+    } else {
+      utils.place-reference(label, "cmd", "command")
+    }
+  }
   #block(
     below: 0.65em,
     above: 1.3em,
