@@ -28,6 +28,7 @@
 
   theme: themes.orly,
   theme-options: (
+    // image source: https://www.publicdomainpictures.net/de/view-image.php?image=73646&picture=queen-elizabeth-ii-clipart
     title-image: image("queen-elizabeth-ll-clipart.jpg"),
   ),
 )
