@@ -134,7 +134,7 @@ Your project folder should look something like this:
 └── typst.toml
 ```
 
-Open `docs/manual.typ` in your editor, delete the arguments in the #cmd-[mantys] call at the top from #arg[name] to #arg[respository]. Then uncomment the line ```..toml("../typst.toml"),```.
+Open `docs/manual.typ` in your editor, delete the arguments in the @cmd:mantys[-] call at the top from #arg[name] to #arg[respository]. Then uncomment the line ```..toml("../typst.toml"),```.
 
 The top of your manual should look like this:
 #sourcecode[```typ
@@ -191,9 +191,9 @@ MANTYS' defaults are configured with this structure in mind and will let you eas
 
 == Initializing the template <sec:init>
 
-After importing MANTYS the template is initialized by applying a show rule with the #cmd[mantys] command.
+After importing MANTYS the template is initialized by applying a show rule with the @cmd:mantys command.
 
-#cmd-[mantys] requires some information to setup the template with an initial title page. Most of the information can be read directly from the `typst.toml` of your package:
+@cmd:mantys[-] requires some information to setup the template with an initial title page. Most of the information can be read directly from the `typst.toml` of your package:
 ```typ
 #show: mantys(
 	..toml("../typst.toml"),
@@ -202,7 +202,7 @@ After importing MANTYS the template is initialized by applying a show rule with 
 ```
 
 #info-alert[Change the path to the `typst.toml` file according to your project structure.]
-#warning-alert[Note that since #version(1,0,0) @cmd:mantys no longer requires the use of #builtin[with].]
+#warning-alert[Note that since #version(1,0,0) @cmd:mantys no longer requires the use of #typ.with.]
 
 #command(
   "mantys",
@@ -281,7 +281,7 @@ The following keys can be passed to @cmd:mantys:
 ]
 
 #argument("examples-scope", default: (:), command: "mantys")[
-  Default scope for code examples. The examples scope is a #typ.t.dict with two keys: `scope` and `imports`. The `scope` is passed to #builtin[eval] for evaluation. `imports` maps module names to a set of imports that should be prepended to example code as a preamble.
+  Default scope for code examples. The examples scope is a #typ.t.dict with two keys: `scope` and `imports`. The `scope` is passed to #typ.eval for evaluation. `imports` maps module names to a set of imports that should be prepended to example code as a preamble.
 
   *Schema*:
   #schema(
@@ -321,7 +321,7 @@ The following keys can be passed to @cmd:mantys:
 #argument("git", types: ("dictionary",), command: "mantys")[
   MANTYS can show information about the current commit in the manuals footer. This is useful if you compile your manual with a CI workflow like GitHub Actions.
 
-  The git information is read with the @cmd:git-info command. To allow MANTYS to read local files from your project you need to provide a reader function to #cmd-[git-info].
+  The git information is read with the @cmd:git-info command. To allow MANTYS to read local files from your project you need to provide a reader function to @cmd:git-info[-].
 
   ```typ
   #mantys(
@@ -467,7 +467,7 @@ The usual way to access the @type:document is by calling one of the #module[docu
 
 ==== Custom initialization
 
-Instead of using @cmd:mantys in a #builtin[show] rule, you can initialize MANTYS using @cmd:mantys-init directly (#cmd-[mantys] essentially is a shortcut for using #cmd-[mantys-init]).
+Instead of using @cmd:mantys in a #typ.show rule, you can initialize MANTYS using @cmd:mantys-init directly (@cmd:mantys[-] essentially is a shortcut for using @cmd:mantys-init[-]).
 
 #command("mantys-init", ret: array)[
   Calling this function will return a tuple with two elements:
@@ -538,7 +538,7 @@ A custom type can appear anyplace in the manual where a data type can appear, li
 
 Place a custom type anchor with the @cmd:custom-type command.
 
-#command("custom-type", arg("name"), arg(color: auto))[
+#command("custom-type", arg("name"), arg(color: auto), label: none)[
   Places a custom type anchor in the document. Any occurrences of the data type #arg[name] will link to this location in the manual. THe anchor itself is invisible.
 ]
 
@@ -549,11 +549,11 @@ If your custom type is defined by a dictionary schema, you cann simply pass an e
 
 @cmd:schema also accepts a #universe("valkyrie") validation schema.
 
-#command("schema", arg("name"), arg("definition"), arg(color: auto))[
+#command("schema", arg("name"), arg("definition"), arg(color: auto), label: none)[
 
 ]
 
-#info-alert[
+#warning-alert[
   Support for #package[valkyrie] schemas is still in development. Some aspects (like optional keys) are not yet supported.
 ]
 
@@ -573,7 +573,7 @@ You can use the builtin `@` short-syntax for referencing commands, arguments and
   [Use the `type` prefix to reference custom types in the manual or use @cmd:typeref.], example[`@type:custom-type`],
 )
 
-Referencing a command will create an index entry. To prevent this, add `[-]` as a supplement. If #arg[index-references] was set to #typ.v.false, no index entries are created by default but by adding `[+]` to a reference it will be.
+Referencing a command will create an index entry. To prevent this, add `[-]` as a supplement. If @cmd:mantys.index-references was set to #typ.v.false, no index entries are created by default but adding `[+]` to a reference will set one.
 
 ```side-by-side
 @cmd:utils:dict-get[-]
@@ -581,7 +581,7 @@ Referencing a command will create an index entry. To prevent this, add `[-]` as 
 @cmd:mantys.index-references[+]
 ```
 
-Referencing the builtin commands and types can be done via the @cmd:builtin and #cmd[dtype] commands. For these cases MANTYS also provides shortcuts in the #var-("typ") dictionary.
+Referencing the builtin commands and types can be done via the @cmd:builtin and @cmd:dtype commands. For these cases MANTYS also provides shortcuts in the #var-("typ") dictionary.
 
 - #ex(`#typ.raw`)
 - #ex(`#typ.t.dict`)
@@ -647,7 +647,7 @@ The #arg[scope] passed to @cmd:example[-] is merged with the `scope` from #arg[e
 The #arg[imports] are parsed into a preamble by @cmd:utils:build-preamble. The value is a #typ.t.dict with `(module: import)` pairs that are prepended to the raw code of the example:
 #example[```typ
     #utils.add-preamble(
-      "#rawi[Some] #cmd[command].",
+      "#rawi[Some] @cmd:command.",
       (
         mantys: "cmd",
         utils: "rawi",
@@ -814,7 +814,7 @@ MANTYS adds an index of all commands and custom types to the end of the manual. 
 
 === Adding entries to the index
 
-Using #cmd[idx] you can add new entries to the index. Entries may be categorized by #arg[kind]. Commands have #arg(kind: "cmd") set and custom types #arg(kind: "type"). You may add arbitrary new types. If your package handles colors, you may want to add a "color" category like this:
+Using @cmd:idx you can add new entries to the index. Entries may be categorized by #arg[kind]. Commands have #arg(kind: "cmd") set and custom types #arg(kind: "type"). You may add arbitrary new types. If your package handles colors, you may want to add a "color" category like this:
 ```typc
 idx("red", kind: "color")
 ```
@@ -887,7 +887,7 @@ Index entries are defined by a #arg[term] and a #arg[kind] that groups terms.
 
 The #var("typ") dictionary is a shortcut to the common Typst builtin functions, types (#var("typ.t")) and values (#var("typ.v")).
 
-=== Shortcuts for builtin commands
+=== Shortcuts for builtin commands <subsec:shortcuts-builtins>
 #balanced-cols(
   3,
   {
@@ -900,7 +900,7 @@ The #var("typ") dictionary is a shortcut to the common Typst builtin functions, 
   },
 )
 
-=== Shortcuts for builtin types
+=== Shortcuts for builtin types <subsec:shortcuts-types>
 #balanced-cols(
   3,
   {
@@ -911,7 +911,7 @@ The #var("typ") dictionary is a shortcut to the common Typst builtin functions, 
   },
 )
 
-=== Shortcuts for builtin values
+=== Shortcuts for builtin values <subsec:shortcuts-values>
 #balanced-cols(
   3,
   {
