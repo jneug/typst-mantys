@@ -1,7 +1,7 @@
 #import "../src/mantys.typ": *
 #import "../src/_api.typ" as mantys-api
 #import "../src/core/schema.typ" as s
-#import "assets.typ": assets
+#import "_assets.typ": assets
 
 #let show-module(name, scope: (:), ..tidy-args) = tidy-module(
   name,
