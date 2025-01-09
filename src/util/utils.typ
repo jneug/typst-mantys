@@ -123,6 +123,36 @@
   }
 }
 
+/// Creates a #typ.version object from the supplied arguments. #arg[args] can
+/// be a string with a version in dot-notation.
+/// - #ex(`#utils.ver(1,2,3)`)
+/// - #ex(`#utils.ver("1.2.3")`)
+/// - #ex(`#utils.ver("1.2", 3)`)
+/// -> version
+#let ver(
+  /// -> int | array | str
+  ..args,
+) = {
+  if args.pos() == () {
+    return version(0)
+  }
+
+  version(
+    ..args
+      .pos()
+      .map(v => {
+        if type(v) == version {
+          array(v)
+        } else if type(v) == str {
+          v.split(".")
+        } else {
+          v
+        }
+      })
+      .flatten()
+      .map(int),
+  )
+}
 /// Displays #arg[code] as inline #typ.raw code (with #arg(inline: true)).
 /// - #ex(`#utils.rawi("my-code")`)
 /// -> content
