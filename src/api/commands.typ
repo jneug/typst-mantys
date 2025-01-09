@@ -459,8 +459,8 @@
   /// -> content
   body,
 ) = block()[
-  #if label != none {
-    if label == auto {
+  #if label not in (none, false) {
+    if label in (auto, true) {
       utils.place-reference(
         utils.create-label(name, module: args.named().at("module", default: none)),
         "cmd",
