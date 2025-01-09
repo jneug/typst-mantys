@@ -1,5 +1,7 @@
+#import "../util/utils.typ"
 #import "../core/document.typ"
 #import "elements.typ": package
+
 
 #let _type-map = (
   "auto": "foundations/auto",
@@ -222,12 +224,47 @@
 )
 
 
-#let link-docs(..path) = std.link("https://typst.app/docs/reference/" + path.pos().first(), ..path.pos().slice(1))
+/// Utility function to create urls from components and
+/// url parameters.
+/// - #ex(`#url("forum.typst.app", "search", params: (q: "Mantys Package"))`)
+/// - #ex(`#url("github@neugebauer.cc", scheme:"mailto:")`)
+/// -> str
+#let url(
+  /// Host of the url. Like #value("github.com").
+  /// Note that the host should not include an URL-Scheme.
+  /// -> str
+  host,
+  /// Path components of the URL.
+  /// -> array
+  ..components,
+  /// URL-Scheme to use.
+  /// -> str
+  scheme: "https:/" + "/",
+  /// Optional anchor part.
+  /// -> str
+  anchor: none,
+  /// Dictionary of parameters to include in the URL.
+  params: (:),
+) = {
+  if host.starts-with(scheme) {
+    host = host.slice(scheme.len())
+  }
 
-#let link-dtype(..name) = link-docs(_type-map.at(name.pos().first(), default: ""), ..name.pos().slice(1))
+  let parts = (host,) + components.pos().filter(v => v != none).map(str)
+  let url = scheme + parts.join("/")
+  if params != none and params != (:) {
+    url += "?" + params.pairs().map(((k, v)) => k + "=" + utils.url-encode(v)).join("&")
+  }
+  if anchor != none and anchor != "" {
+    url += "#" + anchor
+  }
+  return url
+}
 
-#let link-builtin(..name) = link-docs(_builtin-map.at(name.pos().first(), default: ""), ..name.pos().slice(1))
 
+/// Overloads the builtin #typ.link function to add a #arg[footnote] argument.
+/// ```typ #link(url, lable, footnote: false)``` will not show the #arg[url] in
+/// a footnote, independent of @cmd:mantys.show-urls-in-footnotes.
 #let link(..args) = {
   let dest = args.pos().first()
   let body = if args.pos().len() > 1 {
@@ -242,9 +279,90 @@
   }
 }
 
+
+/// Utility function to create a #typ.link to the official Typst reference documentation.
+/// - #ex(`#link-docs("introspection/counter")`)
+/// - #ex(`#link-docs("introspection/counter", "counter")`)
+/// -> content
+#let link-docs(
+  /// Path in the docs and an optional label.
+  /// -> str
+  ..path,
+) = std.link("https://typst.app/docs/reference/" + path.pos().first(), ..path.pos().slice(1))
+
+/// Utility function to create a #typ.link to a data
+/// type in the official Typst reference documentation.
+/// - #ex(`#link-dtype("int")`)
+/// - #ex(`#link-dtype("int", "number")`)
+/// In most cases you should rather use @cmd:dtype for
+/// linking directly to the documentation.
+/// -> content
+#let link-dtype(
+  /// Data type name and an optional label.
+  /// -> str
+  ..name,
+) = link-docs(_type-map.at(name.pos().first(), default: ""), ..name.pos().slice(1))
+
+/// Utility function to create a #typ.link to a builtin
+/// function in the official Typst reference documentation.
+/// - #ex(`#link-builtin("strong")`)
+/// - #ex(`#link-builtin("strong", "emphasis")`)
+/// In most cases you should rather use @cmd:builtin for
+/// linking directly to the documentation.
+/// -> content
+#let link-builtin(
+  /// Function name and an optional label.
+  /// -> str
+  ..name,
+) = link-docs(_builtin-map.at(name.pos().first(), default: ""), ..name.pos().slice(1))
+
+
+/// Utility function to create a link to a named repository,
+/// usually at _github.com_, but the hostname can be
+/// changed via the #arg[host] argument.
+///
+/// With #arg(repo: auto) the repository stored in the @type:document is used, if any.
+/// - #ex(`#link-repo(auto)`)
+/// - #ex(`#link-repo("jneug/typst-finite")`)
+/// - #ex(`#link-repo("Kuchenmampfer/flautomat", host:"codeberg.org")`)
+#let link-repo(repo, host: "github.com", path: none, label: auto) = {
+  let make-link(repo) = {
+    link(
+      url(
+        host,
+        repo,
+        if path != none { path.trim("/", at: start) },
+      ),
+      if label == auto {
+        repo
+      } else {
+        label
+      },
+    )
+  }
+  if repo != auto {
+    make-link(repo)
+  } else {
+    document.use-value(
+      "package.repository",
+      repo-url => {
+        if repo-url != none {
+          let m = repo-url.match(regex("https?://[^/]+/([^/]+/[^/]+)"))
+          let repo = if m != none {
+            m.captures.at(0)
+          } else {
+            repo-url
+          }
+          make-link(repo)
+        }
+      },
+    )
+  }
+}
+
 /// Displays a link to a #link("https://github.com", "github.com", footnote:false) user page.
 /// If #arg[name] is empty or #typ.v.auto, the package
-/// author is linked (if a github username was provided).
+/// author is linked (if a github username was provided during initialization).
 /// ```example
 /// - #github-user()
 /// - #github-user("typst")
@@ -260,6 +378,7 @@
     link("https://github.com/" + name, sym.at + name)
   } else {
     context {
+      // TODO (jneug) how to handle multiple authors?
       let author = document.get-value("package.authors").first()
       if "github" in author {
         link("https://github.com/" + author.github, sym.at + author.github)
@@ -276,9 +395,9 @@
   }
 }
 
-/// Displays a link to a #link("https://github.com", "github.com", footnote:false) repository.
-/// If #arg[repo] is empty or #typ.v.auto, the package
-/// repository is linked (if a repository URL was provided).
+/// Displays a #typ.link to a #link("https://github.com", "github.com", footnote:false)
+/// repository. If #arg[repo] is empty or #typ.v.auto, the package
+/// repository is linked (if a repository URL was provided during initialization).
 /// ```example
 /// - #github()
 /// - #github("typst/packages")
@@ -299,43 +418,15 @@
   /// -> content | auto
   label: auto,
 ) = {
-  let make-link(r) = {
-    if r.starts-with("https://github.com/") {
-      r = r.slice(19)
-    }
-    let path = if path == none {
-      ""
-    } else {
-      "/" + path.trim("/", at: start)
-    }
-    let label = if label == auto {
-      r
-    } else {
-      label
-    }
-    link("https://github.com/" + r + path, label)
-  }
-
-  let repo = repo.pos().at(0, default: auto)
-
-  if repo != auto {
-    make-link(repo)
-  } else {
-    document.use-value(
-      "package.repository",
-      repo => {
-        if repo != none {
-          make-link(repo)
-        } else {
-          panic("#github requires a <repo> to be provided or the <repository> option set during initialization.")
-        }
-      },
-    )
-  }
+  link-repo(
+    repo.pos().at(0, default: auto),
+    path: path,
+    label: label,
+  )
 }
 
-/// Displays a link to a #link("https://github.com", "github.com", footnote:false) repository.
-/// If #arg[repo] is empty or #typ.v.auto, the package
+/// Displays a #typ.link to a #link("https://github.com", "github.com", footnote:false)
+/// repository. If #arg[repo] is empty or #typ.v.auto, the package
 /// repository is linked (if a repository URL was provided).
 /// ```example
 /// - #github-file("README.md")
@@ -363,21 +454,33 @@
   }
 }
 
-/// ```example
-/// - #universe()
-/// - #universe("tidy")
-/// ```
+/// Displays a #typ.link to a Typst package in the #link("https://typst.app/universe", "Typst universe").
+/// If #arg[pkg] is empty, the name of the package from the @type:document
+/// is used.
+///
+/// - #ex(`#universe()`)
+/// - #ex(`#universe("tidy")`)
+/// - #ex(`#universe("tidy", version: version(0,4,0))`)
+///
 /// -> content
 #let universe(
+  /// An optional package name.
+  /// -> str
   ..pkg,
+  /// An optional version.
+  /// -> version | str
   version: none,
 ) = {
   let make-link(pkg) = {
-    let url = "https://typst.app/universe/package/" + pkg
-    if version != none {
-      url += "/" + str(version)
-    }
-    link(url, package(pkg))
+    link(
+      url(
+        "typst.app",
+        "universe/package",
+        pkg,
+        version,
+      ),
+      package(pkg),
+    )
   }
 
   let pkg = pkg.pos().at(0, default: auto)
@@ -393,56 +496,60 @@
   }
 }
 
-/// Creates a link to the #github("typst/package") repository
-/// in the `@preview` namespace.
-/// ```example
-/// - #preview()
-/// - #preview(ver: version(0,4,1))
-/// - #preview("tidy")
-/// - #preview("tidy:0.3.1", namespace:"local")
-/// ```
+/// Displays a #typ.link to the #github("typst/package") repository
+/// in the `@preview` namespace. #arg[pkg] may include a version number
+/// for the package after a colon.
+///
+/// - #ex(`#preview()`)
+/// - #ex(`#preview(version: version(0,4,1))`)
+/// - #ex(`#preview("tidy")`)
+/// - #ex(`#preview("tidy:0.3.1", namespace:"local")`)
+///
 /// -> content
 #let preview(
+  /// An optional package name.
+  /// -> str
   ..pkg,
-  ver: auto,
+  /// An optional version. If #typ.v.auto, #arg[pkg] is checked for a verison number.
+  /// -> version | str
+  version: auto,
   namespace: "preview",
 ) = {
   let pkg = pkg.pos().at(0, default: auto)
 
-  if ver == auto and pkg != auto {
+  if version == auto and pkg != auto {
+    // Find version in package name
     let m = pkg.match(regex(":(\d+\.\d+\.\d+)$"))
     if m != none {
-      ver = m.captures.at(0)
-      pkg = pkg.slice(0, -ver.len() - 1)
+      version = m.captures.at(0)
+      pkg = pkg.slice(0, -version.len() - 1)
     } else {
-      ver = none
+      version = none
     }
-  } else if ver == auto {
-    ver = none
+  } else if version == auto {
+    version = none
   }
 
-  if type(ver) == str {
-    ver = version(..ver.split(".").map(int))
+  if version != none {
+    version = utils.ver(version)
   }
 
   let make-link(pkg) = {
     link(
-      "https://github.com/typst/packages/tree/main/packages/"
-        + namespace
-        + "/"
-        + pkg
-        + if ver != none {
-          "/" + str(ver)
-        } else {
-          ""
-        },
+      url(
+        "github.com",
+        "typst/packages/tree/main/packages",
+        namespace,
+        pkg,
+        version,
+      ),
       package(
-        "@"
+        sym.at
           + namespace
           + "/"
           + pkg
-          + if ver != none {
-            ":" + str(ver)
+          + if version != none {
+            ":" + str(version)
           } else {
             ""
           },
