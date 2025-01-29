@@ -233,7 +233,7 @@
           strong(link(it.element.location(), it.body))
         }
 
-        std.text(font: base.fonts.sans, weight: "bold", size: 1.4em, "Table of Contents")
+        std.text(font: theme.fonts.sans, weight: "bold", size: 1.4em, "Table of Contents")
         columns(
           2,
           outline(
