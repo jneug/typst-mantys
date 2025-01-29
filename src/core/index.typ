@@ -59,9 +59,15 @@
   sort-key: it => it.term,
   /// Grouping function to group index entries by. Usually entries are grouped by the first letter of #arg[term], but this can be changed to group by other keys. See below for an example.
   ///
-  /// #lambda("str", ret:"str")
+  /// #lambda("dict", ret:"str")
   /// -> function
   grouping: it => upper(it.term.at(0)),
+  /// Function to generate term indices that will be used to check if two index entries are for the same
+  /// index element. This allows you to combine different `kind`s as the same index entry.
+  ///
+  /// #lambda("dict", ret:"str")
+  /// -> function
+  index-format: it => it.kind + ":" + it.term,
 ) = context {
   let entries = query(<mantys:index>)
 
@@ -72,9 +78,10 @@
 
   let register = (:)
   for entry in entries {
-    if entry.value.term not in register {
+    let term-index = index-format(entry.value)
+    if term-index not in register {
       register.insert(
-        entry.value.term,
+        term-index,
         (
           term: entry.value.term,
           kind: entry.value.kind,
@@ -88,7 +95,7 @@
         ),
       )
     } else {
-      let idx = register.at(entry.value.term)
+      let idx = register.at(term-index)
       if idx.main == none and entry.value.main {
         idx.main = entry.location()
       }
@@ -96,7 +103,7 @@
       if idx.display == auto and entry.value.display != auto {
         idx.display = entry.value.display
       }
-      register.at(entry.value.term) = idx
+      register.at(term-index) = idx
     }
   }
 
@@ -110,13 +117,13 @@
     }
   }
 
-  for (term, entry) in register {
+  for (term-index, entry) in register {
     entry.locations = entry.locations.dedup(key: get-page).sorted(key: get-page)
-    register.at(term) = entry
+    register.at(term-index) = entry
   }
 
   let index = (:)
-  for (term, entry) in register {
+  for (_, entry) in register {
     let key = grouping(entry)
     if key not in index {
       index.insert(key, ())
