@@ -13,10 +13,12 @@
 /// Schema for a field that always will be set to a constant value, no matter
 /// the value supplied for that key. The value is taken from the supplied
 /// types default value.
-///
-/// - type (dictionary): Any of the valkyrie types with a default value set.
 /// -> dictionary
-#let constant(type) = {
+#let constant(
+  /// Any of the valkyrie types with a default value set.
+  /// -> dictionary
+  type,
+) = {
   type.optional = true
   type.pre-transform = (..) => type.default
   type
