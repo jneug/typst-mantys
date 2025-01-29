@@ -10,10 +10,16 @@
 
 // Internal version of #eval_docstring.
 // Adds Mantys API as preamble.
-#let _eval-docstring(docstring, style-args) = deps.tidy.utilities.eval-docstring(
-  utils.add-preamble(docstring, ("mantys": "*")),
-  style-args,
-)
+#let _eval-docstring(docstring, style-args) = {
+  // add mantys api to scope
+  style-args.scope.insert("mantys", api)
+  style-args.scope.insert("property", api.property)
+
+  deps.tidy.utilities.eval-docstring(
+    utils.add-preamble(docstring, ("mantys": "*")),
+    style-args,
+  )
+}
 
 /// Shows the outline of a module (list pf functions).
 ///
@@ -131,10 +137,6 @@
   fn,
   style-args,
 ) = {
-  // add mantys api to scope
-  style-args.scope.insert("mantys", api)
-  style-args.scope.insert("property", api.property)
-
   // evaluate docstring
   let descr = _eval-docstring(fn.description, style-args)
 
