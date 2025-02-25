@@ -1,4 +1,4 @@
-# Mantys (v1.0.0)
+# Mantys (v1.0.1)
 
 > **MAN**uals for **TY**p**S**t
 
@@ -16,7 +16,7 @@ typst init @preview/mantys
 A basic template for a manual could looks like this:
 
 ```typst
-#import "@local/mantys:1.0.0": *
+#import "@local/mantys:1.0.1": *
 
 #import "your-package.typ"
 
