@@ -7,6 +7,7 @@
   name,
   read("../src/" + name + ".typ"),
   show-module-name: false,
+  scope: scope,
   ..tidy-args.named(),
 )
 
