@@ -89,6 +89,10 @@ For a full reference of available commands read [the manual](docs/manual.pdf).
 
 ## Changelog
 
+### Version 1.0.1
+
+- Compatibility with Typst 0.13
+
 ### Version 1.0.0
 
 Version 1.0.0 is a complete rewrite of Mantys with many breaking changes. Read the [the manual](docs/manual.pdf) for a full usage reference.
