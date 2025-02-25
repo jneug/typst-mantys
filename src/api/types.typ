@@ -16,20 +16,20 @@
   // foundations
   arguments: arguments,
   array: array,
-  boolean: bool,
+  bool: bool,
   bytes: bytes,
   content: content,
   datetime: datetime,
   dictionary: dictionary,
   float: float,
   function: function,
-  integer: int,
+  int: int,
   location: location,
   module: module,
   plugin: plugin,
   regex: regex,
   selector: selector,
-  string: str,
+  str: str,
   type: type,
   label: label,
   version: version,
@@ -48,11 +48,11 @@
 )
 /// Dictionary of allowed type aliases, like `dict` for `dictionary`.
 #let _type-aliases = (
-  bool: "boolean",
-  str: "string",
+  boolean: "bool",
+  string: "str",
   arr: "array",
   dict: "dictionary",
-  int: "integer",
+  integer: "int",
   func: "function",
 )
 /// Dictionary of colors to use for builtin types.
@@ -72,20 +72,21 @@
     // foundations
     arguments: gray,
     array: gray,
-    boolean: rgb(255, 236, 193),
+    bool: rgb(255, 236, 193),
     bytes: gray,
     content: rgb(166, 235, 229),
     datetime: gray,
     dictionary: gray,
     float: purple,
     function: gray,
-    integer: purple,
+    int: purple,
     location: gray,
     module: gray,
     plugin: gray,
     regex: gray,
     selector: gray,
     string: rgb(209, 255, 226),
+    str: rgb(209, 255, 226),
     type: gray,
     label: rgb(167, 234, 255),
     version: gray,
@@ -211,7 +212,6 @@
       return links.link-dtype(name, type-box(name, _type-colors.default))
     }
   }
-
 
   _type = repr(_type)
   return links.link-dtype(_type, type-box(_type, _type-colors.at(_type)))

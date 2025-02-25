@@ -229,7 +229,7 @@
     set block(spacing: 0.65em)
     show outline.entry.where(level: 1): it => {
       v(0.85em, weak: true)
-      strong(link(it.element.location(), it.body))
+      strong(link(it.element.location(), it.inner()))
     }
 
     std.heading(level: 2, outlined: false, bookmarked: false, numbering: none, "Table of Contents")
@@ -239,7 +239,7 @@
         title: none,
         indent: 1em,
         depth: 3,
-        fill: repeat("."),
+        // fill: repeat("."),
       ),
     )
   }
