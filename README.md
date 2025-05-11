@@ -89,6 +89,14 @@ For a full reference of available commands read [the manual](docs/manual.pdf).
 
 ## Changelog
 
+### Version 1.0.2
+
+- Bumped dependencies:
+	- tidy 0.4.1 -> 0.4.3
+	- codly 1.2.0 -> 1.3.0
+	- hydra 0.5.2 -> 0.6.1
+	- marginalia 0.1.2 -> 0.1.4
+
 ### Version 1.0.1
 
 - Compatibility with Typst 0.13
