@@ -16,16 +16,20 @@
   dictionary: "foundations/dictionary",
   float: "foundations/float",
   function: "foundations/function",
-  integer: "foundations/int",
-  location: "foundations/location",
+  int: "foundations/int",
   module: "foundations/module",
   plugin: "foundations/plugin",
   regex: "foundations/regex",
   selector: "foundations/selector",
-  string: "foundations/str",
+  str: "foundations/str",
+  symbol: "foundations/symbol",
   type: "foundations/type",
   label: "foundations/label",
   version: "foundations/version",
+  // instrospection
+  counter: "introspection/counter",
+  location: "introspection/location",
+  state: "introspection/state",
   // layout
   alignment: "layout/alignment",
   angle: "layout/angle",
@@ -38,6 +42,7 @@
   color: "visualize/color",
   gradient: "visualize/gradient",
   stroke: "visualize/stroke",
+  tiling: "visualize/tiling",
 )
 
 #let _builtin-map = (

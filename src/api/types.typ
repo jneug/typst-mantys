@@ -20,19 +20,25 @@
   bytes: bytes,
   content: content,
   datetime: datetime,
+  decimal: decimal,
+  duration: datetime,
   dictionary: dictionary,
   float: float,
   function: function,
   int: int,
-  location: location,
+  label: label,
   module: module,
   plugin: plugin,
   regex: regex,
   selector: selector,
   str: str,
+  symbol: symbol,
   type: type,
-  label: label,
   version: version,
+  // instrospection
+  counter: counter,
+  location: location,
+  state: state,
   // layout
   alignment: alignment,
   angle: angle,
@@ -45,6 +51,7 @@
   color: color,
   gradient: gradient,
   stroke: stroke,
+  tiling: tiling,
 )
 /// Dictionary of allowed type aliases, like `dict` for `dictionary`.
 #let _type-aliases = (
@@ -60,6 +67,31 @@
   let red = rgb(255, 203, 195)
   let gray = rgb(239, 240, 243)
   let purple = rgb(230, 218, 255)
+  let yellow = rgb(255, 236, 193)
+  let green = rgb(209, 255, 226)
+  let pink = rgb(252, 223, 255)
+  let bluish = rgb(198, 215, 236)
+  let blue = rgb(167, 234, 255)
+
+  let gradient-color = gradient.linear(
+    (rgb("#7cd5ff"), 0%),
+    (rgb("#a6fbca"), 33%),
+    (rgb("#fff37c"), 66%),
+    (rgb("#ffa49d"), 100%),
+  )
+  let gradient-date = gradient.conic(
+    angle: 150deg,
+    (rgb("#0205133F"), 0%),
+    (rgb("#0415293F"), 7%),
+    (rgb("#a07aaa3F"), 18%),
+    (rgb("#a6aff63F"), 28%),
+    (rgb("#89c8e53F"), 35%),
+    (rgb("#b7daec3F"), 66%),
+    (rgb("#dcac683F"), 73%),
+    (rgb("#47232d3F"), 79%),
+    (rgb("#0415293F"), 89%),
+    (rgb("#0205133F"), 100%),
+  )
 
   (
     // fallback
@@ -70,49 +102,55 @@
     "auto": red,
     "none": red,
     // foundations
-    arguments: gray,
-    array: gray,
-    bool: rgb(255, 236, 193),
-    bytes: gray,
+    arguments: pink,
+    array: pink,
+    bool: yellow,
+    bytes: pink,
     content: rgb(166, 235, 229),
-    datetime: gray,
-    dictionary: gray,
-    float: purple,
-    function: gray,
-    int: purple,
-    location: gray,
-    module: gray,
+    datetime: gradient-date,
+    duration: gradient-date,
+    decimal: yellow,
+    dictionary: pink,
+    float: yellow,
+    function: purple,
+    int: yellow,
+    label: bluish,
+    module: purple,
     plugin: gray,
-    regex: gray,
-    selector: gray,
-    string: rgb(209, 255, 226),
-    str: rgb(209, 255, 226),
-    type: gray,
-    label: rgb(167, 234, 255),
-    version: gray,
+    regex: green,
+    selector: bluish,
+    string: green,
+    str: green,
+    symbol: green,
+    type: purple,
+    version: pink,
+    // instrospection
+    counter: gray,
+    location: bluish,
+    state: gray,
     // layout
-    alignment: gray,
-    angle: purple,
-    direction: gray,
-    fraction: purple,
-    length: purple,
+    alignment: blue,
+    angle: yellow,
+    direction: blue,
+    fraction: yellow,
+    length: yellow,
     "relative length": purple,
-    ratio: purple,
-    relative: purple,
+    ratio: yellow,
+    relative: yellow,
     // visualize
-    color: gradient.linear(
-      (rgb("#7cd5ff"), 0%),
-      (rgb("#a6fbca"), 33%),
-      (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%),
+    color: gradient-color,
+    gradient: gradient-color,
+    stroke: gradient-color,
+    tiling: gradient.linear(
+      angle: 150deg,
+      ..range(20).map(i => {
+        let p = calc.quo(i + 1, 2)
+        (
+          (rgb("#ffd2ec"), rgb("#c7ffff")).at(calc.rem(p + i, 2)),
+          p * 10%,
+        )
+      }),
     ),
-    gradient: gradient.linear(
-      (rgb("#7cd5ff"), 0%),
-      (rgb("#a6fbca"), 33%),
-      (rgb("#fff37c"), 66%),
-      (rgb("#ffa49d"), 100%),
-    ),
-    stroke: gray,
   )
 }
 
