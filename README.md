@@ -83,7 +83,7 @@ Use `#command(name, ..args)[description]` to describe commands and `#argument(na
 
 The result might look something like this:
 
-![Example for a headline command with Mantys](docs/assets/headline.svg)
+![Example for a headline command with Mantys](docs/assets/examples/headline.png)
 
 For a full reference of available commands read [the manual](docs/manual.pdf).
 
