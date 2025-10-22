@@ -3,6 +3,8 @@
 #import "../src/core/schema.typ" as s
 #import "_assets.typ": assets
 
+#set outline(title: "Table of Contents")
+
 #let show-module(name, scope: (:), ..tidy-args) = tidy-module(
   name,
   read("../src/" + name + ".typ"),
