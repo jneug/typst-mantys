@@ -143,7 +143,7 @@
           set block(above: above, below: below)
 
           if level == 1 {
-            pagebreak(weak: true)
+            colbreak(weak: true)
             block({
               if it.numbering != none {
                 std.text(
@@ -226,27 +226,32 @@
       }
 
       if doc.show-outline {
-        set align(left)
-        set block(spacing: 0.65em)
+        show outline: it => {
+          set align(left)
+          set block(spacing: 0.65em)
+          show heading: title => {
+            place(
+              top + center,
+              scope: "parent",
+              float: true,
+              text(0.65em, weight: "bold")[#title],
+            )
+          }
+          columns(2, it)
+          pagebreak()
+        }
         show outline.entry.where(level: 1): it => {
           v(0.85em, weak: true)
           strong(link(it.element.location(), it.inner()))
         }
 
-        std.text(font: theme.fonts.sans, weight: "bold", size: 1.4em, "Table of Contents")
-        columns(
-          2,
-          outline(
-            title: none,
-            indent: 1em,
-            depth: 3,
-            // fill: repeat("."),
-          ),
+        outline(
+          indent: 1em,
+          depth: 3,
+          // fill: repeat("."),
         )
       }
-
-      pagebreak()
     },
-    last-page: (doc, theme) => { },
+    last-page: (doc, theme) => {},
   )
 }
